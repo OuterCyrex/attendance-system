@@ -68,11 +68,12 @@ export const staticRoutes: AppRouteRecordRaw[] = [
         meta: { title: 'iframe' }
       }
     ]
-  },
-  {
-    path: '/class/attendance',
+  }
+  /* {
+    path: '/attendance',
     name: 'attendance',
     component: () => import('@/views/attendance/index.vue'),
-    meta: { title: '出勤详细', isHideTab: true }
-  }
+    meta: {
+    }
+  } */
 ]
