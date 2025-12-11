@@ -11,7 +11,6 @@ import { AttendanceRoutes } from './attendance'
  */
 export const routeModules: AppRouteRecord[] = [
   dashboardRoutes,
-  widgetsRoutes,
   ClassRoutes,
   MessageRoutes,
   AccountRoutes,

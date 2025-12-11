@@ -82,12 +82,12 @@
               </ElButton>
             </div>
 
-            <div class="mt-5 text-sm text-gray-600">
+            <!-- <div class="mt-5 text-sm text-gray-600">
               <span>{{ $t('login.noAccount') }}</span>
               <RouterLink class="text-theme" :to="{ name: 'Register' }">{{
                 $t('login.register')
               }}</RouterLink>
-            </div>
+            </div> -->
           </ElForm>
         </div>
       </div>
@@ -160,8 +160,8 @@
       // 登录请求
       const { username, password } = formData
 
-      const { token, refreshToken } = await fetchLogin({
-        userName: username,
+      const { token, userInfo } = await fetchLogin({
+        username: username,
         password
       })
 
@@ -171,8 +171,9 @@
       }
 
       // 存储 token 和登录状态
-      userStore.setToken(token, refreshToken)
+      userStore.setToken(token)
       userStore.setLoginStatus(true)
+      userStore.setUserInfo(userInfo)
 
       // 登录成功处理
       showLoginSuccessNotice()

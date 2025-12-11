@@ -37,24 +37,40 @@ declare namespace Api {
   namespace Auth {
     /** 登录参数 */
     interface LoginParams {
-      userName: string
+      username: string
       password: string
     }
 
     /** 登录响应 */
     interface LoginResponse {
       token: string
-      refreshToken: string
+      userInfo: {
+        realName: string
+        phone: string
+        id: number
+        department: string
+        teacherNo: string
+        email: string
+        username: string
+      }
     }
 
     /** 用户信息 */
-    interface UserInfo {
-      buttons: string[]
-      roles: string[]
-      userId: number
-      userName: string
+    interface userInfo: {
+      realName: string
+      phone: string
+      id: number
+      department: string
+      teacherNo: string
       email: string
-      avatar?: string
+      username: string
+    }
+
+    interface GetClassListParams {
+      className: string
+      teacherNo: string
+      pageNum: number
+      pageSize: number
     }
   }
 }

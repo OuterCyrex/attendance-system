@@ -38,7 +38,7 @@
         <div class="operation-buttons">
           <el-button type="primary" :icon="Plus">新增班级</el-button>
           <el-button type="primary"> 导入班级</el-button>
-          <el-button type="info" plain> 下载班级课程表模板</el-button>
+          <el-button type="info" plain @click="downloadTemplate"> 下载班级课程表模板</el-button>
         </div>
       </ElCard>
 
@@ -88,12 +88,20 @@
 <script lang="ts" setup>
   import { Plus } from '@element-plus/icons-vue'
   import { Edit, Delete } from '@element-plus/icons-vue'
-  import { classList } from './mock'
   import { useRouter } from 'vue-router'
-
+  import { fetchTemplate, fetchGetClassList } from '../../api/class'
+  import { useUserStore } from '@/store/modules/user'
+  import { majorOptions, gradeOptions } from './select'
+  import { mockClassList } from './mock'
+  
+  const classList = ref([])
   const total = classList.length
   const currentPage = ref(1)
   const pageSize = ref(10)
+  const userStore = useUserStore()
+
+  const gradeValue = ref<string>('')
+  const majorValue = ref<string>('')
 
   const router = useRouter()
   function goToDetail(id: string) {
@@ -113,6 +121,31 @@
   const displayData = computed(() => {
     const start = (currentPage.value - 1) * pageSize.value
     const end = start + pageSize.value
-    return classList.slice(start, end)
+    return classList.value.slice(start, end)
+  })
+
+  const downloadTemplate = async () => {
+    const { getToken: token } = useUserStore
+    const blob = await fetchTemplate(token)
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = '班级导入模板.xlsx'
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
+  const getClassList = async () => {
+    const { getToken: token } = userStore
+    const { getUserInfo: userInfo } = userStore
+    const data = await fetchGetClassList(token, {
+      teacherNo: userInfo.id,
+      pageNum: currentPage.value,
+      pageSize: pageSize.value
+    })
+    classList.value = data.records.length === 0 ? mockClassList : data.records
+  }
+
+  onMounted(() => {
+    getClassList()
   })
 </script>

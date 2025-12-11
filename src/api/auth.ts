@@ -15,15 +15,17 @@ export function fetchLogin(params: Api.Auth.LoginParams) {
 }
 
 /**
- * 获取用户信息
- * @returns 用户信息
+ * 退出登录
+ * @param string token 用户令牌
+ * @returns 退出登录响应
  */
-export function fetchGetUserInfo() {
-  return request.get<Api.Auth.UserInfo>({
-    url: '/api/user/info'
-    // 自定义请求头
-    // headers: {
-    //   'X-Custom-Header': 'your-custom-value'
-    // }
+export function fetchLogout(token: string) {
+  return request.post<void>({
+    url: '/front/logout',
+    headers: {
+      'Authorization': token
+    },
+    showSuccessMessage: true,
+    showErrorMessage: true,
   })
 }
