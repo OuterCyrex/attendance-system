@@ -12,17 +12,6 @@ export async function fetchLogin(params: Api.Auth.LoginParams) {
     showSuccessMessage: true,
     showErrorMessage: true
   })
-
-  try {
-    const userStore = useUserStore()
-    if (res && (res as any).userInfo) {
-      userStore.setUserInfo((res as any).userInfo)
-    }
-  } catch {
-    // ignore if store not available in this context
-  }
-
-  return res
 }
 
 /**
