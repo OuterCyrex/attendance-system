@@ -1,17 +1,28 @@
 import request from '@/utils/http'
-
+import { useUserStore } from '@/store/modules/user'
 /**
  * 登录
  * @param params 登录参数
  * @returns 登录响应
  */
-export function fetchLogin(params: Api.Auth.LoginParams) {
-  return request.post<Api.Auth.LoginResponse>({
+export async function fetchLogin(params: Api.Auth.LoginParams) {
+  const res = await request.post<Api.Auth.LoginResponse>({
     url: '/front/login',
     params,
     showSuccessMessage: true,
-    showErrorMessage: true,
+    showErrorMessage: true
   })
+
+  try {
+    const userStore = useUserStore()
+    if (res && (res as any).userInfo) {
+      userStore.setUserInfo((res as any).userInfo)
+    }
+  } catch {
+    // ignore if store not available in this context
+  }
+
+  return res
 }
 
 /**
@@ -29,3 +40,4 @@ export function fetchLogout(token: string) {
     showErrorMessage: true,
   })
 }
+
