@@ -12,7 +12,7 @@ export function fetchTemplate(token: string) {
     url: `${import.meta.env.VITE_API_URL}class/downloadTemplate`,
     method: 'GET',
     responseType: 'blob',
-    headers: { Authorization: token }, // 传token
+    headers: { Authorization: 'Bearer ' + token },
     withCredentials: import.meta.env.VITE_WITH_CREDENTIALS === 'true'
   }).then(res => res.data)
 }
@@ -27,7 +27,79 @@ export function fetchGetClassList(token: string, params: GetClassListParams) {
     url: '/class/query',
     params,
     headers: {
-      'Authorization': token
+      'Authorization': 'Bearer ' + token
+    },
+    showErrorMessage: true,
+  })
+}
+
+/**
+ * 导入excel
+ * @param string token 用户令牌
+ * @param file 文件
+ * @returns 导入响应
+ */
+export function fetchImportClass(token: string, file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request.request({
+    url: `/class/import`,
+    method: 'post',
+    data: formData,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  })
+}
+
+/**
+ * 手动添加班级
+ * @param token 令牌
+ * @param params 班级参数
+ * @returns 添加响应
+ */
+export function fetchAddClass(token: string, teacherNo: string,  params: classInfo) {
+  return request.post<void>({
+    url: '/class/add',
+    data: {...params, teacherNo},
+    headers: {
+      'Authorization': 'Bearer ' + token
+    },
+    showSuccessMessage: true,
+    showErrorMessage: true,
+  })
+}
+
+/**
+ * 删除班级
+ * @param token 令牌
+ * @param string 班级名称
+ * @returns 删除响应
+ */
+export function fetchDeleteClass(token: string, id: string) {
+  return request.del<void>({
+    url: `/class/delete/${id}`,
+    headers: {
+      'Authorization': 'Bearer ' + token
+    },
+    showSuccessMessage: true,
+    showErrorMessage: true,
+  })
+}
+
+/**
+ * 更新班级
+ * @param token 令牌
+ * @param id 课程id
+ * @param params 班级信息
+ * @returns 响应
+ */
+export function fetchUpdateClass(token: string, id: string, params: classInfo) {
+  return request.del<void>({
+    url: `/class/update/${id}`,
+    params,
+    headers: {
+      'Authorization': 'Bearer ' + token
     },
     showSuccessMessage: true,
     showErrorMessage: true,

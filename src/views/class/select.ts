@@ -1,7 +1,7 @@
 export const majorOptions = [
-    { label: '计算机科学', value: 'cs' },
-    { label: '电子工程', value: 'ee' },
-    { label: '软件工程', value: 'se' }
+    { label: '计算机科学', value: '计算机科学' },
+    { label: '物联网工程', value: '物联网工程' },
+    { label: '软件工程', value: '软件工程' }
   ]
 
  export const gradeOptions = [

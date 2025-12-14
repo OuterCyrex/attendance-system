@@ -6,7 +6,7 @@ import { useUserStore } from '@/store/modules/user'
  * @returns 登录响应
  */
 export async function fetchLogin(params: Api.Auth.LoginParams) {
-  const res = await request.post<Api.Auth.LoginResponse>({
+  return request.post<Api.Auth.LoginResponse>({
     url: '/front/login',
     params,
     showSuccessMessage: true,
@@ -23,7 +23,7 @@ export function fetchLogout(token: string) {
   return request.post<void>({
     url: '/front/logout',
     headers: {
-      'Authorization': token
+      'Authorization': 'Bearer ' + token
     },
     showSuccessMessage: true,
     showErrorMessage: true,

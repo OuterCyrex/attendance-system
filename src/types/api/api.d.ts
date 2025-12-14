@@ -47,7 +47,7 @@ declare namespace Api {
       userInfo: {
         realName: string
         phone: string
-        id: number
+        id: string
         department: string
         teacherNo: string
         email: string
@@ -59,7 +59,7 @@ declare namespace Api {
     interface userInfo: {
       realName: string
       phone: string
-      id: number
+      id: string
       department: string
       teacherNo: string
       email: string
@@ -69,8 +69,54 @@ declare namespace Api {
     interface GetClassListParams {
       className: string
       teacherNo: string
+      grade: string
+      major: string
       pageNum: number
       pageSize: number
+    }
+
+    interface classInfo {
+      className: string
+      teacherNo: string
+      count: number
+      grade: string
+      major: string
+    }
+
+    interface GetScheduleParams {
+      teacherNo: number
+      className: string
+      courseName: string
+      weekday: number
+      semester: string
+      schoolYear: string
+      pageNum: number
+      pageSize: number
+    }
+
+    interface scheduleInfo {
+      id: number
+      courseName: string
+      teacherNo: number
+      className: string
+      weekday: number
+      startTime: {
+        hour: number
+        minute: number
+        second: number
+        nano: number
+      }
+      endTime: {
+        hour: number
+        minute: number
+        second: number
+        nano: number
+      }
+      classroom: string
+      semester: string
+      schoolYear: string
+      createTime: string
+      updateTime: string
     }
   }
 }
