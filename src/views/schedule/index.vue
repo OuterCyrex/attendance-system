@@ -102,6 +102,7 @@ import { useUserStore } from '@/store/modules/user'
 import { mockScheduleList } from './mock'
 import { weekOptions, yearOptions, semesterOptions } from './select'
 import scheduleFormDialog from './scheduleForm.vue'
+import { UploadFile } from 'element-plus'
 
 const schoolYear = ref('')
 const semester = ref('')
@@ -194,16 +195,8 @@ const handleFileChange = async (uploadFile: UploadFile) => {
   const file = uploadFile.raw
   if (!file) return
 
-  try {
-    const res = await fetchImportClass(token, file)
-    console.log('[Class] import response:', res)
-    // 等待刷新完成，确保列表已更新
-    await getClassList()
-    ElMessage.success('导入成功')
-  } catch (error) {
-    console.error('[Class] import error:', error)
-    ElMessage.error('导入失败，请检查文件格式并重试')
-  }
+  await fetchImportSchedule(token, file)
+  getScheduleList()
 }
 
 const addSchedule = async (record: scheduleInfo) => {
