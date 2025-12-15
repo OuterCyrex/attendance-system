@@ -23,13 +23,11 @@ export function fetchTemplate(token: string) {
  * @returns 退出登录响应
  */
 export function fetchGetScheduleList(token: string, params: GetScheduleListParams) {
-  return request.get<void>({
+  // 直接把查询参数作为请求参数发送，避免后台接口期待不同的参数结构
+  return request.get<any>({
     url: '/courseSchedule/query',
-    params,
-    headers: {
-      'Authorization': 'Bearer ' + token
-    },
-    showErrorMessage: true,
+    params: { queryDTO:{...params} },
+    showErrorMessage: true
   })
 }
 
@@ -42,12 +40,42 @@ export function fetchGetScheduleList(token: string, params: GetScheduleListParam
 export function fetchImportSchedule(token: string, file: File) {
   const formData = new FormData()
   formData.append('file', file)
-  return request.request({
+  return request.post({
     url: `/courseSchedule/import`,
-    method: 'post',
     data: formData,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    }
+  })
+}
+
+export function fetchAddSechedule(token:string, teacherNo:number, params:any) {
+  return request.post({
+    url: '/courseSchedule/add',
+    params: { ...params, teacherNo },
+    showErrorMessage: true
+  })
+}
+
+export function fetchImportClass(token: string, file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+    return request.post({
+    url: '/courseSchedule/import',
+    data: formData,
+  })
+}
+
+export function fetchUpdateSchedule(token: string, id: string, params: schedule) {
+  return request.put<void>({
+    url: `/courseSchedule/update/${id}`,
+    params,
+    showSuccessMessage: true,
+    showErrorMessage: true,
+  })
+}
+
+export function fetchDeleteSchedule(token: string, id: string) {
+  return request.del<void>({
+    url: `courseSchedule/delete/${id}`,
+    showSuccessMessage: true,
+    showErrorMessage: true,
   })
 }

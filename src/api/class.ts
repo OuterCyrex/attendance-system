@@ -25,7 +25,7 @@ export function fetchTemplate(token: string) {
 export function fetchGetClassList(token: string, params: GetClassListParams) {
   return request.get<void>({
     url: '/class/query',
-    params,
+    params:{queryDTO:{...params}},
     headers: {
       'Authorization': 'Bearer ' + token
     },
@@ -95,7 +95,7 @@ export function fetchDeleteClass(token: string, id: string) {
  * @returns 响应
  */
 export function fetchUpdateClass(token: string, id: string, params: classInfo) {
-  return request.del<void>({
+  return request.put<void>({
     url: `/class/update/${id}`,
     params,
     headers: {
