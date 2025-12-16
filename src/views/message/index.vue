@@ -5,13 +5,8 @@
                 <!-- 单个日期选择器 -->
                 <div class="flex items-center">
                     <div class="mr-2 text-gray-500">日期：</div>
-                    <el-date-picker v-model="selectedDate" type="date"
-                        placeholder="选择日期"
-                        format="YYYY-MM-DD"
-                        value-format="YYYY-MM-DD"
-                        size="default"
-                        class="w-[200px]"
-                        />
+                    <el-date-picker v-model="selectedDate" type="date" placeholder="选择日期" format="YYYY-MM-DD"
+                        value-format="YYYY-MM-DD" size="default" class="w-[200px]" />
                 </div>
 
                 <!-- 查询/重置按钮 -->
@@ -21,12 +16,14 @@
                 </div>
             </div>
         </ElCard>
-        <ElCard class="col-span-12 mt-4" shadow="never" v-loading="tableLoading">
+        <ElCard class="col-span-12 mt-4" shadow="never" v-loading="tableLoading" style="min-height: 600px">
             <div class="flex items-center px-4 py-3 bg-gray-50 border-b border-gray-200 rounded-t-md">
                 <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange"
                     label="选择全部" size="large" />
             </div>
 
+            <el-empty v-if="alertList.length === 0"></el-empty>
+            
             <div class="flex justify-between items-center px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150"
                 v-for="item in alertList" :key="item.id" @click="handleViewDetail(item)">
                 <div class="flex items-center gap-4 flex-1">
