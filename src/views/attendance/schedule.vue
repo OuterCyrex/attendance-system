@@ -153,13 +153,13 @@ const manualAttendance = async () => {
 
 const handlePageChange = (page: number) => {
     currentPage.value = page
-    getAlertList()
+    getAttendanceList()
 }
 
 const handleSizeChange = (size: number) => {
     pageSize.value = size
     currentPage.value = 1
-    getAlertList()
+    getAttendanceList()
 }
 
 const latestRecord = computed(() => {
