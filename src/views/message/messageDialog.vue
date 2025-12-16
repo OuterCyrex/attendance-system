@@ -44,7 +44,7 @@
 
             <div class="flex items-center">
                 <div class="w-20 text-left text-gray-500 mr-3 shrink-0">通知时间:</div>
-                <div class="flex-1 text-gray-600">{{ currentAlert.notifyTime }}</div>
+                <div class="flex-1 text-gray-600">{{ currentAlert.updateTime }}</div>
             </div>
 
         </div>
