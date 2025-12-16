@@ -1,10 +1,10 @@
 import request from '@/utils/http'
 import axios from 'axios'
 
-export function fetchGetAttendanceList(token: string, courseId: string) {
-    return request.get<Array<attendanceInfo>>({
+export function fetchGetAttendanceList(token: string, params:any) {
+    return request.post<Array<attendanceInfo>>({
         url: '/attendance/queryAttendance',
-        params: {courseId},
+        params,
         showErrorMessage: true
     })
 }

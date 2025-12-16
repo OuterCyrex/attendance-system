@@ -48,8 +48,7 @@
 
                     <div class="flex">
                         <el-button class="ml-auto mr-4 mt-2" type="primary" @click="manualAttendance"
-                        v-loading="buttonLoading"
-                        >手动考勤</el-button>
+                            v-loading="buttonLoading">手动考勤</el-button>
                     </div>
                 </el-card>
             </div>
@@ -92,9 +91,14 @@ import { fetchGetSchedule } from '../../api/schedule'
 import { fetchGetAttendanceList, fetchManualAttendance } from '../../api/attendance'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/store/modules/user'
+import { userInfo } from 'os'
 
 const userStore = useUserStore()
 const { getToken: token } = userStore
+const { getUserInfo: userInfo } = userStore
+
+const currentNum = ref(1)
+const pageSize = ref(10)
 
 const route = useRoute()
 const recordId = route.params.id as string
@@ -120,8 +124,14 @@ const getScheduleDetail = async () => {
 }
 
 const getAttendanceList = async () => {
+    const params = {
+        courseId: recordId,
+        date: userInfo.date,
+        pageNum: currentNum.value,
+        pageSize: pageSize.value
+    }
     tableLoading.value = true
-    attendanceList.value = await fetchGetAttendanceList(token, recordId)
+    attendanceList.value = await fetchGetAttendanceList(token, params)
     tableLoading.value = false
 }
 
