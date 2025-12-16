@@ -17,3 +17,10 @@ export function fetchManualAttendance(token: string, courseId: string) {
         showErrorMessage: true
     })
 }
+
+export function fetchGetAttendance(token: string, attendanceId: string) {
+    return request.get<attendanceInfo>({
+        url: `/attendance/get/${attendanceId}`,
+        showErrorMessage: true
+    })
+}

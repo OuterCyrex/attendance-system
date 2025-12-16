@@ -13,7 +13,7 @@ export const AttendanceClassRoutes: AppRouteRecord = {
 export const AttendanceScheduleRoutes: AppRouteRecord = {
   path: '/attendance/schedule/:id',
   name: 'attendance/schedule',
-  component: '/attendance/schedule',
+  component: '/attendance/schedule/schedule',
   meta: {
     title: '课程考勤',
     isHide: true

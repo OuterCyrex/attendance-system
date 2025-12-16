@@ -78,6 +78,11 @@
                                 </el-tag>
                             </template>
                         </el-table-column>
+                        <el-table-column label="详情" width="100">
+                            <template #default="{ row }">
+                                <el-button type="primary" link @click="checkAttendanceDetail(row.id)"> 查看 </el-button>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="remark" label="备注" />
                     </el-table>
                     <div class="col-span-12 mt-10 mb-15 flex justify-center">
@@ -88,16 +93,18 @@
                 </el-card>
             </div>
         </div>
+
+        <scheduleDetail v-if="showDetailDialog" v-model="showDetailDialog" :id="detailId"/>
     </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { fetchGetSchedule } from '../../api/schedule'
-import { fetchGetAttendanceList, fetchManualAttendance } from '../../api/attendance'
+import { fetchGetSchedule } from '../../../api/schedule'
+import { fetchGetAttendanceList, fetchManualAttendance } from '../../../api/attendance'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/store/modules/user'
-import { userInfo } from 'os'
+import scheduleDetail from './scheduleDetail.vue'
 
 const userStore = useUserStore()
 const { getToken: token } = userStore
@@ -111,6 +118,8 @@ const route = useRoute()
 const recordId = route.params.id as string
 const tableLoading = ref(false)
 const buttonLoading = ref(false)
+const detailId = ref(0)
+const showDetailDialog = ref(false)
 
 const schedule = ref({
     id: '',
@@ -149,6 +158,11 @@ const manualAttendance = async () => {
     await fetchManualAttendance(token, recordId)
     getAttendanceList()
     buttonLoading.value = false
+}
+
+const checkAttendanceDetail = (id: string) => {
+    detailId.value = id
+    showDetailDialog.value = true
 }
 
 const handlePageChange = (page: number) => {
