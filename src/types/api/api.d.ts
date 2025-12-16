@@ -118,5 +118,18 @@ declare namespace Api {
       createTime: string
       updateTime: string
     }
+
+    interface attendanceInfo {
+      id: string
+      courseId: string
+      checkTime: string
+      actualCount: number
+      expectedCount: number
+      attendanceRate: number
+      imageUrl: string
+      checkType: number
+      status: number
+      remark: string
+    }
   }
 }

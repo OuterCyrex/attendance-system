@@ -6,6 +6,6 @@ export const ClassRoutes: AppRouteRecord = {
   component: '/class/index',
   meta: {
     title: '班级管理',
-    icon: 'ri:apps-2-add-line'
+    icon: 'ri:book-2-fill'
   }
 }

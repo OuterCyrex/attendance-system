@@ -23,9 +23,9 @@ export function fetchTemplate(token: string) {
  * @returns 退出登录响应
  */
 export function fetchGetClassList(token: string, params: GetClassListParams) {
-  return request.get<void>({
+  return request.post<void>({
     url: '/class/query',
-    params:{queryDTO:{...params}},
+    params: params,
     headers: {
       'Authorization': 'Bearer ' + token
     },

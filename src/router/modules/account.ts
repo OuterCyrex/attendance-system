@@ -6,6 +6,6 @@ export const AccountRoutes: AppRouteRecord = {
   component: '/account/index',
   meta: {
     title: '个人设置',
-    icon: 'ri:apps-2-add-line'
+    icon: 'ri:user-3-fill'
   }
 }

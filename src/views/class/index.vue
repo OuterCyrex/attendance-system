@@ -115,7 +115,7 @@ const editFormData = ref<classInfo>({
 const router = useRouter()
 function goToDetail(id: string) {
   router.push({
-    name: 'attendance',
+    name: 'attendance/class',
     params: { id }
   })
 }
@@ -146,9 +146,9 @@ const showEditForm = (row: classInfo) => {
 const getClassList = async () => {
   tableLoading.value = true
   const data = await fetchGetClassList(token, {
-    teacherNo: userInfo.id,
-    grades: gradeValue.value,
-    majors: majorValue.value,
+    teacherNo: userInfo.teacherNo,
+    grades: [gradeValue.value],
+    majors: [majorValue.value],
     pageNum: currentPage.value,
     pageSize: pageSize.value
   })
@@ -173,7 +173,7 @@ const resetSearch = async () => {
 }
 
 const AddClass = async (record: classInfo) => {
-  const data = await fetchAddClass(token, userInfo.id, record)
+  const data = await fetchAddClass(token, userInfo.teacherNo, record)
   getClassList()
 }
 

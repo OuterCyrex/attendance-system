@@ -23,10 +23,9 @@ export function fetchTemplate(token: string) {
  * @returns 退出登录响应
  */
 export function fetchGetScheduleList(token: string, params: GetScheduleListParams) {
-  // 直接把查询参数作为请求参数发送，避免后台接口期待不同的参数结构
-  return request.get<any>({
+  return request.post<any>({
     url: '/courseSchedule/query',
-    params: { queryDTO:{...params} },
+    params: params,
     showErrorMessage: true
   })
 }
@@ -76,6 +75,13 @@ export function fetchDeleteSchedule(token: string, id: string) {
   return request.del<void>({
     url: `courseSchedule/delete/${id}`,
     showSuccessMessage: true,
+    showErrorMessage: true,
+  })
+}
+
+export function fetchGetSchedule(token: string, id: string) {
+  return request.get<scheduleInfo>({
+    url: `courseSchedule/get/${id}`,
     showErrorMessage: true,
   })
 }

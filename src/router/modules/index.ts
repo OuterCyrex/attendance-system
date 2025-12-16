@@ -4,7 +4,7 @@ import { widgetsRoutes } from './widgets'
 import { ClassRoutes } from './class'
 import { MessageRoutes } from './message'
 import { AccountRoutes } from './account'
-import { AttendanceRoutes } from './attendance'
+import { AttendanceClassRoutes, AttendanceScheduleRoutes } from './attendance'
 import { ScheduleRoutes } from './schedule'
 
 /**
@@ -15,5 +15,6 @@ export const routeModules: AppRouteRecord[] = [
   ScheduleRoutes,
   MessageRoutes,
   AccountRoutes,
-  AttendanceRoutes
+  AttendanceClassRoutes,
+  AttendanceScheduleRoutes
 ]

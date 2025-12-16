@@ -6,7 +6,9 @@
         <div class="flex items-center gap-4">
           <div class="flex items-center">
             <div class="mr-2 text-gray-500">学年：</div>
-            <el-input v-model="schoolYear" placeholder="如 2024-2025" style="width: 160px" />
+            <el-select v-model="schoolYear" placeholder="如 2024-2025" style="width: 160px" >
+              <el-option v-for="op of yearOptions" :label="op.label" :value="op.value" />
+            </el-select>
           </div>
 
           <div class="flex items-center">
@@ -17,6 +19,11 @@
             </el-select>
           </div>
 
+          <div class="flex items-center">
+            <div class="mr-2 text-gray-500">班级：</div>
+            <el-input v-model="className" placeholder="请输入班级名称" style="width: 200px"/>
+          </div>
+
           <div class="ml-auto flex gap-2">
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button type="info" plain @click="resetSearch()">重置</el-button>
@@ -24,7 +31,6 @@
         </div>
       </ElCard>
 
-      <!-- 操作区 -->
       <ElCard class="col-span-12 mt-4" shadow="never">
         <div class="operation-buttons flex">
           <el-button type="primary" :icon="Plus" @click="addDialogVisible = true">新增课程安排</el-button>
@@ -36,15 +42,10 @@
         </div>
       </ElCard>
 
-      <!-- 表格 -->
       <ElCard class="col-span-12 mt-4" shadow="never">
         <el-table v-loading="tableLoading" :data="scheduleList" style="min-height: 400px" border stripe
           highlight-current-row class="data-table__content">
-          <!-- 班级信息在前 -->
-          <el-table-column label="班级ID" prop="id" width="80" />
           <el-table-column label="班级名称" prop="className" />
-
-          <!-- 课程信息在后 -->
           <el-table-column label="课程名称" prop="courseName" />
           <el-table-column label="授课教师" prop="teacherNo" />
           <el-table-column label="上课星期">
@@ -62,7 +63,13 @@
           <el-table-column label="教室" prop="classroom" />
           <el-table-column label="学年" prop="schoolYear" />
           <el-table-column label="学期" prop="semester" />
-
+          <el-table-column label="考勤" >
+            <template #default="scope">
+              <el-tag :type="isInClassTime(scope.row.weekday, scope.row.startTime, scope.row.endTime) ? 'success' : 'info'" effect="dark" style="cursor: pointer"
+              @click="goToDetail(scope.row.id)"
+              >{{ isInClassTime(scope.row.weekday, scope.row.startTime, scope.row.endTime) ? '上课中' : '未上课' }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column label="操作" width="160">
             <template #default="scope">
               <el-button link type="primary" :icon="Edit" @click="showEditForm(scope.row)">编辑</el-button>
@@ -97,15 +104,17 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
 import { Plus, Edit, Delete } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 import { fetchImportSchedule, fetchTemplate, fetchGetScheduleList, fetchAddSechedule, fetchUpdateSchedule, fetchDeleteSchedule } from '../../api/schedule'
 import { useUserStore } from '@/store/modules/user'
-import { mockScheduleList } from './mock'
 import { weekOptions, yearOptions, semesterOptions } from './select'
 import scheduleFormDialog from './scheduleForm.vue'
 import { UploadFile } from 'element-plus'
+import { isInClassTime } from '../../utils/compute/time'
 
 const schoolYear = ref('')
 const semester = ref('')
+const className = ref('')
 
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -117,6 +126,7 @@ const tableLoading = ref(false)
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
 const editId = ref()
+const router = useRouter()
 const editFormData = ref<scheduleInfo>({
   courseName: "",
   className: "",
@@ -163,19 +173,17 @@ const formatTime = (time: any) => {
 const getScheduleList = async () => {
   tableLoading.value = true
   const params = {
-    teacherNo: userInfo.id,
+    teacherNo: userInfo.teacherNo,
     pageNum: currentPage.value,
     pageSize: pageSize.value,
     schoolYear: schoolYear.value,
-    semester: semester.value
+    semester: semester.value,
+    className: className.value
   }
-  // debug: 查看实际发送的查询参数
-  console.log('[Schedule] fetchGetScheduleList params:', params)
 
   const data = await fetchGetScheduleList(token, params)
   scheduleList.value = data.records
   total.value = data.total
-  //console.log(scheduleList.value)
   tableLoading.value = false
 }
 
@@ -191,6 +199,13 @@ const handleSearch = () => {
   getScheduleList()
 }
 
+function goToDetail(id: string) {
+  router.push({
+    name: 'attendance/schedule',
+    params: { id }
+  })
+}
+
 const handleFileChange = async (uploadFile: UploadFile) => {
   const file = uploadFile.raw
   if (!file) return
@@ -200,7 +215,7 @@ const handleFileChange = async (uploadFile: UploadFile) => {
 }
 
 const addSchedule = async (record: scheduleInfo) => {
-  const data = await fetchAddSechedule(token, userInfo.id, record)
+  const data = await fetchAddSechedule(token, userInfo.teacherNo, record)
   getScheduleList()
 }
 

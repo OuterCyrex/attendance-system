@@ -1,11 +1,21 @@
 import { AppRouteRecord } from '@/types/router'
 
-export const AttendanceRoutes: AppRouteRecord = {
-  path: '/attendance',
-  name: 'attendance',
-  component: '/attendance/index',
+export const AttendanceClassRoutes: AppRouteRecord = {
+  path: '/attendance/class/:id',
+  name: 'attendance/class',
+  component: '/attendance/class',
   meta: {
-    title: '考勤详细',
+    title: '班级考勤',
+    isHide: true
+  }
+}
+
+export const AttendanceScheduleRoutes: AppRouteRecord = {
+  path: '/attendance/schedule/:id',
+  name: 'attendance/schedule',
+  component: '/attendance/schedule',
+  meta: {
+    title: '课程考勤',
     isHide: true
   }
 }
