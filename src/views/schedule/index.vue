@@ -6,7 +6,7 @@
         <div class="flex items-center gap-4">
           <div class="flex items-center">
             <div class="mr-2 text-gray-500">学年：</div>
-            <el-select v-model="schoolYear" placeholder="如 2024-2025" style="width: 160px" >
+            <el-select v-model="schoolYear" placeholder="如 2024-2025" style="width: 160px">
               <el-option v-for="op of yearOptions" :label="op.label" :value="op.value" />
             </el-select>
           </div>
@@ -21,7 +21,7 @@
 
           <div class="flex items-center">
             <div class="mr-2 text-gray-500">班级：</div>
-            <el-input v-model="className" placeholder="请输入班级名称" style="width: 200px"/>
+            <el-input v-model="className" placeholder="请输入班级名称" style="width: 200px" />
           </div>
 
           <div class="ml-auto flex gap-2">
@@ -63,11 +63,12 @@
           <el-table-column label="教室" prop="classroom" />
           <el-table-column label="学年" prop="schoolYear" />
           <el-table-column label="学期" prop="semester" />
-          <el-table-column label="考勤" >
+          <el-table-column label="考勤">
             <template #default="scope">
-              <el-tag :type="isInClassTime(scope.row.weekday, scope.row.startTime, scope.row.endTime) ? 'success' : 'info'" effect="dark" style="cursor: pointer"
-              @click="goToDetail(scope.row.id)"
-              >{{ isInClassTime(scope.row.weekday, scope.row.startTime, scope.row.endTime) ? '上课中' : '未上课' }}</el-tag>
+              <el-tag
+                :type="isInClassTime(scope.row.weekday, scope.row.startTime, scope.row.endTime) ? 'success' : 'info'"
+                effect="dark" style="cursor: pointer" @click="goToDetail(scope.row.id)">{{
+                  isInClassTime(scope.row.weekday, scope.row.startTime, scope.row.endTime) ? '上课中' : '未上课' }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作" width="160">
