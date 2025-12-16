@@ -191,6 +191,7 @@ const getScheduleList = async () => {
 const resetSearch = async () => {
   schoolYear.value = ''
   semester.value = ''
+  className.value = ''
   currentPage.value = 1
   getScheduleList()
 }

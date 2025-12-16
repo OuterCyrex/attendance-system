@@ -25,7 +25,7 @@ export function fetchTemplate(token: string) {
 export function fetchGetScheduleList(token: string, params: GetScheduleListParams) {
   return request.post<any>({
     url: '/courseSchedule/query',
-    data: { attendanceQueryDTO:{ ...params }},
+    data: params,
     showErrorMessage: true
   })
 }

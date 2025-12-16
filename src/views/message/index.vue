@@ -23,19 +23,17 @@
             </div>
 
             <el-empty v-if="alertList.length === 0"></el-empty>
-            
             <div class="flex justify-between items-center px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150"
                 v-for="item in alertList" :key="item.id" @click="handleViewDetail(item)">
-                <div class="flex items-center gap-4 flex-1">
-
-                    <el-checkbox @click.stop :value="item.id" v-model="checkedList" @change="handleCheckedChange"
+                <el-checkbox-group class="flex items-center gap-4 flex-1"  v-model="checkedList">
+                    <el-checkbox @click.stop :value="item.id" @change="handleCheckedChange"
                         class="mt-0.5" />
                     <div class="flex flex-col gap-0.5">
                         <span class="text-sm" style="cursor: pointer;">
                             {{ item.alertMessage }}
                         </span>
                     </div>
-                </div>
+                </el-checkbox-group>
 
                 <span class="text-xs text-gray-500 min-w-[80px] text-right">{{ item.updateTime }}</span>
             </div>

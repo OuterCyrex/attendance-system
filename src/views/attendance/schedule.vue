@@ -56,7 +56,8 @@
             <div class="col-span-9">
                 <el-card shadow="never">
                     <div class="text-xl font-semibold mb-4">考勤记录</div>
-                    <el-table :data="attendanceList" border stripe style="min-height: 600px;" v-loading="tableLoading">
+                    <el-table :data="attendanceList" border stripe style="min-height: 500px;" v-loading="tableLoading"
+                        empty-text="暂无考勤数据">
                         <el-table-column prop="checkTime" label="考勤时间" width="180" />
                         <el-table-column prop="expectedCount" label="应到" width="80" />
                         <el-table-column prop="actualCount" label="实到" width="80" />
@@ -79,6 +80,11 @@
                         </el-table-column>
                         <el-table-column prop="remark" label="备注" />
                     </el-table>
+                    <div class="col-span-12 mt-10 mb-15 flex justify-center">
+                        <ElPagination background layout="prev, pager, next, sizes, total" :total="total"
+                            v-model:current-page="currentPage" v-model:page-size="pageSize"
+                            @current-change="handlePageChange" @size-change="handleSizeChange" />
+                    </div>
                 </el-card>
             </div>
         </div>
@@ -97,8 +103,9 @@ const userStore = useUserStore()
 const { getToken: token } = userStore
 const { getUserInfo: userInfo } = userStore
 
-const currentNum = ref(1)
 const pageSize = ref(10)
+const total = ref(0)
+const currentPage = ref(1)
 
 const route = useRoute()
 const recordId = route.params.id as string
@@ -127,11 +134,13 @@ const getAttendanceList = async () => {
     const params = {
         courseId: recordId,
         date: userInfo.date,
-        pageNum: currentNum.value,
+        pageNum: currentPage.value,
         pageSize: pageSize.value
     }
     tableLoading.value = true
-    attendanceList.value = await fetchGetAttendanceList(token, params)
+    const data = await fetchGetAttendanceList(token, params)
+    attendanceList.value = data.records
+    total.value = data.total
     tableLoading.value = false
 }
 
@@ -140,6 +149,17 @@ const manualAttendance = async () => {
     await fetchManualAttendance(token, recordId)
     getAttendanceList()
     buttonLoading.value = false
+}
+
+const handlePageChange = (page: number) => {
+    currentPage.value = page
+    getAlertList()
+}
+
+const handleSizeChange = (size: number) => {
+    pageSize.value = size
+    currentPage.value = 1
+    getAlertList()
 }
 
 const latestRecord = computed(() => {
