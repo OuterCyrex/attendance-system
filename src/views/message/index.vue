@@ -25,9 +25,8 @@
             <el-empty v-if="alertList.length === 0"></el-empty>
             <div class="flex justify-between items-center px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150"
                 v-for="item in alertList" :key="item.id" @click="handleViewDetail(item)">
-                <el-checkbox-group class="flex items-center gap-4 flex-1"  v-model="checkedList">
-                    <el-checkbox @click.stop :value="item.id" @change="handleCheckedChange"
-                        class="mt-0.5" />
+                <el-checkbox-group class="flex items-center gap-4 flex-1" v-model="checkedList">
+                    <el-checkbox @click.stop :value="item.id" @change="handleCheckedChange" class="mt-0.5" />
                     <div class="flex flex-col gap-0.5">
                         <span class="text-sm" style="cursor: pointer;">
                             {{ item.alertMessage }}
@@ -124,16 +123,18 @@ const handleSizeChange = (size: number) => {
     getAlertList()
 }
 
-const isIndeterminate = computed(() => {
-    return checkedList.value.length > 0 && checkedList.value.length < alertList.value.length;
-});
+const isIndeterminate = ref(false)
 
-const handleCheckedChange = () => {
-    checkAll.value = checkedList.value.length === alertList.value.length && alertList.value.length > 0;
-};
+const handleCheckAllChange = (val: boolean) => {
+    checkedList.value = val ? alertList.value.map((el) => el.id) : []
+    isIndeterminate.value = false
+}
 
-const handleCheckAllChange = (val: CheckboxValueType) => {
-    checkedList.value = val ? alertList.value.map(item => item.id) : [];
+const handleCheckedChange = (val: string[]) => {
+    const valLength = val.length
+    const totalLength = alertList.value.length
+    checkAll.value = valLength === totalLength
+    isIndeterminate.value = valLength > 0 && !checkAll.value
 }
 
 const resetSearch = () => {
