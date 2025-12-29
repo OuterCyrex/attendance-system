@@ -6,7 +6,8 @@ export const AttendanceClassRoutes: AppRouteRecord = {
   component: '/attendance/class',
   meta: {
     title: '班级考勤',
-    isHide: true
+    isHide: true,
+    roles:['teacher']
   }
 }
 
@@ -16,6 +17,7 @@ export const AttendanceScheduleRoutes: AppRouteRecord = {
   component: '/attendance/schedule/schedule',
   meta: {
     title: '课程考勤',
-    isHide: true
+    isHide: true,
+    roles:['teacher']
   }
 }

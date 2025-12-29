@@ -1,8 +1,8 @@
 <template>
     <el-dialog v-model="dialogVisible" :title="titleMap[mode]" width="500px" :close-on-click-modal="false">
         <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
-            <el-form-item label="班级名称" prop="className">
-                <el-input v-model="form.className" placeholder="请输入班级名称" />
+            <el-form-item label="课程号" prop="courseNo" class="flex-1">
+                <el-input v-model="form.courseNo" placeholder="例如: CS101" />
             </el-form-item>
 
             <el-form-item label="课程名称" prop="courseName">
@@ -15,26 +15,32 @@
                 </el-select>
             </el-form-item>
 
-            <el-form-item label="上课时间" prop="timeRange">
-                <el-time-picker v-model="form.timeRange" is-range range-separator="To" start-placeholder="Start time"
-                    end-placeholder="End time" format="HH:mm" value-format="HH:mm" />
+            <el-form-item label="周次范围" prop="weekRange" class="flex-1">
+                <el-input v-model="form.weekRange" placeholder="例如: 1-16" />
             </el-form-item>
 
             <el-form-item label="教室" prop="classroom">
                 <el-input v-model="form.classroom" placeholder="请输入上课教室" />
             </el-form-item>
 
-            <el-form-item label="学年" prop="schoolYear">
-                <el-select v-model="form.schoolYear" class="w-full" placeholder="请选择学年">
-                    <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
-                </el-select>
+            <el-form-item label="上课节次" required>
+                <div class="flex items-center gap-2">
+                    <el-form-item prop="startPeriod" class="mb-0">
+                        <el-input-number v-model="form.startPeriod" :min="1" :max="12" placeholder="开始"
+                            controls-position="right" />
+                    </el-form-item>
+                    <span class="text-gray-400">至</span>
+                    <el-form-item prop="endPeriod" class="mb-0">
+                        <el-input-number v-model="form.endPeriod" :min="form.startPeriod" :max="12" placeholder="结束"
+                            controls-position="right" />
+                    </el-form-item>
+                    <span class="text-gray-400 text-xs ml-2">节</span>
+                </div>
             </el-form-item>
 
-            <el-form-item label="学期" prop="semester">
-                <el-select v-model="form.semester" class="w-full" placeholder="请选择学期">
-                    <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label"
-                        :value="item.value" />
-                </el-select>
+            <el-form-item label="预计人数" prop="expectedCount" class="flex-1">
+                <el-input-number v-model="form.expectedCount" :min="0" :max="999" controls-position="right"
+                    class="w-full" />
             </el-form-item>
         </el-form>
 
@@ -64,8 +70,6 @@ const props = withDefaults(
         visible: boolean
         mode?: 'add' | 'edit'
         formData?: Partial<scheduleInfo>
-        yearOptions: SelectOption[]
-        semesterOptions: SelectOption[]
         weekOptions: SelectOption[]
     }>(),
     {
@@ -85,28 +89,39 @@ const dialogVisible = computed({
 })
 
 const defaultForm: scheduleInfo = {
+    courseNo: '',
     courseName: '',
-    className: '',
-    weekday: 0,
-    startTime: '',
-    endTime: '',
+    weekday: '',
+    weekRange: '',
+    startPeriod: 1,
+    endPeriod: 2,
     classroom: '',
-    semester: '',
-    schoolYear: '',
-    timeRange: []
+    expectedCount: 0
 }
 
 const formRef = ref<FormInstance>()
 const form = reactive<scheduleInfo>({ ...defaultForm })
 
 const rules: FormRules = {
-    className: [{ required: true, message: '请输入班级名称', trigger: 'blur' }],
+    courseNo: [{ required: true, message: '请输入课程号', trigger: 'blur' }],
     courseName: [{ required: true, message: '请输入课程名称', trigger: 'blur' }],
     weekday: [{ required: true, message: '请选择上课星期', trigger: 'change' }],
-    timeRange: [{ type: 'array', required: true, message: '请选择上课时间段', trigger: 'change' }],
+    weekRange: [{ required: true, message: '请输入周次范围(如1-16)', trigger: 'blur' }],
     classroom: [{ required: true, message: '请输入上课教室', trigger: 'blur' }],
-    schoolYear: [{ required: true, message: '请选择学年', trigger: 'change' }],
-    semester: [{ required: true, message: '请选择学期', trigger: 'change' }]
+    startPeriod: [{ required: true, message: '必填', trigger: 'change' }],
+    endPeriod: [
+        { required: true, message: '必填', trigger: 'change' },
+        {
+            validator: (rule: any, value: any, callback: any) => {
+                if (value < form.startPeriod) {
+                    callback(new Error('结束节次不能小于开始节次'))
+                } else {
+                    callback()
+                }
+            },
+            trigger: 'change'
+        }
+    ]
 }
 
 const titleMap = {
@@ -133,19 +148,6 @@ watch(
                 ...defaultForm,
                 ...props.formData
             })
-
-            // 初始化时间范围（timeRange）: 如果传入了 startTime/endTime，则使用它们
-            const p: any = props.formData || {}
-            if (p.startTime && p.endTime) {
-                // 后端可能返回带秒的时间字符串（如 '08:30:00'），统一截取到 HH:mm
-                const s = String(p.startTime).slice(0, 5)
-                const e = String(p.endTime).slice(0, 5)
-                form.timeRange = [s, e]
-            } else if (Array.isArray(p.timeRange) && p.timeRange.length === 2) {
-                form.timeRange = p.timeRange
-            } else {
-                form.timeRange = []
-            }
         } else {
             Object.assign(form, { ...defaultForm })
         }
@@ -159,14 +161,8 @@ const handleSubmit = async () => {
     await formRef.value.validate((valid) => {
         if (!valid) return
 
-        if (form.timeRange && form.timeRange.length === 2) {
-            form.startTime = form.timeRange[0]
-            form.endTime = form.timeRange[1]
-        }
-        const { timeRange, ...rawData } = form
-
         const submitData: SubmitClassData =
-            props.mode === 'edit' ? { id: props.id, ...rawData } : { ...rawData }
+            props.mode === 'edit' ? { ...form, id: props.id } : { ...form }
 
         emit('submit', submitData)
         dialogVisible.value = false

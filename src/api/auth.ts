@@ -7,7 +7,7 @@ import { useUserStore } from '@/store/modules/user'
  */
 export async function fetchLogin(params: Api.Auth.LoginParams) {
   return request.post<Api.Auth.LoginResponse>({
-    url: '/front/login',
+    url: '/auth/login',
     params,
     showSuccessMessage: true,
     showErrorMessage: true
@@ -21,7 +21,7 @@ export async function fetchLogin(params: Api.Auth.LoginParams) {
  */
 export function fetchLogout(token: string) {
   return request.post<void>({
-    url: '/front/logout',
+    url: '/auth/logout',
     headers: {
       'Authorization': 'Bearer ' + token
     },
@@ -29,4 +29,3 @@ export function fetchLogout(token: string) {
     showErrorMessage: true,
   })
 }
-

@@ -6,6 +6,7 @@ export const ScheduleRoutes: AppRouteRecord = {
   component: '/schedule/index',
   meta: {
     title: '排课管理',
-    icon: 'ri:apps-2-add-line'
+    icon: 'ri:apps-2-add-line',
+    roles:['teacher','college_admin']
   }
 }

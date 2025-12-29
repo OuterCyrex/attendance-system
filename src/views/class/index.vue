@@ -49,6 +49,11 @@
               <el-button type="primary" link @click="goToDetail(scope.row.id)"> 查看 </el-button>
             </template>
           </el-table-column>
+          <el-table-column label="班级课程">
+            <template #default="scope">
+              <el-button type="primary" link @click="goToCourseDetail(scope.row)"> 查看 </el-button>
+            </template>
+          </el-table-column>
           <el-table-column label="操作">
             <template #default="scope">
               <el-button type="primary" :icon="Edit" link size="small" @click="showEditForm(scope.row)"> 编辑 </el-button>
@@ -117,6 +122,14 @@ function goToDetail(id: string) {
   router.push({
     name: 'attendance/class',
     params: { id }
+  })
+}
+function goToCourseDetail(row: any) {
+  router.push({
+    name: 'schedule',
+    query: {
+      classId: row.id,
+    }  // 对应目标页面的 route.query.classId
   })
 }
 function handlePageChange(page: number) {

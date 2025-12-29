@@ -6,6 +6,7 @@ import { MessageRoutes } from './message'
 import { AccountRoutes } from './account'
 import { AttendanceClassRoutes, AttendanceScheduleRoutes } from './attendance'
 import { ScheduleRoutes } from './schedule'
+import { TeacherManageRoutes } from './teacherManage'
 
 /**
  * 导出所有模块化路由
@@ -16,5 +17,6 @@ export const routeModules: AppRouteRecord[] = [
   MessageRoutes,
   AccountRoutes,
   AttendanceClassRoutes,
-  AttendanceScheduleRoutes
+  AttendanceScheduleRoutes,
+  TeacherManageRoutes
 ]

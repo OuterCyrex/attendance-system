@@ -6,6 +6,7 @@ export const MessageRoutes: AppRouteRecord = {
   component: '/message/index',
   meta: {
     title: '消息通知',
-    icon: 'ri:message-2-fill'
+    icon: 'ri:message-2-fill',
+    roles:['teacher']
   }
 }

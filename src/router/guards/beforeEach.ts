@@ -184,6 +184,18 @@ async function handleRouteGuard(
     return
   }
 
+  const requiredRoles = to.meta?.roles as string[] | undefined
+  const userRole = userStore.role
+  console.log(userRole)
+  if (requiredRoles && requiredRoles.length > 0) {
+    if (!userRole || !requiredRoles.includes(userRole)) {
+      console.warn(`[Permission] 用户角色 ${userRole} 无权访问 ${to.path}`)
+      closeLoading()
+      next({ path: '/403' }) 
+      return
+    }
+  }
+
   // 5. 处理已匹配的路由
   if (to.matched.length > 0) {
     setWorktab(to)

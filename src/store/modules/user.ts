@@ -74,6 +74,10 @@ export const useUserStore = defineStore(
     // 计算属性：获取工作台状态
     const getWorktabState = computed(() => useWorktabStore().$state)
 
+    const role = computed(() => {
+      return info.value.role || ''
+    })
+
     /**
      * 设置用户信息
      * @param newInfo 新的用户信息
@@ -223,7 +227,8 @@ export const useUserStore = defineStore(
       setLockPassword,
       setToken,
       logOut,
-      checkAndClearWorktabs
+      checkAndClearWorktabs,
+      role
     }
   },
   {
