@@ -77,10 +77,9 @@
           <el-table-column label="预计人数" prop="expectedCount" width="100" />
           <el-table-column label="考勤">
             <template #default="scope">
-              <el-tag
-                :type="isInClassTime(scope.row.weekday, scope.row.startTime, scope.row.endTime) ? 'success' : 'info'"
-                effect="dark" style="cursor: pointer" @click="goToDetail(scope.row.id)">{{
-                  isInClassTime(scope.row.weekday, scope.row.startTime, scope.row.endTime) ? '上课中' : '未上课' }}</el-tag>
+              <el-tag :type="scope.row.isInClassTime ? 'success' : 'info'" effect="dark" style="cursor: pointer"
+                @click="goToDetail(scope.row.id)">{{
+                  scope.row.isInClassTime ? '上课中' : '未上课' }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column v-if="hasPermission" label="操作" width="160">
@@ -123,7 +122,6 @@ import { useUserStore } from '@/store/modules/user'
 import { weekOptions } from './select'
 import scheduleFormDialog from './scheduleForm.vue'
 import { UploadFile } from 'element-plus'
-import { isInClassTime } from '../../utils/compute/time'
 import { useRoute } from 'vue-router'
 
 const schoolYear = ref('')
@@ -195,7 +193,6 @@ const handleSizeChange = (size: number) => {
 }
 
 TODO: '获取信息似乎有变化'
-TODO: '要实现班级页面跳转到这个页面展示特定数据,并禁用添加教师'
 const getScheduleList = async () => {
   tableLoading.value = true
   const params = {
