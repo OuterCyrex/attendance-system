@@ -105,3 +105,9 @@ export function fetchUpdateClass(token: string, id: string, params: classInfo) {
     showErrorMessage: true,
   })
 }
+
+export function fetchClassDetail(id:string) {
+  return request.get<any>({
+    url:`/class/get/${id}`
+  })
+}

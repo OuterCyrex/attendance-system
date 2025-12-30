@@ -24,3 +24,9 @@ export function fetchGetAttendance(token: string, attendanceId: string) {
         showErrorMessage: true
     })
 }
+
+export function fetchAttendanceRateByClass(classId:string) {
+    return request.get<any>({
+        url:`/attendance/queryAttendanceRateByClass/${classId}`
+    })
+}
