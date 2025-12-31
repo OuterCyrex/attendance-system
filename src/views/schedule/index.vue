@@ -40,11 +40,6 @@
       <ElCard class="col-span-12 mt-4" shadow="never">
         <el-table v-loading="tableLoading" :data="scheduleList" style="min-height: 400px" border stripe
           highlight-current-row class="data-table__content">
-          <el-table-column label="班级名称" min-width="150" show-overflow-tooltip>
-            <template #default="scope">
-              {{ Array.isArray(scope.row.classNames) ? scope.row.classNames.join('、') : scope.row.classNames }}
-            </template>
-          </el-table-column>
           <el-table-column label="课程号" prop="courseNo" width="120" />
           <el-table-column label="课程名称" prop="courseName" min-width="150" />
           <el-table-column label="周次" prop="weekRange" width="120" />
@@ -74,6 +69,11 @@
 
           <el-table-column label="教室" prop="classroom" width="150" />
 
+          <el-table-column label="班级名称" min-width="150" show-overflow-tooltip>
+            <template #default="scope">
+              {{ Array.isArray(scope.row.classNames) ? scope.row.classNames.join('、') : scope.row.classNames }}
+            </template>
+          </el-table-column>
           <el-table-column label="预计人数" prop="expectedCount" width="100" />
           <el-table-column label="考勤">
             <template #default="scope">
