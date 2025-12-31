@@ -4,11 +4,8 @@
             <div class="header">
                 <div>
                     <div class="text-2xl font-semibold">{{ schedule.courseName }}</div>
-                    <div class="text-sm text-gray-500 mt-2">
-                        {{ schedule.className }} · {{ schedule.schoolYear }} 学年 第 {{ schedule.semester }} 学期
-                    </div>
                 </div>
-                <el-tag size="large" type="success" effect="dark">周{{ weekdayText }}</el-tag>
+                <el-tag size="large" type="success" effect="dark">{{ schedule.weekday }}</el-tag>
             </div>
         </el-card>
 
@@ -18,10 +15,10 @@
                     <div class="text-xl font-semibold mb-3">课程信息</div>
                     <div class="text-sm text-gray-600 space-y-2">
                         <div><span class="font-medium">课程名称：</span>{{ schedule.courseName }}</div>
-                        <div><span class="font-medium">班级：</span>{{ schedule.className }}</div>
-                        <div><span class="font-medium">学年：</span>{{ schedule.schoolYear }}</div>
-                        <div><span class="font-medium">学期：</span>第 {{ schedule.semester }} 学期</div>
-                        <div><span class="font-medium">上课时间：</span>{{ schedule.startTime }} - {{ schedule.endTime }}
+                        <div><span class="font-medium">课程号：</span>{{ schedule.courseNo }}</div>
+                        <div><span class="font-medium">周次范围：</span>{{ schedule.weekRange }}</div>
+                        <div><span class="font-medium">上课时间：</span>第{{ schedule.startPeriod }}节 - 第{{ schedule.endPeriod
+                        }}节
                         </div>
                         <div><span class="font-medium">上课地点：</span>{{ schedule.classroom }}</div>
                     </div>
@@ -94,7 +91,7 @@
             </div>
         </div>
 
-        <scheduleDetail v-if="showDetailDialog" v-model="showDetailDialog" :id="detailId"/>
+        <scheduleDetail v-if="showDetailDialog" v-model="showDetailDialog" :id="detailId" />
     </div>
 </template>
 
@@ -122,16 +119,19 @@ const detailId = ref(0)
 const showDetailDialog = ref(false)
 
 const schedule = ref({
-    id: '',
-    courseName: '',
-    teacherNo: '',
-    className: '',
-    weekday: 1,
-    startTime: '',
-    endTime: '',
-    classroom: '',
-    semester: '',
-    schoolYear: '',
+    id: "",
+    courseNo: "",
+    orderNo: "",
+    courseName: "",
+    weekday: "",
+    expectedCount: 0,
+    weekRange: "",
+    startPeriod: 0,
+    endPeriod: 0,
+    classroom: "",
+    createTime: "",
+    updateTime: ""
+
 })
 const attendanceList = ref<attendanceInfo[]>([])
 
@@ -186,10 +186,10 @@ const latestRecord = computed(() => {
     )
 })
 
-const weekdayText = computed(() => {
+/* const weekdayText = computed(() => {
     const map = ['一', '二', '三', '四', '五', '六', '日']
     return map[schedule.value.weekday - 1] || '-'
-})
+}) */
 
 const checkTypeMap: Record<number, string> = {
     1: '自动',

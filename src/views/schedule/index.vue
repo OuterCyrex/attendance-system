@@ -75,7 +75,7 @@
             </template>
           </el-table-column>
           <el-table-column label="预计人数" prop="expectedCount" width="100" />
-          <el-table-column label="考勤">
+          <el-table-column label="考勤" v-if="!hasPermission">
             <template #default="scope">
               <el-tag :type="scope.row.isInClassTime ? 'success' : 'info'" effect="dark" style="cursor: pointer"
                 @click="goToDetail(scope.row.id)">{{
