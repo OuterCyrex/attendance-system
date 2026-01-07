@@ -117,6 +117,7 @@
         phone: ''
     })
     const userStore = useUserStore()
+    const {getToken: token} = userStore
     const { getUserInfo: userInfo } = userStore
 
     const handlePageChange = (page: number) => {

@@ -12,3 +12,9 @@ export const majorOptions = [
     { label: '2021级', value: '2021' },
     { label: '2020级', value: '2020' }
   ]
+
+  export const collegeOptions = [
+    { label: '计算机与软件学院', value: '计算机与软件学院' },
+    { label: '理学院', value: '理学院' },
+    { label: '石油与天然气学院', value: '石油与天然气学院' }
+]

@@ -7,6 +7,6 @@ export const ClassRoutes: AppRouteRecord = {
   meta: {
     title: '班级管理',
     icon: 'ri:book-2-fill',
-    roles:['teacher']
+    roles:['teacher','college_admin', 'admin']
   }
 }

@@ -15,8 +15,8 @@ export const routeModules: AppRouteRecord[] = [
   ClassRoutes,
   ScheduleRoutes,
   MessageRoutes,
-  AccountRoutes,
   AttendanceClassRoutes,
   AttendanceScheduleRoutes,
-  TeacherManageRoutes
+  TeacherManageRoutes,
+  AccountRoutes
 ]

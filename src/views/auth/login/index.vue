@@ -149,13 +149,13 @@ const handleSubmit = async () => {
 
     TODO: '不同身份路由跳转'
     // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到首页
-    let redirect = route.query.redirect as string
-    if (userInfo.role === 'college_admin') {
-      redirect = /* redirect ? redirect :  */'/teacherManage'
-    } else {
+    // let redirect = route.query.redirect as string
+    // if (userInfo.role === 'college_admin') {
+    //   redirect = /* redirect ? redirect :  */'/teacherManage'
+    // } else {
 
-    }
-    router.push(redirect || '/')
+    // }
+    router.push('/')
   } catch (error) {
     // 处理 HttpError
     if (error instanceof HttpError) {

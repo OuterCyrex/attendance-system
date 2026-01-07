@@ -7,6 +7,6 @@ export const AccountRoutes: AppRouteRecord = {
   meta: {
     title: '个人设置',
     icon: 'ri:user-3-fill',
-    roles:['teacher']
+    roles:['teacher', 'college_admin', 'admin']
   }
 }

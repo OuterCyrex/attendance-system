@@ -3,17 +3,31 @@
     <div class="grid grid-cols-12 w-full">
       <ElCard class="col-span-12" shadow="never">
         <div class="flex items-center gap-4">
-          <div class="year-select flex items-center">
+          <div class="flex items-center">
             <div class="mr-2 text-gray-500">年级：</div>
             <el-select v-model="gradeValue" placeholder="请选择年级" style="width: 160px">
               <el-option v-for="item in gradeOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </div>
 
-          <div class="year-select flex items-center">
+          <div class="flex items-center">
             <div class="mr-2 text-gray-500">专业：</div>
             <el-select v-model="majorValue" placeholder="请选择专业" style="width: 160px">
               <el-option v-for="item in majorOptions" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </div>
+
+          <div class="flex items-center" v-if="userInfo.role === 'college_admin'">
+            <div class="mr-2 text-gray-500">辅导员：</div>
+            <el-select v-model="collegeValue" placeholder="请选择辅导员" style="width: 160px">
+              <el-option v-for="item in collegeOptions" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </div>
+
+          <div class="flex items-center" v-if="userInfo.role === 'admin'">
+            <div class="mr-2 text-gray-500">学院：</div>
+            <el-select v-model="collegeValue" placeholder="请选择学院" style="width: 160px">
+              <el-option v-for="item in collegeOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </div>
 
@@ -24,7 +38,7 @@
         </div>
       </ElCard>
 
-      <ElCard class="col-span-12 mt-4" shadow="never">
+      <ElCard class="col-span-12 mt-4" shadow="never" v-if="userInfo.role === 'admin'">
         <div class="operation-buttons flex">
           <el-button type="primary" :icon="Plus" @click="addDialogVisible = true">新增班级</el-button>
           <el-upload class="mx-4" :auto-upload="false" :show-file-list="false" :on-change="handleFileChange"
@@ -54,7 +68,7 @@
               <el-button type="primary" link @click="goToCourseDetail(scope.row)"> 查看 </el-button>
             </template>
           </el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="操作" v-if="userInfo.role === 'admin'">
             <template #default="scope">
               <el-button type="primary" :icon="Edit" link size="small" @click="showEditForm(scope.row)"> 编辑 </el-button>
               <el-popconfirm title="确认删除该班级吗？" confirm-button-text="确认" cancel-button-text="取消"
@@ -85,12 +99,10 @@
 <script lang="ts" setup>
 import { Plus } from '@element-plus/icons-vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { fetchTemplate, fetchGetClassList, fetchImportClass, fetchAddClass, fetchDeleteClass, fetchUpdateClass } from '../../api/class'
 import { useUserStore } from '@/store/modules/user'
-import { majorOptions, gradeOptions } from './select'
-import { mockClassList } from './mock'
+import { majorOptions, gradeOptions, collegeOptions } from './select'
 import classFormDialog from './classForm.vue'
 import type { UploadFile } from 'element-plus'
 
@@ -101,15 +113,17 @@ const pageSize = ref(10)
 const tableLoading = ref(false)
 
 const userStore = useUserStore()
-const { getToken: token } = userStore
+const { token } = userStore
 const { getUserInfo: userInfo } = userStore
 
 const gradeValue = ref<string>('')
 const majorValue = ref<string>('')
+const teacherValue = ref<string>('')
+const collegeValue = ref<string>('')
 
 const addDialogVisible = ref<boolean>(false)
 const editDialogVisible = ref<boolean>(false)
-const editId = ref<number>(0)
+const editId = ref<string>('')
 const editFormData = ref<classInfo>({
   className: '',
   grade: '',
@@ -156,15 +170,16 @@ const showEditForm = (row: classInfo) => {
   editDialogVisible.value = true
 }
 
-const getClassList = async () => {
+const getClassList = async (tid?: string) => {
   tableLoading.value = true
-  const data = await fetchGetClassList(token, {
-    teacherNo: userInfo.teacherNo,
+  const queryParams = {
     grades: [gradeValue.value],
     majors: [majorValue.value],
     pageNum: currentPage.value,
-    pageSize: pageSize.value
-  })
+    pageSize: pageSize.value,
+    collegeName: collegeValue.value,
+  }
+  const data = await fetchGetClassList(token, queryParams)
   classList.value = data.records
   total.value = data.total
   tableLoading.value = false
@@ -178,10 +193,10 @@ const handleFileChange = async (uploadFile: UploadFile) => {
   getClassList()
 }
 
-
 const resetSearch = async () => {
   gradeValue.value = ''
   majorValue.value = ''
+  teacherValue.value = ''
   getClassList()
 }
 
@@ -200,7 +215,29 @@ const DeleteClass = async (id: string) => {
   getClassList()
 }
 
+const getTeacherList = async () => {
+        tableLoading.value = true
+
+        const params = {
+            pageNum: currentPage.value,
+            pageSize: pageSize.value,
+            collegeNo: userInfo.collegeNo || '',
+            teacherNo: searchForm.teacherNo,
+            realName: searchForm.realName,
+            phone: searchForm.phone,
+            department: searchForm.department
+        }
+        try {
+            const data = await fetchGetTeacherList()
+            teacherList.value = data
+        } catch {
+
+        }
+        tableLoading.value = false
+    }
+
 onMounted(() => {
   getClassList()
+  if (userInfo.role === 'college_admin') getTeacherList()
 })
 </script>

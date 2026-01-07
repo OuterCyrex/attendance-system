@@ -20,7 +20,7 @@
 
             <el-form-item label="所属部门" prop="department">
                 <el-select v-model="form.department" class="w-full" placeholder="请选择部门">
-                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item" :value="item" />
+                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item.label" :value="item" />
                 </el-select>
             </el-form-item>
 
