@@ -1,0 +1,391 @@
+<template>
+    <div class="report-container">
+        <div class="grid grid-cols-12 w-full">
+
+            <ElCard class="col-span-12" shadow="never">
+                <div class="flex flex-wrap items-center gap-4">
+
+                    <div v-if="userRole === 'admin'" class="flex items-center">
+                        <span class="mr-2 text-gray-500 text-sm">学院名称:</span>
+                        <el-select v-model="searchForm.collegeNames" placeholder="请选择学院" style="width: 160px" clearable
+                            multiple collapse-tags>
+                            <el-option label="计算机学院" value="computer"></el-option>
+                            <el-option label="数学学院" value="math"></el-option>
+                            <el-option label="物理学院" value="physics"></el-option>
+                        </el-select>
+                    </div>
+
+                    <!-- 教师不可见，学院管理员和学校管理员可见 -->
+                    <div v-if="userRole !== 'teacher'" class="flex items-center">
+                        <span class="mr-2 text-gray-500 text-sm">任课教师:</span>
+                        <el-select v-model="searchForm.teacherNos" placeholder="请选择任课教师" style="width: 160px" clearable
+                            multiple collapse-tags>
+                            <el-option label="张老师" value="zhang"></el-option>
+                            <el-option label="李老师" value="li"></el-option>
+                            <el-option label="王老师" value="wang"></el-option>
+                        </el-select>
+                    </div>
+
+                    <!-- 教师不可见，学院管理员和学校管理员可见 -->
+                    <div v-if="userRole !== 'teacher'" class="flex items-center">
+                        <span class="mr-2 text-gray-500 text-sm">课程类型:</span>
+                        <el-select v-model="searchForm.courseTypes" placeholder="请选择课程类型" style="width: 160px" clearable
+                            multiple collapse-tags>
+                            <el-option label="必修课" value="required"></el-option>
+                            <el-option label="选修课" value="elective"></el-option>
+                            <el-option label="实验课" value="lab"></el-option>
+                        </el-select>
+                    </div>
+
+                    <div v-if="userRole !== 'teacher'" class="flex items-center">
+                        <span class="mr-2 text-gray-500 text-sm">辅导员工号:</span>
+                        <el-select v-model="searchForm.courseTypes" placeholder="请选择课程类型" style="width: 160px" clearable
+                            multiple collapse-tags>
+                            <el-option label="必修课" value="required"></el-option>
+                            <el-option label="选修课" value="elective"></el-option>
+                            <el-option label="实验课" value="lab"></el-option>
+                        </el-select>
+                    </div>
+
+                    <div class="flex items-center">
+                        <span class="mr-2 text-gray-500 text-sm">班级名称:</span>
+                        <el-select v-model="searchForm.classNames" placeholder="请选择班级" style="width: 160px" clearable
+                            multiple collapse-tags>
+                            <el-option label="计科1班" value="cs1"></el-option>
+                            <el-option label="计科2班" value="cs2"></el-option>
+                            <el-option label="软工1班" value="se1"></el-option>
+                        </el-select>
+                    </div>
+
+                    <div v-if="userRole !== 'teacher'" class="flex items-center">
+                        <span class="mr-2 text-gray-500 text-sm">课序号:</span>
+                        <el-input v-model="searchForm.orderNos" placeholder="请输入课序号" style="width: 160px" clearable />
+                    </div>
+
+                    <div class="flex items-center">
+                        <span class="mr-2 text-gray-500 text-sm">学期:</span>
+                        <el-select v-model="searchForm.semester" placeholder="请选择学期" style="width: 160px" clearable
+                            multiple collapse-tags>
+                            <el-option label="2024春" value="2024春"></el-option>
+                            <el-option label="2024秋" value="2024秋"></el-option>
+                            <el-option label="2025春" value="2025春"></el-option>
+                        </el-select>
+                    </div>
+
+
+                    <div class="ml-auto flex gap-2">
+                        <el-button type="primary" @click="handleSearch">查询</el-button>
+                        <el-button type="info" plain @click="resetSearch">重置</el-button>
+                    </div>
+                </div>
+            </ElCard>
+
+            <ElCard class="col-span-12 mt-4" shadow="never">
+                <div class="operation-buttons flex">
+                    <el-button type="primary" :icon="Download" @click="exportReport">导出报表</el-button>
+                </div>
+            </ElCard>
+
+            <ElCard class="col-span-12 mt-4" shadow="never">
+                <el-table :data="attendanceList" v-loading="tableLoading" border stripe highlight-current-row
+                    class="data-table__content" style="min-height: 560px">
+                    <el-table-column label="序号" type="index" width="60"></el-table-column>
+                    <el-table-column label="课程编号" prop="courseNo" width="120"></el-table-column>
+                    <el-table-column label="课程名称" prop="courseName" width="150"></el-table-column>
+                    <el-table-column label="教师姓名" prop="teacherName" width="120"></el-table-column>
+                    <el-table-column label="课程类型" prop="courseType" width="120"></el-table-column>
+                    <el-table-column label="学期" prop="semesterName" width="120"></el-table-column>
+                    <el-table-column label="班级名称" width="150">
+                        <template #default="scope">
+                            <el-tag v-for="className in scope.row.classNames" :key="className" size="small"
+                                class="mr-1">
+                                {{ className }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="订单号" prop="orderNo" width="120"></el-table-column>
+                    <el-table-column label="课程ID" prop="courseId" width="120"></el-table-column>
+                    <el-table-column label="签到时间" prop="checkTime" width="180"></el-table-column>
+                    <el-table-column label="应到人数" prop="expectedCount" width="100"></el-table-column>
+                    <el-table-column label="实到人数" prop="actualCount" width="100"></el-table-column>
+                    <el-table-column label="出勤率(%)" prop="attendanceRate" width="120">
+                        <template #default="scope">
+                            <el-progress :percentage="scope.row.attendanceRate" :stroke-width="15"
+                                :color="getAttendanceRateColor(scope.row.attendanceRate)" />
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="签到类型" prop="checkType" width="120">
+                        <template #default="scope">
+                            <el-tag :type="getCheckTypeTagType(scope.row.checkType)" size="small">
+                                {{ getCheckTypeName(scope.row.checkType) }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="状态" prop="status" width="100">
+                        <template #default="scope">
+                            <el-tag :type="getStatusType(scope.row.status)" size="small">
+                                {{ getStatusName(scope.row.status) }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="签到图片" width="150">
+                        <template #default="scope">
+                            <el-image v-if="scope.row.imageUrl" :src="scope.row.imageUrl"
+                                :preview-src-list="[scope.row.imageUrl]" preview-teleported
+                                style="width: 100px; height: 60px; object-fit: cover;" fit="cover" :alt="'签到图片'" />
+                            <span v-else>暂无图片</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="备注" prop="remark" min-width="150"></el-table-column>
+                    <el-table-column label="创建时间" prop="createTime" width="180"></el-table-column>
+                </el-table>
+            </ElCard>
+
+            <div class="col-span-12 mt-10 mb-15 flex justify-center">
+                <ElPagination background layout="prev, pager, next, sizes, total" :total="total"
+                    v-model:current-page="currentPage" v-model:page-size="pageSize" @current-change="handlePageChange"
+                    @size-change="handleSizeChange" />
+            </div>
+        </div>
+    </div>
+</template>
+
+<script lang="ts" setup>
+import { Download } from '@element-plus/icons-vue'
+import { fetchQueryAttendanceReport, exportAttendanceReportExcel, fetchExportAttendanceReport } from '@/api/report'
+import { useUserStore } from '@/store/modules/user'
+
+const currentPage = ref(1)
+const total = ref(0)
+const pageSize = ref(10)
+const tableLoading = ref(false)
+const attendanceList = ref([])
+
+const searchForm = reactive({
+    collegeNames: [],
+    teacherNos: [],
+    orderNos: [],
+    courseTypes: [],
+    classNames: [],
+    startDate: '',
+    endDate: '',
+    semester: []
+})
+
+const userStore = useUserStore()
+const { getToken: token } = userStore
+const { getUserInfo: userInfo } = userStore
+
+// 获取用户角色
+const userRole = computed(() => {
+    if (userInfo?.role) {
+        if (userInfo.role.includes('college_admin')) {
+            return 'college_admin'
+        } else if (userInfo.role.includes('admin')) {
+            return 'admin'
+        } else if (userInfo.role.includes('teacher')) {
+            return 'teacher'
+        }
+    }
+})
+
+const handlePageChange = (page: number) => {
+    currentPage.value = page
+    getAttendanceList()
+}
+
+const handleSizeChange = (size: number) => {
+    pageSize.value = size
+    currentPage.value = 1
+    getAttendanceList()
+}
+
+const getAttendanceList = async () => {
+    tableLoading.value = true
+
+    // 构建基础参数
+    const params: any = {
+        collegeNames: searchForm.collegeNames.length > 0 ? searchForm.collegeNames : (userInfo?.collegeNames || []),
+        teacherNos: searchForm.teacherNos.length > 0 ? searchForm.teacherNos : (userInfo?.teacherNos || []),
+        orderNos: searchForm.orderNos,
+        courseTypes: searchForm.courseTypes.length > 0 ? searchForm.courseTypes : (userInfo?.courseTypes || []),
+        classNames: searchForm.classNames.length > 0 ? searchForm.classNames : (userInfo?.classNames || []),
+        startDate: searchForm.startDate,
+        endDate: searchForm.endDate,
+        semester: searchForm.semester.length > 0 ? searchForm.semester : (userInfo?.semester || []),
+        pageNum: currentPage.value,
+        pageSize: pageSize.value
+    }
+
+    // 根据用户角色调整参数
+    if (userRole.value === 'teacher') {
+        // 教师只能看到自己相关的数据
+        params.teacherNos = userInfo?.teacherNos || []
+        params.classNames = searchForm.classNames.length > 0 ? searchForm.classNames : (userInfo?.classNames || [])
+        params.semester = searchForm.semester.length > 0 ? searchForm.semester : (userInfo?.semester || [])
+        // 清空其他可能的筛选条件
+        params.collegeNames = userInfo?.collegeNames || []
+        params.courseTypes = []
+        params.orderNos = []
+    } else if (userRole.value === 'college_admin') {
+        // 学院管理员只能看到本学院的数据
+        params.collegeNames = userInfo?.collegeNames || []
+    }
+
+    const response = await fetchQueryAttendanceReport(params)
+    // 检查API响应状态
+    attendanceList.value = response?.records || []
+    total.value = response?.data?.total || 0
+    tableLoading.value = false
+}
+
+const handleSearch = () => {
+    currentPage.value = 1
+    getAttendanceList()
+}
+
+const resetSearch = () => {
+    // 重置所有搜索字段
+    searchForm.collegeNames = []
+    searchForm.teacherNos = []
+    searchForm.orderNos = []
+    searchForm.courseTypes = []
+    searchForm.classNames = []
+    searchForm.startDate = ''
+    searchForm.endDate = ''
+    searchForm.semester = []
+
+    currentPage.value = 1
+    getAttendanceList()
+}
+
+// 获取签到类型标签类型
+const getCheckTypeTagType = (type: number) => {
+    switch (type) {
+        case 1:
+            return 'success' // 自动签到用绿色
+        case 2:
+            return 'warning' // 手动签到用黄色
+        default:
+            return 'info'    // 默认用蓝色
+    }
+}
+
+// 获取签到类型名称
+const getCheckTypeName = (type: number) => {
+    switch (type) {
+        case 1:
+            return '自动'
+        case 2:
+            return '手动'
+        default:
+            return '未知'
+    }
+}
+
+
+// 获取状态类型
+const getStatusType = (status: number) => {
+    switch (status) {
+        case 1:
+            return 'success' // 正常状态用绿色
+        case 2:
+            return 'danger'  // 异常状态用红色
+        default:
+            return 'info'    // 默认状态用蓝色
+    }
+}
+
+// 获取状态名称
+const getStatusName = (status: number) => {
+    switch (status) {
+        case 1:
+            return '正常'
+        case 2:
+            return '异常'
+        default:
+            return '未知'
+    }
+}
+
+// 获取出勤率进度条颜色
+const getAttendanceRateColor = (rate: number) => {
+    if (rate >= 90) return '#67c23a' // 绿色 - 高出勤率
+    if (rate >= 70) return '#e6a23c' // 黄色 - 中等出勤率
+    return '#f56c6c' // 红色 - 低出勤率
+}
+
+// 导出报表
+const exportReport = async () => {
+    try {
+        // 构建导出参数
+        // 根据用户角色构建不同的参数
+        let exportParams: any = {
+            startDate: searchForm.startDate,
+            endDate: searchForm.endDate,
+            pageNum: 1,
+            pageSize: 99999 // 导出所有数据
+        }
+
+        // 根据用户角色调整参数
+        if (userRole.value === 'teacher') {
+            // 教师只能看到自己相关的数据
+            exportParams.teacherNos = userInfo?.teacherNos || []
+            exportParams.classNames = searchForm.classNames.length > 0 ? searchForm.classNames : (userInfo?.classNames || [])
+            exportParams.semester = searchForm.semester.length > 0 ? searchForm.semester : (userInfo?.semester || [])
+            // 清空其他可能的筛选条件
+            exportParams.collegeNames = userInfo?.collegeNames || []
+            exportParams.courseTypes = []
+            exportParams.orderNos = []
+        } else if (userRole.value === 'college_admin') {
+            // 学院管理员只能看到本学院的数据
+            exportParams.collegeNames = userInfo?.collegeNames || []
+        }
+
+        // 调用实际的导出接口
+        const response = await exportAttendanceReportExcel(exportParams)
+
+        // 检查响应是否为Blob类型
+        let blob;
+        if (response instanceof Blob) {
+            blob = response;
+        } else {
+            // 如果响应不是Blob，尝试创建Blob
+            blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        }
+
+        // 创建下载链接
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `考勤报表_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        link.style.display = 'none';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // 释放URL对象
+        URL.revokeObjectURL(url);
+
+        ElMessage.success('报表导出成功');
+    } catch (error) {
+        console.error('导出报表失败:', error);
+        ElMessage.error('报表导出失败');
+    }
+}
+
+onMounted(() => {
+    getAttendanceList()
+})
+</script>
+
+<style scoped>
+.report-container {
+    padding: 20px;
+}
+
+.operation-buttons {
+    margin-bottom: 16px;
+}
+</style>

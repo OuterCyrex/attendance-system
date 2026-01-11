@@ -46,13 +46,13 @@ export const SETTING_DEFAULT_CONFIG = {
   /** 是否显示菜单按钮 */
   showMenuButton: true,
   /** 是否显示快速入口 */
-  showFastEnter: true,
+  showFastEnter: false,
   /** 是否显示刷新按钮 */
   showRefreshButton: true,
   /** 是否显示面包屑 */
   showCrumbs: true,
   /** 是否显示工作台标签 */
-  showWorkTab: true,
+  showWorkTab: false,
   /** 是否显示语言切换 */
   showLanguage: true,
   /** 是否显示进度条 */
