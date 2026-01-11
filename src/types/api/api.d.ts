@@ -131,5 +131,40 @@ declare namespace Api {
       status: number
       remark: string
     }
+
+    interface queryTeacherParams {
+      teacherNo: string
+      department: string
+      realName: string
+      pageNum: number
+      pageSize: number
+    }
+
+    interface updateTeacherParams {
+      username: string
+      password: string
+      realName: string
+      teacherNo: string
+      phone: string
+      email: string
+      department: string
+      status: number
+      attendanceThreshold: number
+      enableEmailNotification: number
+    }
+
+    interface addTeacherParams {
+      username: string
+      password: string
+      realName: string
+      teacherNo: string
+      phone: string
+      email: string
+      department: string
+      status: number
+      attendanceThreshold: number
+      enableEmailNotification: boolean
+      collegeNo: string
+    }
   }
 }

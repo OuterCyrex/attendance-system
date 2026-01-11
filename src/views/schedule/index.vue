@@ -2,7 +2,7 @@
   <div class="class-container">
     <div class="grid grid-cols-12 w-full">
       <!-- 查询条件 -->
-      <ElCard class="col-span-12" shadow="never">
+      <ElCard class="col-span-12" shadow="never" v-if="!isClassMode">
         <div class="flex items-center gap-4">
           <div class="flex items-center">
             <div class="mr-2 text-gray-500">课程名称：</div>
@@ -23,6 +23,20 @@
             <el-button type="primary" @click="handleSearch">查询</el-button>
             <el-button type="info" plain @click="resetSearch()">重置</el-button>
           </div>
+        </div>
+      </ElCard>
+
+      <ElCard class="col-span-12" shadow="never" v-if="isClassMode">
+        <div class="flex justify-between items-center gap-4">
+          <div>
+            <div class="text-xl font-semibold mb-2">{{ classInfo.className }}</div>
+            <div class="flex items-center gap-4">
+              <div class="text-sm text-gray-400">专业：<el-tag size="small" type="warning">{{ classInfo.major }}</el-tag></div>
+              <div class="text-sm text-gray-400">年级：<el-tag size="small">{{ classInfo.grade }}</el-tag></div>
+            </div>
+          </div>
+
+          <el-tag size="large"> 人数：{{ classInfo.count }}</el-tag>
         </div>
       </ElCard>
 
@@ -123,6 +137,7 @@ import { weekOptions } from './select'
 import scheduleFormDialog from './scheduleForm.vue'
 import { UploadFile } from 'element-plus'
 import { useRoute } from 'vue-router'
+import { fetchClassDetail } from '@/api/class'
 
 const schoolYear = ref('')
 const semester = ref('')
@@ -155,6 +170,12 @@ const userStore = useUserStore()
 const { getToken: token } = userStore
 const { getUserInfo: userInfo } = userStore
 const classId = computed(() => (route.query.classId as string))
+const classInfo = ref({
+  className: "",
+  count: 0,
+  grade: 0,
+  major: '',
+})
 const isClassMode = computed(() => !!classId.value)
 const ALLOWED_ROLES = ['college_admin']
 
@@ -167,6 +188,7 @@ const hasPermission = computed(() => {
 const loadData = () => {
   if (isClassMode.value) {
     getScheduleListByClass()
+    getClassInfo()
   } else {
     getScheduleList()
   }
@@ -196,14 +218,12 @@ TODO: '获取信息似乎有变化'
 const getScheduleList = async () => {
   tableLoading.value = true
   const params = {
-    teacherNo: teacherNo.value,
+    teacherNo: userInfo.id,
     pageNum: currentPage.value,
     pageSize: pageSize.value,
     courseName: courseName.value,
     className: className.value
   }
-  console.log(params.teacherNo)
-
   const data = await fetchGetScheduleList(token, params)
   scheduleList.value = data.records
   total.value = data.total
@@ -220,6 +240,13 @@ const getScheduleListByClass = async () => {
   const data = await fetchGetScheduleListByCourse(token, params)
   scheduleList.value = data.records
   total.value = data.total
+  tableLoading.value = false
+}
+
+const getClassInfo = async () => {
+  tableLoading.value = true
+  const data = await fetchClassDetail(classId.value)
+  classInfo.value = data
   tableLoading.value = false
 }
 
