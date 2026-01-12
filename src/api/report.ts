@@ -20,3 +20,17 @@ export const fetchAttendanceReportExcel = (params: any) => {
         responseType: 'blob'
     })
 }
+
+/* 暂时先放这里下面这些接口，后面再换位置 */
+
+export const fetchSemesterList = () => {
+    return http.get({
+        url: '/semester/list',
+    })
+}
+
+export const fetchOrderList = () => {
+    return http.get({
+        url:'/courseSchedule/getAllClassNumbers'
+    })
+}
