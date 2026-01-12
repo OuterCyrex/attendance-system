@@ -166,5 +166,11 @@ declare namespace Api {
       enableEmailNotification: boolean
       collegeNo: string
     }
+
+    interface collegeInfo {
+      id: string
+      name: string
+      collegeNo: string
+    }
   }
 }

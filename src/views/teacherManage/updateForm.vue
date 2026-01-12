@@ -10,10 +10,6 @@
                 <el-input v-model="form.username" placeholder="请输入用户名称" />
             </el-form-item>
 
-            <el-form-item label="登录密码" prop="password">
-                <el-input v-model="form.password" type="password" show-password placeholder="修改请输入新密码" />
-            </el-form-item>
-
             <el-form-item label="真实姓名" prop="realName">
                 <el-input v-model="form.realName" placeholder="请输入真实姓名" />
             </el-form-item>
@@ -76,7 +72,6 @@ const { getUserInfo: userInfo } = userStore
 const formRef = ref<FormInstance>()
 const defaultForm: updateTeacherParams = {
     username: '',
-    password: '',
     realname: '',
     teacherNo: '',
     phone: '',
@@ -131,7 +126,6 @@ const handleSubmit = async () => {
 
     const data = {
         username:  form.username,
-        password:  form.password,
         realName:  form.realName,
         teacherNo:  form.teacherNo,
         phone:  form.phone,
