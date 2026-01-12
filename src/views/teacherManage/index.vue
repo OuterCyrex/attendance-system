@@ -18,8 +18,8 @@
                         <span class="mr-2 text-gray-500 text-sm">部门/学院:</span>
                         <el-select v-model="searchForm.department" placeholder="请选择部门/学院" style="width: 160px"
                             clearable>
-                            <el-option v-for="item in departmentOption" :key="item.value" :label="item.label"
-                                :value="item.value" />
+                            <el-option v-for="item in collegeOptions" :key="item.id" :label="item.name"
+                                :value="item.name" />
                         </el-select>
                     </div>
 
@@ -50,8 +50,7 @@
                     <el-table-column label="教师工号" prop="teacherNo"></el-table-column>
                     <el-table-column label="电话" prop="phone"></el-table-column>
                     <el-table-column label="邮箱" prop="email"></el-table-column>
-                    <el-table-column label="所属部门/学院"
-                        prop="department"></el-table-column>
+                    <el-table-column label="所属部门/学院" prop="department"></el-table-column>
                     <el-table-column label="是否禁用">
                         <template #default="scope">
                             <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">{{ scope.row.status === 1 ?
@@ -64,7 +63,7 @@
                                 @click="UpdateTeacher(scope.$index)">
                                 编辑 </el-button>
                             <el-popconfirm title="确认删除该教师吗？" confirm-button-text="确认" cancel-button-text="取消"
-                                @confirm="DeleteTeacher">
+                                @confirm="DeleteTeacher(scope.row.id)">
                                 <template #reference>
                                     <el-button type="danger" :icon="Delete" link size="small"> 删除 </el-button>
                                 </template>
@@ -80,9 +79,9 @@
                     @size-change="handleSizeChange" />
             </div>
         </div>
-        <AddForm v-if="addDialogVisible" @close="addDialogVisible = false" @submit="getTeacherList"/>
+        <AddForm v-if="addDialogVisible" @close="addDialogVisible = false" @submit="getTeacherList" />
         <UpdateForm :id="teacherList[editIndex].id" :formData="teacherList[editIndex]" v-if="editDialogVisible"
-            @close="editDialogVisible = false" @submit="getTeacherList"/>
+            @close="editDialogVisible = false" @submit="getTeacherList" />
     </div>
 </template>
 
@@ -90,17 +89,19 @@
 import { ref, reactive } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
-import { departmentOption } from './select'
 import UpdateForm from './updateForm.vue'
 import AddForm from './addForm.vue'
-import { fetchGetTeacherList } from '@/api/teacherMange'
+import { fetchDeleteTeacher, fetchGetTeacherList, fetchImportTeacher, fetchTeacherTemplate } from '@/api/teacherMange'
 import { useUserStore } from '@/store/modules/user'
+import { fetchGetCollegeList } from '@/api/misc'
+import type { UploadFile } from 'element-plus'
 
 const currentPage = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
 const tableLoading = ref(false)
 const teacherList = ref([])
+const collegeOptions = ref<Array<collegeInfo>>([])
 const editIndex = ref<number>(0)
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
@@ -112,6 +113,7 @@ const searchForm = reactive({
 })
 const userStore = useUserStore()
 const { getUserInfo: userInfo } = userStore
+const { getToken: token } = userStore
 
 const handlePageChange = (page: number) => {
     currentPage.value = page
@@ -129,9 +131,34 @@ const getTeacherList = async () => {
         pageSize: pageSize.value,
         teacherNo: searchForm.teacherNo,
         realName: searchForm.realName,
+        department: searchForm.department,
     }
     const data = await fetchGetTeacherList(params)
     teacherList.value = data.records
+    tableLoading.value = false
+}
+
+const downloadTemplate = async () => {
+  const blob = await fetchTeacherTemplate(token)
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = '教师导入模板.xlsx'
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
+const handleFileChange = async (uploadFile: UploadFile) => {
+  const file = uploadFile.raw
+  if (!file) return
+
+  await fetchImportTeacher(token, file)
+  getTeacherList()
+}
+
+const getCollegeList = async () => {
+    tableLoading.value = true
+    const data = await fetchGetCollegeList()
+    collegeOptions.value = data
     tableLoading.value = false
 }
 
@@ -140,8 +167,11 @@ const UpdateTeacher = (index: number) => {
     editDialogVisible.value = true
 }
 
-const DeleteTeacher = () => {
-
+const DeleteTeacher = async (id: string) => {
+    tableLoading.value = true
+    const data = await fetchDeleteTeacher(id)
+    await getTeacherList()
+    tableLoading.value = false
 }
 
 const handleSearch = () => {
@@ -155,5 +185,8 @@ const resetSearch = () => {
     getTeacherList()
 }
 
-onMounted(() => getTeacherList())
+onMounted(() => {
+    getTeacherList()
+    if (userInfo.role === 'admin') getCollegeList()
+})
 </script>

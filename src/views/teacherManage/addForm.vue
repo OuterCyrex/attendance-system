@@ -67,6 +67,7 @@ import { fetchAddTeacher } from '@/api/teacherMange';
 
 const emit = defineEmits<{
     (e: 'close'): void
+    (e: 'submit'): void
 }>()
 
 const localDialogVisible = ref(true)
@@ -125,6 +126,7 @@ const handleSubmit = async () => {
 
     fetchAddTeacher(formData).then(() => {
         handleCancel()
+        emit('submit')
     })
 }
 

@@ -27,7 +27,7 @@
           <div class="flex items-center" v-if="userInfo.role === 'admin'">
             <div class="mr-2 text-gray-500">学院：</div>
             <el-select v-model="collegeValue" placeholder="请选择学院" style="width: 160px">
-              <el-option v-for="item in collegeOptions" :key="item.value" :label="item.label" :value="item.value" />
+              <el-option v-for="item in collegeOptions" :key="item.id" :label="item.name" :value="item.name" />
             </el-select>
           </div>
 
@@ -102,11 +102,13 @@ import { Edit, Delete } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { fetchTemplate, fetchGetClassList, fetchImportClass, fetchAddClass, fetchDeleteClass, fetchUpdateClass } from '../../api/class'
 import { useUserStore } from '@/store/modules/user'
-import { majorOptions, gradeOptions, collegeOptions } from './select'
+import { majorOptions, gradeOptions } from './select'
 import classFormDialog from './classForm.vue'
 import type { UploadFile } from 'element-plus'
+import { fetchGetCollegeList } from '@/api/misc'
 
 const classList = ref([])
+const collegeOptions = ref<Array<collegeInfo>>([])
 const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -143,7 +145,7 @@ function goToCourseDetail(row: any) {
     name: 'schedule',
     query: {
       classId: row.id,
-    }  // 对应目标页面的 route.query.classId
+    }
   })
 }
 function handlePageChange(page: number) {
@@ -201,6 +203,13 @@ const handleFileChange = async (uploadFile: UploadFile) => {
   getClassList()
 }
 
+const getCollegeList = async () => {
+  tableLoading.value = true
+  const data = await fetchGetCollegeList()
+  collegeOptions.value = data
+  tableLoading.value = false
+}
+
 const resetSearch = async () => {
   gradeValue.value = ''
   majorValue.value = ''
@@ -247,6 +256,7 @@ const getTeacherList = async () => {
 
 onMounted(() => {
   getClassList()
+  if (userInfo.role === 'admin') getCollegeList()
   if (userInfo.role === 'college_admin') getTeacherList()
 })
 </script>

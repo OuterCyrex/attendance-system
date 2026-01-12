@@ -278,9 +278,9 @@ async function handleDynamicRoutes(
     const menuList = await menuProcessor.getMenuList()
 
     // 3. 验证菜单数据
-    if (!menuProcessor.validateMenuList(menuList)) {
-      throw new Error('获取菜单列表失败，请重新登录')
-    }
+    // if (!menuProcessor.validateMenuList(menuList)) {
+    //   throw new Error('获取菜单列表失败，请重新登录')
+    // }
 
     // 4. 注册动态路由
     routeRegistry?.register(menuList)

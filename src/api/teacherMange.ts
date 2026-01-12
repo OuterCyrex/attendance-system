@@ -27,3 +27,45 @@ export const fetchAddTeacher = (param: addTeacherParams) => {
         showErrorMessage: true
     })
 }
+
+export const fetchDeleteTeacher = (id: string) => {
+    return request.del<void>({
+        url: `/teacher/teachers/${id}`,
+        showSuccessMessage: true,
+        showErrorMessage: true
+    })
+}
+
+/**
+ * 获取模板
+ * @param token 令牌
+ * @returns file
+ */
+export function fetchTeacherTemplate(token: string) {
+    return axios({
+      url: `${import.meta.env.VITE_API_URL}teacher/downloadTemplate`,
+      method: 'GET',
+      responseType: 'blob',
+      headers: { Authorization: 'Bearer ' + token },
+      withCredentials: import.meta.env.VITE_WITH_CREDENTIALS === 'true'
+    }).then(res => res.data)
+  }
+
+  /**
+ * 导入excel
+ * @param string token 用户令牌
+ * @param file 文件
+ * @returns 导入响应
+ */
+export function fetchImportTeacher(token: string, file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+    return request.request({
+      url: `/teacher/import`,
+      method: 'post',
+      data: formData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    })
+  }
