@@ -234,21 +234,6 @@ const getAttendanceList = async () => {
         pageSize: pageSize.value
     }
 
-    // 根据用户角色调整参数
-    if (userRole.value === 'teacher') {
-        // 教师只能看到自己相关的数据
-        params.teacherNos = userInfo?.teacherNos || []
-        params.classNames = searchForm.classNames.length > 0 ? searchForm.classNames : (userInfo?.classNames || [])
-        params.semester = searchForm.semester.length > 0 ? searchForm.semester : (userInfo?.semester || [])
-        // 清空其他可能的筛选条件
-        params.collegeNames = userInfo?.collegeNames || []
-        params.courseTypes = []
-        params.orderNos = []
-    } else if (userRole.value === 'college_admin') {
-        // 学院管理员只能看到本学院的数据
-        params.collegeNames = userInfo?.collegeNames || []
-    }
-
     const response = await fetchQueryAttendanceReport(params)
     // 检查API响应状态
     attendanceList.value = response?.records || []
