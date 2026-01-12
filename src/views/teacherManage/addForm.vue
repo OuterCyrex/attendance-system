@@ -16,8 +16,8 @@
                 <el-input v-model="formData.username" placeholder="请输入用户名称" />
             </el-form-item>
 
-            <el-form-item label="登录密码" prop="password" autocomplete="off">
-                <el-input v-model="formData.password" type="password" show-password placeholder="修改请输入新密码" />
+            <el-form-item label="登录密码" prop="password" autocomplete="off" >
+                <el-input v-model="formData.password" disabled placeholder="修改请输入新密码" />
             </el-form-item>
 
             <el-form-item label="真实姓名" prop="realName">
@@ -26,8 +26,8 @@
 
             <el-form-item v-if="currentUserInfo.role === 'admin'" label="所属部门" prop="department">
                 <el-select v-model="formData.department" class="w-full" placeholder="请选择部门">
-                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item.label"
-                        :value="item.value" />
+                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item.name"
+                        :value="item.name" />
                 </el-select>
             </el-form-item>
 
@@ -70,6 +70,10 @@ const emit = defineEmits<{
     (e: 'submit'): void
 }>()
 
+const props = defineProps<{
+    departmentOption?: Array<collegeInfo>
+}>()
+
 const localDialogVisible = ref(true)
 const userStore = useUserStore()
 const { getUserInfo: currentUserInfo } = userStore
@@ -77,7 +81,7 @@ const { getUserInfo: currentUserInfo } = userStore
 const formRef = ref<FormInstance>()
 const defaultForm: addTeacherParams = {
     username: '',
-    password: '',
+    password: '123456',
     realName: '',
     teacherNo: '',
     phone: '',
@@ -91,6 +95,7 @@ const defaultForm: addTeacherParams = {
 const formData = reactive<addTeacherParams>(JSON.parse(JSON.stringify(defaultForm)));
 
 const rules: FormRules = {
+    teacherNo: [{ required: true, message: '请输入教师工号', trigger: 'blur' }],
     username: [{ required: true, message: '请输入用户名称', trigger: 'blur' }],
     department: [{ required: true, message: '请选择部门', trigger: 'change' }],
     realName: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }],

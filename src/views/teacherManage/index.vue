@@ -79,9 +79,9 @@
                     @size-change="handleSizeChange" />
             </div>
         </div>
-        <AddForm v-if="addDialogVisible" @close="addDialogVisible = false" @submit="getTeacherList" />
+        <AddForm v-if="addDialogVisible" @close="addDialogVisible = false" @submit="getTeacherList" :department-option="collegeOptions"/>
         <UpdateForm :id="teacherList[editIndex].id" :formData="teacherList[editIndex]" v-if="editDialogVisible"
-            @close="editDialogVisible = false" @submit="getTeacherList" />
+            @close="editDialogVisible = false" @submit="getTeacherList" :department-option="collegeOptions"/>
     </div>
 </template>
 

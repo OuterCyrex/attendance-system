@@ -16,8 +16,8 @@
 
             <el-form-item v-if="userInfo.role === 'admin'" label="所属部门" prop="department">
                 <el-select v-model="form.department" class="w-full" placeholder="请选择部门">
-                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item.label"
-                        :value="item.value" />
+                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item.name"
+                        :value="item.name" />
                 </el-select>
             </el-form-item>
 
@@ -58,6 +58,7 @@ import { fetchUpdateTeacher } from '@/api/teacherMange';
 const props = defineProps<{
     id: string,
     formData?: updateTeacherParams
+    departmentOption?: Array<collegeInfo>
 }>()
 
 const emit = defineEmits<{
