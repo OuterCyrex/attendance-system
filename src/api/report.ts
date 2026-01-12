@@ -9,17 +9,8 @@ export const fetchQueryAttendanceReport = (params: any) => {
     })
 }
 
-// 导出考勤报表
-export const fetchExportAttendanceReport = (params: any) => {
-    return http.post({
-        url: '/attendance/export',
-        data: params,
-        responseType: 'blob'
-    })
-}
-
 // 新增：导出考勤报表Excel接口
-export const exportAttendanceReportExcel = (params: any) => {
+export const fetchAttendanceReportExcel = (params: any) => {
     return http.post({
         url: '/attendance/exportAttendanceReport',
         data: params,

@@ -9,13 +9,10 @@
                         <span class="mr-2 text-gray-500 text-sm">学院名称:</span>
                         <el-select v-model="searchForm.collegeNames" placeholder="请选择学院" style="width: 160px" clearable
                             multiple collapse-tags>
-                            <el-option label="计算机学院" value="computer"></el-option>
-                            <el-option label="数学学院" value="math"></el-option>
-                            <el-option label="物理学院" value="physics"></el-option>
+                            <el-option v-for="value in collegeList" :label="value.name" :value="value.name"></el-option>
                         </el-select>
                     </div>
 
-                    <!-- 教师不可见，学院管理员和学校管理员可见 -->
                     <div v-if="userRole !== 'teacher'" class="flex items-center">
                         <span class="mr-2 text-gray-500 text-sm">任课教师:</span>
                         <el-select v-model="searchForm.teacherNos" placeholder="请选择任课教师" style="width: 160px" clearable
@@ -26,7 +23,6 @@
                         </el-select>
                     </div>
 
-                    <!-- 教师不可见，学院管理员和学校管理员可见 -->
                     <div v-if="userRole !== 'teacher'" class="flex items-center">
                         <span class="mr-2 text-gray-500 text-sm">课程类型:</span>
                         <el-select v-model="searchForm.courseTypes" placeholder="请选择课程类型" style="width: 160px" clearable
@@ -42,24 +38,21 @@
                         <el-select v-model="searchForm.courseTypes" placeholder="请选择课程类型" style="width: 160px" clearable
                             multiple collapse-tags>
                             <el-option label="必修课" value="required"></el-option>
-                            <el-option label="选修课" value="elective"></el-option>
-                            <el-option label="实验课" value="lab"></el-option>
                         </el-select>
                     </div>
 
                     <div class="flex items-center">
                         <span class="mr-2 text-gray-500 text-sm">班级名称:</span>
-                        <el-select v-model="searchForm.classNames" placeholder="请选择班级" style="width: 160px" clearable
-                            multiple collapse-tags>
-                            <el-option label="计科1班" value="cs1"></el-option>
-                            <el-option label="计科2班" value="cs2"></el-option>
-                            <el-option label="软工1班" value="se1"></el-option>
-                        </el-select>
+                        <el-input v-model="searchForm.classNames" placeholder="请输入班级名称" style="width: 160px"
+                            clearable></el-input>
                     </div>
 
                     <div v-if="userRole !== 'teacher'" class="flex items-center">
                         <span class="mr-2 text-gray-500 text-sm">课序号:</span>
-                        <el-input v-model="searchForm.orderNos" placeholder="请输入课序号" style="width: 160px" clearable />
+                        <el-select v-model="searchForm.orderNos" placeholder="请选择课序号" style="width: 160px" clearable
+                            multiple collapse-tags>
+                            <el-option label="必修课" value="required"></el-option>
+                        </el-select>
                     </div>
 
                     <div class="flex items-center">
@@ -67,8 +60,6 @@
                         <el-select v-model="searchForm.semester" placeholder="请选择学期" style="width: 160px" clearable
                             multiple collapse-tags>
                             <el-option label="2024春" value="2024春"></el-option>
-                            <el-option label="2024秋" value="2024秋"></el-option>
-                            <el-option label="2025春" value="2025春"></el-option>
                         </el-select>
                     </div>
 
@@ -152,14 +143,16 @@
 
 <script lang="ts" setup>
 import { Download } from '@element-plus/icons-vue'
-import { fetchQueryAttendanceReport, exportAttendanceReportExcel, fetchExportAttendanceReport } from '@/api/report'
+import { fetchQueryAttendanceReport, fetchAttendanceReportExcel } from '@/api/report'
 import { useUserStore } from '@/store/modules/user'
+import { fetchGetCollegeList } from '@/api/misc'
 
 const currentPage = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
 const tableLoading = ref(false)
 const attendanceList = ref([])
+const collegeList = ref([])
 
 const searchForm = reactive({
     collegeNames: [],
@@ -343,7 +336,7 @@ const exportReport = async () => {
         }
 
         // 调用实际的导出接口
-        const response = await exportAttendanceReportExcel(exportParams)
+        const response = await fetchAttendanceReportExcel(exportParams)
 
         // 检查响应是否为Blob类型
         let blob;
@@ -375,8 +368,16 @@ const exportReport = async () => {
     }
 }
 
+const getCollegeList = async () => {
+    const data = await fetchGetCollegeList()
+    collegeList.value = data
+}
+
 onMounted(() => {
     getAttendanceList()
+    if (userRole.value === 'admin') {
+        getCollegeList()
+    }
 })
 </script>
 
