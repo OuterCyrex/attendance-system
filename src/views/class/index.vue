@@ -177,7 +177,15 @@ const getClassList = async (tid?: string) => {
     majors: [majorValue.value],
     pageNum: currentPage.value,
     pageSize: pageSize.value,
-    collegeName: collegeValue.value,
+    collegeName: '',
+  }
+  switch (userInfo.role) {
+    case 'college_admin':
+      queryParams['collegeName'] = userInfo.collegeName
+      break
+    case 'admin':
+      queryParams['collegeName'] = collegeValue.value
+      break
   }
   const data = await fetchGetClassList(token, queryParams)
   classList.value = data.records
@@ -197,6 +205,7 @@ const resetSearch = async () => {
   gradeValue.value = ''
   majorValue.value = ''
   teacherValue.value = ''
+  collegeValue.value = ''
   getClassList()
 }
 
