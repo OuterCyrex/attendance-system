@@ -1,0 +1,22 @@
+import http from '@/utils/http'
+import { ApiResponse, PageResponse, AttendanceRecord } from '@/types/report'
+
+// 查询考勤报表
+export const fetchQueryAttendanceReport = (params: any) => {
+    return http.post<ApiResponse<PageResponse<AttendanceRecord>>>({
+        url: '/attendance/queryAttendanceReport',
+        data: params
+    })
+}
+
+// 新增：导出考勤报表Excel接口
+export const fetchAttendanceReportExcel = (params: any) => {
+    return http.post({
+        url: '/attendance/exportAttendanceReport',
+        data: params,
+        headers: {
+            'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        },
+        responseType: 'blob'
+    })
+}

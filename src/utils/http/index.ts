@@ -47,7 +47,12 @@ const axiosInstance = axios.create({
   withCredentials: VITE_WITH_CREDENTIALS === 'true',
   validateStatus: (status) => status >= 200 && status < 300,
   transformResponse: [
-    (data, headers) => {
+    (data, headers, config) => {
+      // 如果是blob请求，不进行任何转换
+      if (config.responseType === 'blob') {
+        return data
+      }
+
       const contentType = headers['content-type']
       if (contentType?.includes('application/json')) {
         try {
@@ -82,8 +87,16 @@ axiosInstance.interceptors.request.use(
 
 /** 响应拦截器 */
 axiosInstance.interceptors.response.use(
-  (response: AxiosResponse<BaseResponse>) => {
-    const { code, message } = response.data
+  (response: AxiosResponse<any>) => {
+    // 如果是blob类型响应，直接返回
+    if (response.config.responseType === 'blob') {
+      return response
+    }
+
+    // 对于JSON响应，继续原有逻辑
+    const { data } = response
+    const { code, message } = data
+
     if (code === ApiStatus.success) return response
     if (code === ApiStatus.unauthorized) handleUnauthorizedError(message)
     throw createHttpError(message || $t('httpMsg.requestFailed'), code)
@@ -175,14 +188,25 @@ async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> 
   }
 
   try {
-    const res = await axiosInstance.request<BaseResponse<T>>(config)
+    const res = await axiosInstance.request<T>(config)
 
-    // 显示成功消息
-    if (config.showSuccessMessage && res.data.message) {
-      showSuccess(res.data.message)
+    // 如果是blob响应，直接返回
+    if (config.responseType === 'blob') {
+      return res.data
     }
 
-    return res.data.data as T
+    // 对于JSON响应，继续原有逻辑
+    const { data } = res
+    if (data && typeof data === 'object' && 'data' in data && 'code' in data) {
+      // 显示成功消息
+      if (config.showSuccessMessage && data.message) {
+        showSuccess(data.message)
+      }
+
+      return data.data as T
+    }
+
+    return data as T
   } catch (error) {
     if (error instanceof HttpError && error.code !== ApiStatus.unauthorized) {
       const showMsg = config.showErrorMessage !== false
