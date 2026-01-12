@@ -177,7 +177,7 @@ const classInfo = ref({
   major: '',
 })
 const isClassMode = computed(() => !!classId.value)
-const ALLOWED_ROLES = ['college_admin']
+const ALLOWED_ROLES = ['admin']
 
 const hasPermission = computed(() => {
   if (!userInfo || !userInfo.role) return false

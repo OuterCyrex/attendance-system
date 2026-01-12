@@ -24,7 +24,7 @@
             </el-select>
           </div>
 
-          <div class="flex items-center" v-if="userInfo.role === 'admin'">
+          <div class="flex items-center" v-if="hasPermission">
             <div class="mr-2 text-gray-500">学院：</div>
             <el-select v-model="collegeValue" placeholder="请选择学院" style="width: 160px">
               <el-option v-for="item in collegeOptions" :key="item.id" :label="item.name" :value="item.name" />
@@ -38,7 +38,7 @@
         </div>
       </ElCard>
 
-      <ElCard class="col-span-12 mt-4" shadow="never" v-if="userInfo.role === 'admin'">
+      <ElCard class="col-span-12 mt-4" shadow="never" v-if="hasPermission">
         <div class="operation-buttons flex">
           <el-button type="primary" :icon="Plus" @click="addDialogVisible = true">新增班级</el-button>
           <el-upload class="mx-4" :auto-upload="false" :show-file-list="false" :on-change="handleFileChange"
@@ -53,7 +53,7 @@
       <ElCard class="col-span-12 mt-4" shadow="never">
         <el-table :data="classList" v-loading="tableLoading" border stripe highlight-current-row
           class="data-table__content" style="min-height: 560px">
-          <el-table-column label="id" prop="id"></el-table-column>
+          <el-table-column label="课序号" prop="id"></el-table-column>
           <el-table-column label="班级名称" prop="className"></el-table-column>
           <el-table-column label="年级" prop="grade"></el-table-column>
           <el-table-column label="专业" prop="major"></el-table-column>
@@ -68,7 +68,7 @@
               <el-button type="primary" link @click="goToCourseDetail(scope.row)"> 查看 </el-button>
             </template>
           </el-table-column>
-          <el-table-column label="操作" v-if="userInfo.role === 'admin'">
+          <el-table-column label="操作" v-if="hasPermission">
             <template #default="scope">
               <el-button type="primary" :icon="Edit" link size="small" @click="showEditForm(scope.row)"> 编辑 </el-button>
               <el-popconfirm title="确认删除该班级吗？" confirm-button-text="确认" cancel-button-text="取消"
@@ -122,6 +122,13 @@ const gradeValue = ref<string>('')
 const majorValue = ref<string>('')
 const teacherValue = ref<string>('')
 const collegeValue = ref<string>('')
+const ALLOWED_ROLES = ['admin']
+
+const hasPermission = computed(() => {
+  if (!userInfo || !userInfo.role) return false
+
+  return ALLOWED_ROLES.includes(userInfo.role)
+})
 
 const addDialogVisible = ref<boolean>(false)
 const editDialogVisible = ref<boolean>(false)
