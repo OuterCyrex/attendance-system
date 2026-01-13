@@ -15,12 +15,8 @@
 
                     <div v-if="userRole !== 'teacher'" class="flex items-center">
                         <span class="mr-2 text-gray-500 text-sm">任课教师:</span>
-                        <el-select v-model="searchForm.teacherNos" placeholder="请选择任课教师" style="width: 160px" clearable
-                            multiple collapse-tags>
-                            <el-option label="张老师" value="zhang"></el-option>
-                            <el-option label="李老师" value="li"></el-option>
-                            <el-option label="王老师" value="wang"></el-option>
-                        </el-select>
+                        <el-input v-model="inputInfo.teacherNames" placeholder="请输入班级名称" style="width: 160px"
+                            clearable></el-input>
                     </div>
 
                     <div v-if="userRole !== 'teacher'" class="flex items-center">
@@ -35,15 +31,13 @@
 
                     <div v-if="userRole !== 'teacher'" class="flex items-center">
                         <span class="mr-2 text-gray-500 text-sm">辅导员工号:</span>
-                        <el-select v-model="searchForm.courseTypes" placeholder="请选择课程类型" style="width: 160px" clearable
-                            multiple collapse-tags>
-                            <el-option label="必修课" value="required"></el-option>
-                        </el-select>
+                        <el-input v-model="inputInfo.teacherNos" placeholder="请输入班级名称" style="width: 160px"
+                            clearable></el-input>
                     </div>
 
                     <div class="flex items-center">
                         <span class="mr-2 text-gray-500 text-sm">班级名称:</span>
-                        <el-input v-model="searchForm.classNames" placeholder="请输入班级名称" style="width: 160px"
+                        <el-input v-model="inputInfo.classNames" placeholder="请输入班级名称" style="width: 160px"
                             clearable></el-input>
                     </div>
 
@@ -51,7 +45,7 @@
                         <span class="mr-2 text-gray-500 text-sm">课序号:</span>
                         <el-select v-model="searchForm.orderNos" placeholder="请选择课序号" style="width: 160px" clearable
                             multiple collapse-tags>
-                            <el-option label="必修课" value="required"></el-option>
+                            <el-option v-for="value in orderList" :label="value" :value="value"></el-option>
                         </el-select>
                     </div>
 
@@ -59,7 +53,8 @@
                         <span class="mr-2 text-gray-500 text-sm">学期:</span>
                         <el-select v-model="searchForm.semester" placeholder="请选择学期" style="width: 160px" clearable
                             multiple collapse-tags>
-                            <el-option label="2024春" value="2024春"></el-option>
+                            <el-option v-for="value in semesterList" :label="value.semesterName"
+                                :value="value.semesterName"></el-option>
                         </el-select>
                     </div>
 
@@ -143,7 +138,7 @@
 
 <script lang="ts" setup>
 import { Download } from '@element-plus/icons-vue'
-import { fetchQueryAttendanceReport, fetchAttendanceReportExcel } from '@/api/report'
+import { fetchQueryAttendanceReport, fetchAttendanceReportExcel, fetchSemesterList, fetchOrderList } from '@/api/report'
 import { useUserStore } from '@/store/modules/user'
 import { fetchGetCollegeList } from '@/api/misc'
 
@@ -153,16 +148,20 @@ const pageSize = ref(10)
 const tableLoading = ref(false)
 const attendanceList = ref([])
 const collegeList = ref([])
+const semesterList = ref([])
+const orderList = ref([])
 
 const searchForm = reactive({
-    collegeNames: [],
-    teacherNos: [],
     orderNos: [],
     courseTypes: [],
-    classNames: [],
-    startDate: '',
-    endDate: '',
-    semester: []
+    semester: [],
+    collegeNames: []
+})
+
+const inputInfo = ref({
+    classNames: '',
+    teacherNames: '',
+    teacherNos: ''
 })
 
 const userStore = useUserStore()
@@ -196,33 +195,43 @@ const handleSizeChange = (size: number) => {
 const getAttendanceList = async () => {
     tableLoading.value = true
 
+    let finalClassNames: string[] = []
+    if (inputInfo.value.classNames.trim()) {
+        finalClassNames = inputInfo.value.classNames.replace(/，/g, ',')
+            .split(',')
+            .map(item => item.trim())
+            .filter(item => item !== '')
+    } else {
+        finalClassNames = userInfo?.collegeNames || []
+    }
+
+    let finalTeacherNames: string[] = []
+    if (inputInfo.value.teacherNames.trim()) {
+        finalTeacherNames = inputInfo.value.teacherNames.replace(/，/g, ',')
+            .split(',')
+            .map(item => item.trim())
+            .filter(item => item !== '')
+    }
+
+    let finalTeacherNos: string[] = []
+    if (inputInfo.value.teacherNos.trim()) {
+        finalTeacherNos = inputInfo.value.teacherNos.replace(/，/g, ',')
+            .split(',')
+            .map(item => item.trim())
+            .filter(item => item !== '')
+    }
+
     // 构建基础参数
     const params: any = {
         collegeNames: searchForm.collegeNames.length > 0 ? searchForm.collegeNames : (userInfo?.collegeNames || []),
-        teacherNos: searchForm.teacherNos.length > 0 ? searchForm.teacherNos : (userInfo?.teacherNos || []),
+        teacherNos: finalTeacherNos,
+        teacherNames: finalTeacherNames,
         orderNos: searchForm.orderNos,
         courseTypes: searchForm.courseTypes.length > 0 ? searchForm.courseTypes : (userInfo?.courseTypes || []),
-        classNames: searchForm.classNames.length > 0 ? searchForm.classNames : (userInfo?.classNames || []),
-        startDate: searchForm.startDate,
-        endDate: searchForm.endDate,
+        classNames: finalClassNames,
         semester: searchForm.semester.length > 0 ? searchForm.semester : (userInfo?.semester || []),
         pageNum: currentPage.value,
         pageSize: pageSize.value
-    }
-
-    // 根据用户角色调整参数
-    if (userRole.value === 'teacher') {
-        // 教师只能看到自己相关的数据
-        params.teacherNos = userInfo?.teacherNos || []
-        params.classNames = searchForm.classNames.length > 0 ? searchForm.classNames : (userInfo?.classNames || [])
-        params.semester = searchForm.semester.length > 0 ? searchForm.semester : (userInfo?.semester || [])
-        // 清空其他可能的筛选条件
-        params.collegeNames = userInfo?.collegeNames || []
-        params.courseTypes = []
-        params.orderNos = []
-    } else if (userRole.value === 'college_admin') {
-        // 学院管理员只能看到本学院的数据
-        params.collegeNames = userInfo?.collegeNames || []
     }
 
     const response = await fetchQueryAttendanceReport(params)
@@ -311,29 +320,28 @@ const getAttendanceRateColor = (rate: number) => {
 // 导出报表
 const exportReport = async () => {
     try {
-        // 构建导出参数
-        // 根据用户角色构建不同的参数
+        // 构建导出参数，使用与查询相同的参数
         let exportParams: any = {
-            startDate: searchForm.startDate,
-            endDate: searchForm.endDate,
             pageNum: 1,
             pageSize: 99999 // 导出所有数据
         }
 
-        // 根据用户角色调整参数
-        if (userRole.value === 'teacher') {
-            // 教师只能看到自己相关的数据
-            exportParams.teacherNos = userInfo?.teacherNos || []
-            exportParams.classNames = searchForm.classNames.length > 0 ? searchForm.classNames : (userInfo?.classNames || [])
-            exportParams.semester = searchForm.semester.length > 0 ? searchForm.semester : (userInfo?.semester || [])
-            // 清空其他可能的筛选条件
-            exportParams.collegeNames = userInfo?.collegeNames || []
-            exportParams.courseTypes = []
-            exportParams.orderNos = []
-        } else if (userRole.value === 'college_admin') {
-            // 学院管理员只能看到本学院的数据
-            exportParams.collegeNames = userInfo?.collegeNames || []
-        }
+        const splitToArray = (value?: string) =>
+            value
+                ? value
+                    .replace(/，/g, ',')
+                    .split(',')
+                    .map(item => item.trim())
+                    .filter(item => item !== '')
+                : []
+
+        exportParams.collegeNames = searchForm.collegeNames
+        exportParams.teacherNos = splitToArray(inputInfo.value.teacherNos)
+        exportParams.teacherNames = splitToArray(inputInfo.value.teacherNames)
+        exportParams.classNames = splitToArray(inputInfo.value.classNames)
+        exportParams.courseTypes = searchForm.courseTypes
+        exportParams.orderNos = searchForm.orderNos
+        exportParams.semester = searchForm.semester
 
         // 调用实际的导出接口
         const response = await fetchAttendanceReportExcel(exportParams)
@@ -364,7 +372,7 @@ const exportReport = async () => {
         ElMessage.success('报表导出成功');
     } catch (error) {
         console.error('导出报表失败:', error);
-        ElMessage.error('报表导出失败');
+        ElMessage.error('报表导出失败，请联系管理员');
     }
 }
 
@@ -373,10 +381,24 @@ const getCollegeList = async () => {
     collegeList.value = data
 }
 
+const getSemesterList = async () => {
+    const data = await fetchSemesterList()
+    semesterList.value = data
+}
+
+const getOrderList = async () => {
+    const data = await fetchOrderList()
+    orderList.value = data
+}
+
 onMounted(() => {
     getAttendanceList()
     if (userRole.value === 'admin') {
         getCollegeList()
+    }
+    if (userRole.value !== 'teacher') {
+        getSemesterList()
+        getOrderList()
     }
 })
 </script>
