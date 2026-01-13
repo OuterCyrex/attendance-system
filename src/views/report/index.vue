@@ -320,29 +320,28 @@ const getAttendanceRateColor = (rate: number) => {
 // 导出报表
 const exportReport = async () => {
     try {
-        // 构建导出参数
-        // 根据用户角色构建不同的参数
+        // 构建导出参数，使用与查询相同的参数
         let exportParams: any = {
-            startDate: searchForm.startDate,
-            endDate: searchForm.endDate,
             pageNum: 1,
             pageSize: 99999 // 导出所有数据
         }
 
-        // 根据用户角色调整参数
-        if (userRole.value === 'teacher') {
-            // 教师只能看到自己相关的数据
-            exportParams.teacherNos = userInfo?.teacherNos || []
-            exportParams.classNames = searchForm.classNames.length > 0 ? searchForm.classNames : (userInfo?.classNames || [])
-            exportParams.semester = searchForm.semester.length > 0 ? searchForm.semester : (userInfo?.semester || [])
-            // 清空其他可能的筛选条件
-            exportParams.collegeNames = userInfo?.collegeNames || []
-            exportParams.courseTypes = []
-            exportParams.orderNos = []
-        } else if (userRole.value === 'college_admin') {
-            // 学院管理员只能看到本学院的数据
-            exportParams.collegeNames = userInfo?.collegeNames || []
-        }
+        const splitToArray = (value?: string) =>
+            value
+                ? value
+                    .replace(/，/g, ',')
+                    .split(',')
+                    .map(item => item.trim())
+                    .filter(item => item !== '')
+                : []
+
+        exportParams.collegeNames = searchForm.collegeNames
+        exportParams.teacherNos = splitToArray(inputInfo.value.teacherNos)
+        exportParams.teacherNames = splitToArray(inputInfo.value.teacherNames)
+        exportParams.classNames = splitToArray(inputInfo.value.classNames)
+        exportParams.courseTypes = searchForm.courseTypes
+        exportParams.orderNos = searchForm.orderNos
+        exportParams.semester = searchForm.semester
 
         // 调用实际的导出接口
         const response = await fetchAttendanceReportExcel(exportParams)
@@ -373,7 +372,7 @@ const exportReport = async () => {
         ElMessage.success('报表导出成功');
     } catch (error) {
         console.error('导出报表失败:', error);
-        ElMessage.error('报表导出失败');
+        ElMessage.error('报表导出失败，请联系管理员');
     }
 }
 
