@@ -7,11 +7,7 @@
 
                     <div v-if="userRole === 'admin'" class="w-full md:w-1/3 xl:w-1/4 p-3 flex items-center">
                         <span class="w-24 text-gray-500 text-sm font-medium text-center shrink-0 mr-2">学院名称</span>
-                        <el-select v-model="searchForm.collegeNames" placeholder="请选择学院" class="flex-1" clearable
-                            multiple collapse-tags>
-                            <el-option v-for="value in collegeList" :key="value.name" :label="value.name"
-                                :value="value.name"></el-option>
-                        </el-select>
+                        <collegeSelect @selected="handleCollegeSelected" :reset="resetFlag" class="flex-1" />
                     </div>
 
                     <div v-if="userRole !== 'teacher'" class="w-full md:w-1/3 xl:w-1/4 p-3 flex items-center">
@@ -152,13 +148,13 @@ import { Download } from '@element-plus/icons-vue'
 import { fetchQueryAttendanceReport, fetchAttendanceReportExcel } from '@/api/report'
 import { useUserStore } from '@/store/modules/user'
 import { fetchGetCollegeList, fetchSemesterList, fetchOrderList } from '@/api/misc'
+import collegeSelect from '@/components/select/collegeSelect.vue'
 
 const currentPage = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
 const tableLoading = ref(false)
 const attendanceList = ref([])
-const collegeList = ref([])
 const semesterList = ref([])
 const orderList = ref([])
 
@@ -178,6 +174,12 @@ const inputInfo = ref({
 const userStore = useUserStore()
 const { getToken: token } = userStore
 const { getUserInfo: userInfo } = userStore
+
+const resetFlag = ref(false)
+
+const handleCollegeSelected = async (college: Api.Misc.collegeInfo) => {
+    searchForm.collegeNames = [college.name]
+}
 
 // 获取用户角色
 const userRole = computed(() => {
@@ -258,6 +260,8 @@ const resetSearch = () => {
     inputInfo.value.classNames = ''
     searchForm.semester = []
     inputInfo.value.teacherNames = ''
+
+    resetFlag.value = !resetFlag.value
 
     currentPage.value = 1
     getAttendanceList()
@@ -368,11 +372,6 @@ const exportReport = async () => {
     }
 }
 
-const getCollegeList = async () => {
-    const data = await fetchGetCollegeList()
-    collegeList.value = data
-}
-
 const getSemesterList = async () => {
     const data = await fetchSemesterList()
     semesterList.value = data
@@ -385,9 +384,6 @@ const getOrderList = async () => {
 
 onMounted(() => {
     getAttendanceList()
-    if (userRole.value === 'admin') {
-        getCollegeList()
-    }
     if (userRole.value !== 'teacher') {
         getOrderList()
     }
