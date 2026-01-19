@@ -3,70 +3,66 @@
         <div class="grid grid-cols-12 w-full">
 
             <ElCard class="col-span-12" shadow="never">
-                <div class="flex flex-wrap -m-3">
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center gap-4">
+                        <div v-if="userRole === 'admin'" class="flex items-center">
+                            <div class="mr-2 text-gray-500">学院名称：</div>
+                            <collegeSelect @selected="handleCollegeSelected" :reset="resetFlag" style="width: 200px" />
+                        </div>
 
-                    <div v-if="userRole === 'admin'" class="w-full md:w-1/3 xl:w-1/4 p-3 flex items-center">
-                        <span class="w-24 text-gray-500 text-sm font-medium text-center shrink-0 mr-2">学院名称</span>
-                        <collegeSelect @selected="handleCollegeSelected" :reset="resetFlag" class="flex-1" />
-                    </div>
+                        <div v-if="userRole !== 'teacher'" class="flex items-center">
+                            <div class="mr-2 text-gray-500">任课教师：</div>
+                            <el-input v-model="inputInfo.teacherNames" placeholder="请输入姓名" style="width: 200px"
+                                clearable></el-input>
+                        </div>
 
-                    <div v-if="userRole !== 'teacher'" class="w-full md:w-1/3 xl:w-1/4 p-3 flex items-center">
-                        <span class="w-24 text-gray-500 text-sm font-medium text-center shrink-0 mr-2">任课教师</span>
-                        <el-input v-model="inputInfo.teacherNames" placeholder="请输入姓名" class="flex-1"
-                            clearable></el-input>
-                    </div>
-
-                    <div v-if="userRole !== 'teacher'" class="w-full md:w-1/3 xl:w-1/4 p-3 flex items-center">
-                        <span class="w-24 text-gray-500 text-sm font-medium text-center shrink-0 mr-2">课程类型</span>
-                        <el-select v-model="searchForm.courseTypes" placeholder="请选择类型" class="flex-1" clearable
-                            multiple collapse-tags>
-                            <el-option label="必修课" value="required"></el-option>
-                            <el-option label="选修课" value="elective"></el-option>
-                            <el-option label="实验课" value="lab"></el-option>
-                        </el-select>
-                    </div>
-
-                    <div v-if="userRole !== 'teacher'" class="w-full md:w-1/3 xl:w-1/4 p-3 flex items-center">
-                        <span class="w-24 text-gray-500 text-sm font-medium text-center shrink-0 mr-2">辅导员工号</span>
-                        <el-input v-model="inputInfo.teacherNos" placeholder="请输入工号" class="flex-1"
-                            clearable></el-input>
-                    </div>
-
-                    <div class="w-full md:w-1/3 xl:w-1/4 p-3 flex items-center">
-                        <span class="w-24 text-gray-500 text-sm font-medium text-center shrink-0 mr-2">班级名称</span>
-                        <el-input v-model="inputInfo.classNames" placeholder="请输入班级" class="flex-1"
-                            clearable></el-input>
-                    </div>
-
-                    <div v-if="userRole !== 'teacher'" class="w-full md:w-1/3 xl:w-1/4 p-3 flex items-center">
-                        <span class="w-24 text-gray-500 text-sm font-medium text-center shrink-0 mr-2">课序号</span>
-                        <el-select v-model="searchForm.orderNos" placeholder="请选择课序号" class="flex-1" clearable multiple
-                            collapse-tags>
-                            <el-option v-for="value in orderList" :key="value" :label="value"
-                                :value="value"></el-option>
-                        </el-select>
-                    </div>
-
-                    <div class="w-full md:w-1/3 xl:w-1/4 p-3 flex items-center">
-                        <span class="w-24 text-gray-500 text-sm font-medium text-center shrink-0 mr-2">学期</span>
-                        <el-select v-model="searchForm.semester" placeholder="请选择学期" class="flex-1" clearable multiple
-                            collapse-tags>
-                            <el-option v-for="value in semesterList" :key="value" :label="value"
-                                :value="value"></el-option>
-                        </el-select>
-                    </div>
-
-                    <div class="w-full md:w-1/3 xl:w-1/4 p-3 flex items-center">
-                        <div class="flex gap-2">
-                            <el-button type="primary" @click="handleSearch" class="w-20">
-                                查询
-                            </el-button>
-                            <el-button type="info" plain @click="resetSearch" class="w-20">
-                                重置
-                            </el-button>
+                        <div v-if="userRole !== 'teacher'" class="flex items-center">
+                            <div class="mr-2 text-gray-500">课程类型：</div>
+                            <el-select v-model="searchForm.courseTypes" placeholder="请选择类型" style="width: 200px" clearable
+                                multiple collapse-tags>
+                                <el-option label="必修课" value="required"></el-option>
+                                <el-option label="选修课" value="elective"></el-option>
+                                <el-option label="实验课" value="lab"></el-option>
+                            </el-select>
                         </div>
                     </div>
 
+                    <div class="flex items-center gap-4">
+                        <div v-if="userRole !== 'teacher'" class="flex items-center">
+                            <div class="mr-2 text-gray-500">辅导员工号：</div>
+                            <el-input v-model="inputInfo.teacherNos" placeholder="请输入工号" style="width: 200px"
+                                clearable></el-input>
+                        </div>
+
+                        <div class="flex items-center">
+                            <div class="mr-2 text-gray-500">班级名称：</div>
+                            <el-input v-model="inputInfo.classNames" placeholder="请输入班级" style="width: 200px"
+                                clearable></el-input>
+                        </div>
+
+                        <div v-if="userRole !== 'teacher'" class="flex items-center">
+                            <div class="mr-2 text-gray-500">课序号：</div>
+                            <el-select v-model="searchForm.orderNos" placeholder="请选择课序号" style="width: 200px" clearable multiple
+                                collapse-tags>
+                                <el-option v-for="value in orderList" :key="value" :label="value"
+                                    :value="value"></el-option>
+                            </el-select>
+                        </div>
+
+                        <div class="flex items-center">
+                            <div class="mr-2 text-gray-500">学期：</div>
+                            <el-select v-model="searchForm.semester" placeholder="请选择学期" style="width: 200px" clearable multiple
+                                collapse-tags>
+                                <el-option v-for="value in semesterList" :key="value" :label="value"
+                                    :value="value"></el-option>
+                            </el-select>
+                        </div>
+
+                        <div class="ml-auto flex gap-2">
+                            <el-button type="primary" @click="handleSearch">查询</el-button>
+                            <el-button type="info" plain @click="resetSearch">重置</el-button>
+                        </div>
+                    </div>
                 </div>
             </ElCard>
 
