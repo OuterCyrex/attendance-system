@@ -26,7 +26,7 @@ export const fetchAttendanceReportExcel = (params: any) => {
 
 export const fetchSemesterList = () => {
     return http.get({
-        url: '/semester/list',
+        url: '/semester/names',
     })
 }
 
