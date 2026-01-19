@@ -16,11 +16,7 @@
 
                     <div class="flex items-center" v-if="userInfo.role === 'admin'">
                         <span class="mr-2 text-gray-500 text-sm">部门/学院:</span>
-                        <el-select v-model="searchForm.department" placeholder="请选择部门/学院" style="width: 160px"
-                            clearable>
-                            <el-option v-for="item in collegeOptions" :key="item.id" :label="item.name"
-                                :value="item.name" />
-                        </el-select>
+                        <collegeSelect @selected="handleCollegeSelected" :reset="resetFlag" style="width: 160px" />
                     </div>
 
                     <div class="ml-auto flex gap-2">
@@ -79,9 +75,10 @@
                     @size-change="handleSizeChange" />
             </div>
         </div>
-        <AddForm v-if="addDialogVisible" @close="addDialogVisible = false" @submit="getTeacherList" :department-option="collegeOptions"/>
+        <AddForm v-if="addDialogVisible" @close="addDialogVisible = false" @submit="getTeacherList"
+            :department-option="collegeOptions" />
         <UpdateForm :id="teacherList[editIndex].id" :formData="teacherList[editIndex]" v-if="editDialogVisible"
-            @close="editDialogVisible = false" @submit="getTeacherList" :department-option="collegeOptions"/>
+            @close="editDialogVisible = false" @submit="getTeacherList" :department-option="collegeOptions" />
     </div>
 </template>
 
@@ -95,6 +92,7 @@ import { fetchDeleteTeacher, fetchGetTeacherList, fetchImportTeacher, fetchTeach
 import { useUserStore } from '@/store/modules/user'
 import { fetchGetCollegeList } from '@/api/misc'
 import type { UploadFile } from 'element-plus'
+import collegeSelect from '@/components/select/collegeSelect.vue'
 
 const currentPage = ref(1)
 const total = ref(0)
@@ -105,6 +103,7 @@ const collegeOptions = ref<Array<Api.Misc.collegeInfo>>([])
 const editIndex = ref<number>(0)
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
+const resetFlag = ref(false)
 
 const searchForm = reactive({
     teacherNo: '',
@@ -114,6 +113,10 @@ const searchForm = reactive({
 const userStore = useUserStore()
 const { getUserInfo: userInfo } = userStore
 const { getToken: token } = userStore
+
+const handleCollegeSelected = async (college: Api.Misc.collegeInfo) => {
+    searchForm.department = college.name
+}
 
 const handlePageChange = (page: number) => {
     currentPage.value = page
@@ -142,20 +145,20 @@ const getTeacherList = async () => {
 }
 
 const downloadTemplate = async () => {
-  const blob = await fetchTeacherTemplate(token)
-  const a = document.createElement('a')
-  a.href = URL.createObjectURL(blob)
-  a.download = '教师导入模板.xlsx'
-  a.click()
-  URL.revokeObjectURL(a.href)
+    const blob = await fetchTeacherTemplate(token)
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = '教师导入模板.xlsx'
+    a.click()
+    URL.revokeObjectURL(a.href)
 }
 
 const handleFileChange = async (uploadFile: UploadFile) => {
-  const file = uploadFile.raw
-  if (!file) return
+    const file = uploadFile.raw
+    if (!file) return
 
-  await fetchImportTeacher(token, file)
-  getTeacherList()
+    await fetchImportTeacher(token, file)
+    getTeacherList()
 }
 
 const getCollegeList = async () => {
@@ -185,6 +188,8 @@ const resetSearch = () => {
     searchForm.teacherNo = ''
     searchForm.realName = ''
     searchForm.department = ''
+    resetFlag.value = !resetFlag.value
+
     getTeacherList()
 }
 
