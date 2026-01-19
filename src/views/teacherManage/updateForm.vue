@@ -16,8 +16,8 @@
 
             <el-form-item v-if="userInfo.role === 'admin'" label="所属部门" prop="department">
                 <el-select v-model="form.department" class="w-full" placeholder="请选择部门">
-                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item.label"
-                        :value="item.value" />
+                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item.name"
+                        :value="item.name" />
                 </el-select>
             </el-form-item>
 
@@ -30,11 +30,11 @@
             </el-form-item>
 
             <el-form-item label="启用状态" prop="status">
-                <el-switch v-model="form.status" :active-value="1" :inactive-value="0"/>
+                <el-switch v-model="form.status" :active-value="1" :inactive-value="0" />
             </el-form-item>
 
             <el-form-item label="邮箱通知" prop="enableEmailNotification">
-                <el-switch v-model="form.enableEmailNotification" :active-value="1" :inactive-value="0"/>
+                <el-switch v-model="form.enableEmailNotification" :active-value="1" :inactive-value="0" />
             </el-form-item>
 
             <el-form-item label="通知阈值" prop="attendanceThreshold">
@@ -54,6 +54,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useUserStore } from '@/store/modules/user'
 import type { FormInstance, FormRules } from 'element-plus'
 import { fetchUpdateTeacher } from '@/api/teacherMange';
+import { fetchGetCollegeList } from '@/api/misc';
 
 const props = defineProps<{
     id: string,
@@ -94,6 +95,7 @@ const rules: FormRules = {
     ],
     password: [{ required: false, message: '请输入密码', trigger: 'blur' }]
 }
+const departmentOption = ref({})
 
 onMounted(() => {
     if (!props.id) {
@@ -101,6 +103,7 @@ onMounted(() => {
         return
     }
     Object.assign(form, { ...defaultForm, ...props.formData })
+    getDepartmentOption()
 })
 
 const handleCancel = () => {
@@ -125,12 +128,12 @@ const handleSubmit = async () => {
     }
 
     const data = {
-        username:  form.username,
-        realName:  form.realName,
-        teacherNo:  form.teacherNo,
-        phone:  form.phone,
-        email:  form.email,
-        department:  form.department,
+        username: form.username,
+        realName: form.realName,
+        teacherNo: form.teacherNo,
+        phone: form.phone,
+        email: form.email,
+        department: form.department,
         status: form.status,
         attendanceThreshold: form.attendanceThreshold,
         enableEmailNotification: form.enableEmailNotification === 1
@@ -140,5 +143,10 @@ const handleSubmit = async () => {
         handleCancel()
         emit('submit')
     })
+}
+
+const getDepartmentOption = async () => {
+    let result = await fetchGetCollegeList()
+    departmentOption.value = result
 }
 </script>

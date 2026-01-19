@@ -26,8 +26,8 @@
 
             <el-form-item v-if="currentUserInfo.role === 'admin'" label="所属部门" prop="department">
                 <el-select v-model="formData.department" class="w-full" placeholder="请选择部门">
-                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item.label"
-                        :value="item.value" />
+                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item.name"
+                        :value="item.name" />
                 </el-select>
             </el-form-item>
 
@@ -64,6 +64,7 @@ import { ref, reactive } from 'vue'
 import { useUserStore } from '@/store/modules/user'
 import type { FormInstance, FormRules } from 'element-plus'
 import { fetchAddTeacher } from '@/api/teacherMange';
+import { fetchGetCollegeList } from '@/api/misc';
 
 const emit = defineEmits<{
     (e: 'close'): void
@@ -101,6 +102,7 @@ const rules: FormRules = {
     ],
     password: [{ required: false, message: '请输入密码', trigger: 'blur' }]
 }
+const departmentOption = ref({})
 
 const handleCancel = () => {
     if (formRef.value) {
@@ -130,7 +132,13 @@ const handleSubmit = async () => {
     })
 }
 
+const getDepartmentOption = async () => {
+    let result = await fetchGetCollegeList()
+    departmentOption.value = result
+}
+
 onMounted(() => {
     Object.assign(formData, { ...defaultForm })
+    getDepartmentOption()
 })
 </script>
