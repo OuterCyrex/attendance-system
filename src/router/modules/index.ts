@@ -1,6 +1,5 @@
 import { AppRouteRecord } from '@/types/router'
-import { dashboardRoutes } from './dashboard'
-import { widgetsRoutes } from './widgets'
+import { ChartRoutes } from './chart'
 import { ClassRoutes } from './class'
 import { MessageRoutes } from './message'
 import { AccountRoutes } from './account'
@@ -20,5 +19,6 @@ export const routeModules: AppRouteRecord[] = [
   AttendanceScheduleRoutes,
   TeacherManageRoutes,
   ReportRoutes,
+  ChartRoutes,
   AccountRoutes
 ]

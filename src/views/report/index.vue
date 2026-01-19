@@ -81,7 +81,7 @@
                     <el-table-column label="教师姓名" prop="teacherName" width="120"></el-table-column>
                     <el-table-column label="课程类型" prop="courseType" width="120"></el-table-column>
                     <el-table-column label="学期" prop="semesterName" width="120"></el-table-column>
-                    <el-table-column label="班级名称" width="150">
+                    <el-table-column label="班级名称" width="200">
                         <template #default="scope">
                             <el-tag v-for="className in scope.row.classNames" :key="className" size="small"
                                 class="mr-1">
@@ -89,9 +89,12 @@
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column label="订单号" prop="orderNo" width="120"></el-table-column>
-                    <el-table-column label="课程ID" prop="courseId" width="120"></el-table-column>
-                    <el-table-column label="签到时间" prop="checkTime" width="180"></el-table-column>
+                    <el-table-column label="课序号" prop="orderNo" width="120"></el-table-column>
+                    <el-table-column label="考勤时间" width="180">
+                        <template #default="scope">
+                            {{ scope.row.checkTime ? scope.row.checkTime.replace('T', ' ') : '-' }}
+                        </template>
+                    </el-table-column>
                     <el-table-column label="应到人数" prop="expectedCount" width="100"></el-table-column>
                     <el-table-column label="实到人数" prop="actualCount" width="100"></el-table-column>
                     <el-table-column label="出勤率(%)" prop="attendanceRate" width="120">
@@ -100,7 +103,7 @@
                                 :color="getAttendanceRateColor(scope.row.attendanceRate)" />
                         </template>
                     </el-table-column>
-                    <el-table-column label="签到类型" prop="checkType" width="120">
+                    <el-table-column label="考勤类型" prop="checkType" width="120">
                         <template #default="scope">
                             <el-tag :type="getCheckTypeTagType(scope.row.checkType)" size="small">
                                 {{ getCheckTypeName(scope.row.checkType) }}
@@ -114,7 +117,7 @@
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column label="签到图片" width="150">
+                    <el-table-column label="考勤图片" width="150">
                         <template #default="scope">
                             <el-image v-if="scope.row.imageUrl" :src="scope.row.imageUrl"
                                 :preview-src-list="[scope.row.imageUrl]" preview-teleported
@@ -123,7 +126,6 @@
                         </template>
                     </el-table-column>
                     <el-table-column label="备注" prop="remark" min-width="150"></el-table-column>
-                    <el-table-column label="创建时间" prop="createTime" width="180"></el-table-column>
                 </el-table>
             </ElCard>
 

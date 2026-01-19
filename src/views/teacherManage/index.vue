@@ -135,6 +135,9 @@ const getTeacherList = async () => {
     }
     const data = await fetchGetTeacherList(params)
     teacherList.value = data.records
+    currentPage.value = data.current
+    total.value = data.total
+    pageSize.value = data.size
     tableLoading.value = false
 }
 
