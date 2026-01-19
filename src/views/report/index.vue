@@ -15,7 +15,7 @@
 
                     <div v-if="userRole !== 'teacher'" class="flex items-center">
                         <span class="mr-2 text-gray-500 text-sm">任课教师:</span>
-                        <el-input v-model="inputInfo.teacherNames" placeholder="请输入班级名称" style="width: 160px"
+                        <el-input v-model="inputInfo.teacherNames" placeholder="请输入任课教师姓名" style="width: 160px"
                             clearable></el-input>
                     </div>
 
@@ -31,7 +31,7 @@
 
                     <div v-if="userRole !== 'teacher'" class="flex items-center">
                         <span class="mr-2 text-gray-500 text-sm">辅导员工号:</span>
-                        <el-input v-model="inputInfo.teacherNos" placeholder="请输入班级名称" style="width: 160px"
+                        <el-input v-model="inputInfo.teacherNos" placeholder="请输入辅导员工号" style="width: 160px"
                             clearable></el-input>
                     </div>
 
@@ -53,8 +53,7 @@
                         <span class="mr-2 text-gray-500 text-sm">学期:</span>
                         <el-select v-model="searchForm.semester" placeholder="请选择学期" style="width: 160px" clearable
                             multiple collapse-tags>
-                            <el-option v-for="value in semesterList" :label="value.semesterName"
-                                :value="value.semesterName"></el-option>
+                            <el-option v-for="value in semesterList" :label="value" :value="value"></el-option>
                         </el-select>
                     </div>
 
@@ -89,7 +88,7 @@
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column label="订单号" prop="orderNo" width="120"></el-table-column>
+                    <el-table-column label="课序号" prop="orderNo" width="120"></el-table-column>
                     <el-table-column label="课程ID" prop="courseId" width="120"></el-table-column>
                     <el-table-column label="签到时间" prop="checkTime" width="180"></el-table-column>
                     <el-table-column label="应到人数" prop="expectedCount" width="100"></el-table-column>
@@ -123,7 +122,6 @@
                         </template>
                     </el-table-column>
                     <el-table-column label="备注" prop="remark" min-width="150"></el-table-column>
-                    <el-table-column label="创建时间" prop="createTime" width="180"></el-table-column>
                 </el-table>
             </ElCard>
 
@@ -192,36 +190,29 @@ const handleSizeChange = (size: number) => {
     getAttendanceList()
 }
 
+const splitToArray = (value?: string) => {
+    return value
+        ? value
+            .replace(/，/g, ',')
+            .split(',')
+            .map(item => item.trim())
+            .filter(item => item !== '')
+        : []
+}
+
 const getAttendanceList = async () => {
     tableLoading.value = true
 
     let finalClassNames: string[] = []
-    if (inputInfo.value.classNames.trim()) {
-        finalClassNames = inputInfo.value.classNames.replace(/，/g, ',')
-            .split(',')
-            .map(item => item.trim())
-            .filter(item => item !== '')
-    } else {
-        finalClassNames = userInfo?.collegeNames || []
-    }
+    finalClassNames = splitToArray(inputInfo.value.classNames)
 
     let finalTeacherNames: string[] = []
-    if (inputInfo.value.teacherNames.trim()) {
-        finalTeacherNames = inputInfo.value.teacherNames.replace(/，/g, ',')
-            .split(',')
-            .map(item => item.trim())
-            .filter(item => item !== '')
-    }
+    finalTeacherNames = splitToArray(inputInfo.value.teacherNames)
 
     let finalTeacherNos: string[] = []
-    if (inputInfo.value.teacherNos.trim()) {
-        finalTeacherNos = inputInfo.value.teacherNos.replace(/，/g, ',')
-            .split(',')
-            .map(item => item.trim())
-            .filter(item => item !== '')
-    }
+    finalTeacherNos = splitToArray(inputInfo.value.teacherNos)
 
-    // 构建基础参数
+
     const params: any = {
         collegeNames: searchForm.collegeNames.length > 0 ? searchForm.collegeNames : (userInfo?.collegeNames || []),
         teacherNos: finalTeacherNos,
@@ -235,9 +226,8 @@ const getAttendanceList = async () => {
     }
 
     const response = await fetchQueryAttendanceReport(params)
-    // 检查API响应状态
     attendanceList.value = response?.records || []
-    total.value = response?.data?.total || 0
+    total.value = response?.total || 0
     tableLoading.value = false
 }
 
@@ -249,19 +239,17 @@ const handleSearch = () => {
 const resetSearch = () => {
     // 重置所有搜索字段
     searchForm.collegeNames = []
-    searchForm.teacherNos = []
+    inputInfo.value.teacherNos = ''
     searchForm.orderNos = []
     searchForm.courseTypes = []
-    searchForm.classNames = []
-    searchForm.startDate = ''
-    searchForm.endDate = ''
+    inputInfo.value.classNames = ''
     searchForm.semester = []
+    inputInfo.value.teacherNames = ''
 
     currentPage.value = 1
     getAttendanceList()
 }
 
-// 获取签到类型标签类型
 const getCheckTypeTagType = (type: number) => {
     switch (type) {
         case 1:
@@ -326,15 +314,6 @@ const exportReport = async () => {
             pageSize: 99999 // 导出所有数据
         }
 
-        const splitToArray = (value?: string) =>
-            value
-                ? value
-                    .replace(/，/g, ',')
-                    .split(',')
-                    .map(item => item.trim())
-                    .filter(item => item !== '')
-                : []
-
         exportParams.collegeNames = searchForm.collegeNames
         exportParams.teacherNos = splitToArray(inputInfo.value.teacherNos)
         exportParams.teacherNames = splitToArray(inputInfo.value.teacherNames)
@@ -397,9 +376,9 @@ onMounted(() => {
         getCollegeList()
     }
     if (userRole.value !== 'teacher') {
-        getSemesterList()
         getOrderList()
     }
+    getSemesterList()
 })
 </script>
 
