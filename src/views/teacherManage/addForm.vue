@@ -64,6 +64,7 @@ import { ref, reactive } from 'vue'
 import { useUserStore } from '@/store/modules/user'
 import type { FormInstance, FormRules } from 'element-plus'
 import { fetchAddTeacher } from '@/api/teacherMange';
+import { fetchGetCollegeList } from '@/api/misc';
 
 const emit = defineEmits<{
     (e: 'close'): void
@@ -106,6 +107,7 @@ const rules: FormRules = {
     ],
     password: [{ required: false, message: '请输入密码', trigger: 'blur' }]
 }
+const departmentOption = ref({})
 
 const handleCancel = () => {
     if (formRef.value) {
@@ -135,7 +137,13 @@ const handleSubmit = async () => {
     })
 }
 
+const getDepartmentOption = async () => {
+    let result = await fetchGetCollegeList()
+    departmentOption.value = result
+}
+
 onMounted(() => {
     Object.assign(formData, { ...defaultForm })
+    getDepartmentOption()
 })
 </script>
