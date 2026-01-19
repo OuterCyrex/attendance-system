@@ -56,7 +56,7 @@ declare namespace Api {
     }
 
     /** 用户信息 */
-    interface userInfo: {
+    interface userInfo {
       realName: string
       phone: string
       id: string
@@ -65,7 +65,9 @@ declare namespace Api {
       email: string
       username: string
     }
+  }
 
+  namespace Class {
     interface GetClassListParams {
       className: string
       teacherNo: string
@@ -76,47 +78,50 @@ declare namespace Api {
     }
 
     interface classInfo {
+      id: string
       className: string
       teacherNo: string
       count: number
       grade: string
       major: string
+      createTime: any
+      updateTime: any
+      isDelete: any
+      teacherName: string
+      collegeName: string
     }
-
-    interface GetScheduleParams {
-      teacherNo: number
+  }
+  namespace Schedule {
+    interface GetScheduleListParams {
+      teacherNo: string
       className: string
       courseName: string
-      weekday: number
-      semester: string
-      schoolYear: string
+      teacherName: string
+      courseType: string
+      semesterName: string
+      collegeName: string
       pageNum: number
       pageSize: number
     }
 
     interface scheduleInfo {
-      id: number
+      id: string
+      courseNo: string
+      orderNo: string
       courseName: string
-      teacherNo: number
-      className: string
-      weekday: number
-      startTime: {
-        hour: number
-        minute: number
-        second: number
-        nano: number
-      }
-      endTime: {
-        hour: number
-        minute: number
-        second: number
-        nano: number
-      }
+      weekday: string
+      expectedCount: number
+      weekRange: string
+      startPeriod: number
+      endPeriod: number
       classroom: string
-      semester: string
-      schoolYear: string
+      teacherName: string
+      courseType: string
+      semesterName: string
       createTime: string
       updateTime: string
+      classNames: string[]
+      inClassTime: boolean
     }
 
     interface attendanceInfo {
@@ -131,7 +136,9 @@ declare namespace Api {
       status: number
       remark: string
     }
+  }
 
+  namespace Teacher {
     interface queryTeacherParams {
       teacherNo: string
       department: string
@@ -167,10 +174,52 @@ declare namespace Api {
       collegeNo: string
     }
 
+    interface teacherInfo {
+      id: string
+      username: string
+      realName: string
+      teacherNo: string
+      phone: string
+      email: string
+      department: string
+      identity: any
+      status: number
+    }
+  }
+  
+  namespace Misc { 
     interface collegeInfo {
       id: string
       name: string
       collegeNo: string
     }
+
+    interface semesterInfo {
+      id: string
+      semesterName: string
+      startDate: string
+      endDate: string
+      weeks: number
+      createTime: string
+      updateTime: string
+    }
   }
+
+  namespace Chart {
+    interface getClassChartParams {
+      collegeName: string
+      teacherName: string
+      className: string
+      granularity: number
+      semesterName: string
+    }
+    
+    interface getCourseChartParams {
+      teacherName: string
+      orderNo: string
+      semesterName: string
+      granularity: number
+    }
+  }
+
 }

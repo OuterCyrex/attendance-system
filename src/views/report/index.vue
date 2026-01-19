@@ -139,9 +139,9 @@
 
 <script lang="ts" setup>
 import { Download } from '@element-plus/icons-vue'
-import { fetchQueryAttendanceReport, fetchAttendanceReportExcel, fetchSemesterList, fetchOrderList } from '@/api/report'
+import { fetchQueryAttendanceReport, fetchAttendanceReportExcel } from '@/api/report'
 import { useUserStore } from '@/store/modules/user'
-import { fetchGetCollegeList } from '@/api/misc'
+import { fetchGetCollegeList, fetchSemesterList, fetchOrderList } from '@/api/misc'
 
 const currentPage = ref(1)
 const total = ref(0)

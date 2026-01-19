@@ -7,3 +7,15 @@ export function fetchGetCollegeList() {
       showErrorMessage: true,
     })
   }
+
+  export const fetchSemesterList = () => {
+    return request.get<any>({
+        url: '/semester/names',
+    })
+}
+
+export const fetchOrderList = () => {
+    return request.get<any>({
+        url:'/courseSchedule/getAllClassNumbers'
+    })
+}

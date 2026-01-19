@@ -22,10 +22,10 @@ export function fetchTemplate(token: string) {
  * @param params 参数
  * @returns 退出登录响应
  */
-export function fetchGetScheduleList(token: string, params: GetScheduleListParams) {
+export function fetchGetScheduleList(params: Api.Schedule.GetScheduleListParams) {
   return request.post<any>({
     url: '/courseSchedule/query',
-    data:{courseScheduleQueryDTO:{...params}},
+    data: params,
     showErrorMessage: true
   })
 }

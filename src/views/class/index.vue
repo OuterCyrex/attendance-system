@@ -17,18 +17,14 @@
             </el-select>
           </div>
 
-          <div class="flex items-center" v-if="userInfo.role === 'college_admin'">
-            <div class="mr-2 text-gray-500">辅导员：</div>
-            <el-select v-model="collegeValue" placeholder="请选择辅导员" style="width: 160px">
-              <el-option v-for="item in collegeOptions" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
+          <div class="flex items-center" v-if="userInfo.role === 'admin'">
+            <div class="mr-2 text-gray-500">学院：</div>
+            <collegeSelect @selected="handleCollegeSelected" :reset="resetFlag"/>
           </div>
 
-          <div class="flex items-center" v-if="hasPermission">
-            <div class="mr-2 text-gray-500">学院：</div>
-            <el-select v-model="collegeValue" placeholder="请选择学院" style="width: 160px">
-              <el-option v-for="item in collegeOptions" :key="item.id" :label="item.name" :value="item.name" />
-            </el-select>
+          <div class="flex items-center" v-if="userInfo.role !== 'teacher'">
+            <div class="mr-2 text-gray-500">辅导员：</div>
+            <teacherSelect :collegeNo="collegeNo" :disabled="collegeNo === ''" @selected="handleTeacherSelected" :reset="resetFlag" />
           </div>
 
           <div class="ml-auto flex gap-2">
@@ -38,7 +34,7 @@
         </div>
       </ElCard>
 
-      <ElCard class="col-span-12 mt-4" shadow="never" v-if="hasPermission">
+      <ElCard class="col-span-12 mt-4" shadow="never" v-if="userInfo.role === 'admin'">
         <div class="operation-buttons flex">
           <el-button type="primary" :icon="Plus" @click="addDialogVisible = true">新增班级</el-button>
           <el-upload class="mx-4" :auto-upload="false" :show-file-list="false" :on-change="handleFileChange"
@@ -68,7 +64,7 @@
               <el-button type="primary" link @click="goToCourseDetail(scope.row)"> 查看 </el-button>
             </template>
           </el-table-column>
-          <el-table-column label="操作" v-if="hasPermission">
+          <el-table-column label="操作" v-if="userInfo.role === 'admin'">
             <template #default="scope">
               <el-button type="primary" :icon="Edit" link size="small" @click="showEditForm(scope.row)"> 编辑 </el-button>
               <el-popconfirm title="确认删除该班级吗？" confirm-button-text="确认" cancel-button-text="取消"
@@ -105,10 +101,11 @@ import { useUserStore } from '@/store/modules/user'
 import { majorOptions, gradeOptions } from './select'
 import classFormDialog from './classForm.vue'
 import type { UploadFile } from 'element-plus'
-import { fetchGetCollegeList } from '@/api/misc'
+import collegeSelect from '@/components/select/collegeSelect.vue'
+import teacherSelect from '@/components/select/teacherSelect.vue'
 
 const classList = ref([])
-const collegeOptions = ref<Array<collegeInfo>>([])
+const collegeOptions = ref<Array<Api.Misc.collegeInfo>>([])
 const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -120,25 +117,31 @@ const { getUserInfo: userInfo } = userStore
 
 const gradeValue = ref<string>('')
 const majorValue = ref<string>('')
-const teacherValue = ref<string>('')
-const collegeValue = ref<string>('')
-const ALLOWED_ROLES = ['admin']
 
-const hasPermission = computed(() => {
-  if (!userInfo || !userInfo.role) return false
+const collegeName = ref<string>('')
+const collegeNo = ref<string>('')
+const resetFlag = ref(false)
+const handleCollegeSelected = async (college: Api.Misc.collegeInfo) => {
+  collegeName.value = college.name
+  collegeNo.value = college.collegeNo
+}
 
-  return ALLOWED_ROLES.includes(userInfo.role)
-})
+const teacherName = ref<string>('')
+const teacherNo = ref<string>('')
+const handleTeacherSelected = async (teacher: Api.Teacher.teacherInfo) => {
+  teacherName.value = teacher.realName
+  teacherNo.value = teacher.teacherNo
+}
 
 const addDialogVisible = ref<boolean>(false)
 const editDialogVisible = ref<boolean>(false)
 const editId = ref<string>('')
-const editFormData = ref<classInfo>({
+const editFormData = ref<Api.Class.classInfo>({
   className: '',
   grade: '',
   major: '',
   count: 30
-})
+} as any)
 
 const router = useRouter()
 function goToDetail(id: string) {
@@ -173,7 +176,7 @@ const downloadTemplate = async () => {
   URL.revokeObjectURL(a.href)
 }
 
-const showEditForm = (row: classInfo) => {
+const showEditForm = (row: Api.Class.classInfo) => {
   editId.value = row.id
   editFormData.value = row
   editDialogVisible.value = true
@@ -186,17 +189,10 @@ const getClassList = async (tid?: string) => {
     majors: [majorValue.value],
     pageNum: currentPage.value,
     pageSize: pageSize.value,
-    collegeName: '',
+    collegeName: collegeName.value,
+    teacherNo: teacherNo.value,
   }
-  switch (userInfo.role) {
-    case 'college_admin':
-      queryParams['collegeName'] = userInfo.collegeName
-      break
-    case 'admin':
-      queryParams['collegeName'] = collegeValue.value
-      break
-  }
-  const data = await fetchGetClassList(token, queryParams)
+  const data = await fetchGetClassList(queryParams)
   classList.value = data.records
   total.value = data.total
   tableLoading.value = false
@@ -207,32 +203,31 @@ const handleFileChange = async (uploadFile: UploadFile) => {
   if (!file) return
 
   await fetchImportClass(token, file)
-  getClassList()
-}
-
-const getCollegeList = async () => {
-  tableLoading.value = true
-  const data = await fetchGetCollegeList()
-  collegeOptions.value = data
-  tableLoading.value = false
+  await getClassList()
 }
 
 const resetSearch = async () => {
+  resetFlag.value = !resetFlag.value
   gradeValue.value = ''
   majorValue.value = ''
-  teacherValue.value = ''
-  collegeValue.value = ''
-  getClassList()
+  teacherNo.value = ''
+  teacherName.value = ''
+  collegeNo.value = ''
+  collegeName.value = ''
+
+  if (userInfo.role === 'college_admin') collegeNo.value = userInfo.collegeNo || ''
+  if (userInfo.role === 'teacher') teacherNo.value = userInfo.teacherNo || ''
+  await getClassList()
 }
 
-const AddClass = async (record: classInfo) => {
+const AddClass = async (record: Api.Class.classInfo) => {
   const data = await fetchAddClass(token, userInfo.teacherNo, record)
-  getClassList()
+  await getClassList()
 }
 
-const UpdateClass = async (record: classInfo) => {
+const UpdateClass = async (record:  Api.Class.classInfo) => {
   const data = await fetchUpdateClass(token, editId.value, record)
-  getClassList()
+  await getClassList()
 }
 
 const DeleteClass = async (id: string) => {
@@ -240,30 +235,7 @@ const DeleteClass = async (id: string) => {
   getClassList()
 }
 
-const getTeacherList = async () => {
-        tableLoading.value = true
-
-        const params = {
-            pageNum: currentPage.value,
-            pageSize: pageSize.value,
-            collegeNo: userInfo.collegeNo || '',
-            teacherNo: searchForm.teacherNo,
-            realName: searchForm.realName,
-            phone: searchForm.phone,
-            department: searchForm.department
-        }
-        try {
-            const data = await fetchGetTeacherList()
-            teacherList.value = data
-        } catch {
-
-        }
-        tableLoading.value = false
-    }
-
 onMounted(() => {
-  getClassList()
-  if (userInfo.role === 'admin') getCollegeList()
-  if (userInfo.role === 'college_admin') getTeacherList()
+  resetSearch()
 })
 </script>

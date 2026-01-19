@@ -22,13 +22,10 @@ export function fetchTemplate(token: string) {
  * @param string token 用户令牌
  * @returns 退出登录响应
  */
-export function fetchGetClassList(token: string, params: GetClassListParams) {
-  return request.post<void>({
+export function fetchGetClassList(params: GetClassListParams) {
+  return request.post<any>({
     url: '/class/query',
     params: params,
-    headers: {
-      'Authorization': 'Bearer ' + token
-    },
     showErrorMessage: true,
   })
 }
