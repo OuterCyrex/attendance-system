@@ -63,13 +63,13 @@ export type SelectOption = {
     value: string
 }
 
-export type SubmitScheduleData = scheduleInfo
+export type SubmitScheduleData = Api.Schedule.scheduleInfo
 
 const props = withDefaults(
     defineProps<{
         visible: boolean
         mode?: 'add' | 'edit'
-        formData?: Partial<scheduleInfo>
+        formData?: Partial<Api.Schedule.scheduleInfo>
         weekOptions: SelectOption[]
     }>(),
     {
@@ -88,7 +88,7 @@ const dialogVisible = computed({
     set: (val) => emit('update:visible', val)
 })
 
-const defaultForm: scheduleInfo = {
+const defaultForm: Api.Schedule.scheduleInfo = {
     courseNo: '',
     courseName: '',
     weekday: '',
@@ -100,7 +100,7 @@ const defaultForm: scheduleInfo = {
 }
 
 const formRef = ref<FormInstance>()
-const form = reactive<scheduleInfo>({ ...defaultForm })
+const form = reactive<Api.Schedule.scheduleInfo>({ ...defaultForm })
 
 const rules: FormRules = {
     courseNo: [{ required: true, message: '请输入课程号', trigger: 'blur' }],

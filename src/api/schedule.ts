@@ -52,7 +52,7 @@ export function fetchImportSchedule(token: string, file: File) {
   })
 }
 
-export function fetchAddSechedule(token:string, teacherNo:number, params:any) {
+export function fetchAddSechedule(teacherNo: string, params:any) {
   return request.post({
     url: '/courseSchedule/add',
     params: { ...params, teacherNo },
@@ -69,7 +69,7 @@ export function fetchImportClass(token: string, file: File) {
   })
 }
 
-export function fetchUpdateSchedule(token: string, id: string, params: schedule) {
+export function fetchUpdateSchedule(token: string, id: string, params: Api.Schedule.scheduleInfo) {
   return request.put<void>({
     url: `/courseSchedule/update/${id}`,
     params,
@@ -87,7 +87,7 @@ export function fetchDeleteSchedule(token: string, id: string) {
 }
 
 export function fetchGetSchedule(token: string, id: string) {
-  return request.get<scheduleInfo>({
+  return request.get<Api.Schedule.scheduleInfo>({
     url: `courseSchedule/get/${id}`,
     showErrorMessage: true,
   })

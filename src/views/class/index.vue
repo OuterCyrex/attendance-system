@@ -4,6 +4,11 @@
       <ElCard class="col-span-12" shadow="never">
         <div class="flex items-center gap-4">
           <div class="flex items-center">
+              <div class="mr-2 text-gray-500">班级名称：</div>
+              <el-input v-model="className" placeholder="请输入课程名称" style="width: 200px" @keyup.enter="getClassList" />
+            </div>
+
+          <div class="flex items-center">
             <div class="mr-2 text-gray-500">年级：</div>
             <el-select v-model="gradeValue" placeholder="请选择年级" style="width: 160px">
               <el-option v-for="item in gradeOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -24,7 +29,7 @@
 
           <div class="flex items-center" v-if="userInfo.role !== 'teacher'">
             <div class="mr-2 text-gray-500">辅导员：</div>
-            <teacherSelect :collegeNo="collegeNo" :disabled="collegeNo === ''" @selected="handleTeacherSelected" :reset="resetFlag" />
+            <teacherSelect :collegeName="collegeName" :disabled="collegeNo === ''" @selected="handleTeacherSelected" :reset="resetFlag" />
           </div>
 
           <div class="ml-auto flex gap-2">
@@ -112,11 +117,12 @@ const pageSize = ref(10)
 const tableLoading = ref(false)
 
 const userStore = useUserStore()
-const { token } = userStore
+const { getToken: token } = userStore
 const { getUserInfo: userInfo } = userStore
 
 const gradeValue = ref<string>('')
 const majorValue = ref<string>('')
+const className = ref<string>('')
 
 const collegeName = ref<string>('')
 const collegeNo = ref<string>('')
@@ -191,6 +197,7 @@ const getClassList = async (tid?: string) => {
     pageSize: pageSize.value,
     collegeName: collegeName.value,
     teacherNo: teacherNo.value,
+    className: className.value,
   }
   const data = await fetchGetClassList(queryParams)
   classList.value = data.records
@@ -214,6 +221,7 @@ const resetSearch = async () => {
   teacherName.value = ''
   collegeNo.value = ''
   collegeName.value = ''
+  className.value = ''
 
   if (userInfo.role === 'college_admin') collegeNo.value = userInfo.collegeNo || ''
   if (userInfo.role === 'teacher') teacherNo.value = userInfo.teacherNo || ''
@@ -221,7 +229,7 @@ const resetSearch = async () => {
 }
 
 const AddClass = async (record: Api.Class.classInfo) => {
-  const data = await fetchAddClass(token, userInfo.teacherNo, record)
+  const data = await fetchAddClass(token, userInfo.teacherNo!, record)
   await getClassList()
 }
 

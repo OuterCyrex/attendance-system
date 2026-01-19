@@ -34,7 +34,7 @@ import { ElMessage } from 'element-plus'
 import { fetchGetTeacherList } from '@/api/teacherMange';
 
 const props = defineProps<{
-    collegeNo: string
+    collegeName: string
     disabled?: boolean
     reset?: boolean
 }>()
@@ -76,7 +76,7 @@ const handleCurrentChange = async (val: number) => {
 
 const getTeacherList = async () => {
     tableLoading.value = true
-    const data = await fetchGetTeacherList({collegeNo: props.collegeNo, pageSize: 10, pageNum: currentPage.value})
+    const data = await fetchGetTeacherList({department: props.collegeName, pageSize: 10, pageNum: currentPage.value} as any)
     teacherList.value = data.records
     total.value = data.total
     tableLoading.value = false
@@ -94,9 +94,9 @@ watch(
 )
 
 watch(
-    () => props.collegeNo,
-    async (newCollegeNo, oldCollegeNo) => {
-        if (newCollegeNo !== oldCollegeNo) {
+    () => props.collegeName,
+    async (newCollegeName, oldCollegeName) => {
+        if (newCollegeName !== oldCollegeName) {
             currentPage.value = 1
             selectedItem.value = ''
             await getTeacherList()

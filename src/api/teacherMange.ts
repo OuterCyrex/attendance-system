@@ -2,14 +2,14 @@ import request from '@/utils/http'
 import axios from 'axios'
 const { VITE_API_URL, VITE_WITH_CREDENTIALS } = import.meta.env
 
-export const fetchGetTeacherList = (param: queryTeacherParams) => {
+export const fetchGetTeacherList = (param: Api.Teacher.queryTeacherParams) => {
     return request.post<any>({
         data: param,
         url: '/teacher/teachers/query'
     })
 }
 
-export const fetchUpdateTeacher = (id: string, param: updateTeacherParams) => {
+export const fetchUpdateTeacher = (id: string, param: Api.Teacher.updateTeacherParams) => {
     return request.put<void>({
         data: param,
         url: `/teacher/teachers/${id}`,
@@ -18,7 +18,7 @@ export const fetchUpdateTeacher = (id: string, param: updateTeacherParams) => {
     })
 }
 
-export const fetchAddTeacher = (param: addTeacherParams) => {
+export const fetchAddTeacher = (param: Api.Teacher.addTeacherParams) => {
     return request.post<void>({
         data: param,
         params: {collegeNo: param.collegeNo},

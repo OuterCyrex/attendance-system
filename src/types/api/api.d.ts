@@ -46,10 +46,12 @@ declare namespace Api {
       token: string
       userInfo: {
         realName: string
+        role: string
         phone: string
         id: string
         department: string
         teacherNo: string
+        collegeNo: string
         email: string
         username: string
       }
@@ -58,10 +60,12 @@ declare namespace Api {
     /** 用户信息 */
     interface userInfo {
       realName: string
+      role: string
       phone: string
       id: string
       department: string
       teacherNo: string
+      collegeNo: string
       email: string
       username: string
     }
@@ -71,8 +75,9 @@ declare namespace Api {
     interface GetClassListParams {
       className: string
       teacherNo: string
-      grade: string
-      major: string
+      grades: string[]
+      majors: string[]
+      collegeName: string
       pageNum: number
       pageSize: number
     }
@@ -213,7 +218,7 @@ declare namespace Api {
       granularity: number
       semesterName: string
     }
-    
+
     interface getCourseChartParams {
       teacherName: string
       orderNo: string

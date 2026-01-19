@@ -22,7 +22,7 @@ export function fetchTemplate(token: string) {
  * @param string token 用户令牌
  * @returns 退出登录响应
  */
-export function fetchGetClassList(params: GetClassListParams) {
+export function fetchGetClassList(params: Api.Class.GetClassListParams) {
   return request.post<any>({
     url: '/class/query',
     params: params,
@@ -55,7 +55,7 @@ export function fetchImportClass(token: string, file: File) {
  * @param params 班级参数
  * @returns 添加响应
  */
-export function fetchAddClass(token: string, teacherNo: string,  params: classInfo) {
+export function fetchAddClass(token: string, teacherNo: string,  params: Api.Class.classInfo) {
   return request.post<void>({
     url: '/class/add',
     data: {...params, teacherNo},
@@ -91,7 +91,7 @@ export function fetchDeleteClass(token: string, id: string) {
  * @param params 班级信息
  * @returns 响应
  */
-export function fetchUpdateClass(token: string, id: string, params: classInfo) {
+export function fetchUpdateClass(token: string, id: string, params: Api.Class.classInfo) {
   return request.put<void>({
     url: `/class/update/${id}`,
     params,

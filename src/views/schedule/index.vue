@@ -39,7 +39,7 @@
 
             <div class="flex items-center" v-if="userInfo.role !== 'teacher'">
               <div class="mr-2 text-gray-500">辅导员：</div>
-              <teacherSelect :collegeNo="collegeNo" :disabled="collegeNo === ''" @selected="handleTeacherSelected"
+              <teacherSelect :collegeName="collegeName" :disabled="collegeNo === ''" @selected="handleTeacherSelected"
                 :reset="resetFlag" />
             </div>
 
@@ -349,7 +349,7 @@ const handleFileChange = async (uploadFile: UploadFile) => {
 }
 
 const addSchedule = async (record: Api.Schedule.scheduleInfo) => {
-  const data = await fetchAddSechedule(token, userInfo.teacherNo, record)
+  const data = await fetchAddSechedule(userInfo.teacherNo!, record)
   loadData()
 }
 

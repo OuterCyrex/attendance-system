@@ -59,7 +59,7 @@ export const useUserStore = defineStore(
     // 锁屏密码
     const lockPassword = ref('')
     // 用户信息
-    const info = ref<Partial<Api.Auth.UserInfo>>({})
+    const info = ref<Partial<Api.Auth.userInfo>>({})
     // 搜索历史记录
     const searchHistory = ref<AppRouteRecord[]>([])
     // 访问令牌
@@ -74,6 +74,8 @@ export const useUserStore = defineStore(
     // 计算属性：获取工作台状态
     const getWorktabState = computed(() => useWorktabStore().$state)
 
+    const getToken = computed(() => accessToken.value)
+
     const role = computed(() => {
       return info.value.role || ''
     })
@@ -82,7 +84,7 @@ export const useUserStore = defineStore(
      * 设置用户信息
      * @param newInfo 新的用户信息
      */
-    const setUserInfo = (newInfo: Api.Auth.UserInfo) => {
+    const setUserInfo = (newInfo: Api.Auth.userInfo) => {
       info.value = newInfo
     }
 
@@ -146,7 +148,7 @@ export const useUserStore = defineStore(
      */
     const logOut = () => {
       // 保存当前用户 ID，用于下次登录时判断是否为同一用户
-      const currentUserId = info.value.userId
+      const currentUserId = info.value.id
       if (currentUserId) {
         localStorage.setItem(StorageConfig.LAST_USER_ID_KEY, String(currentUserId))
       }
@@ -186,7 +188,7 @@ export const useUserStore = defineStore(
      */
     const checkAndClearWorktabs = () => {
       const lastUserId = localStorage.getItem(StorageConfig.LAST_USER_ID_KEY)
-      const currentUserId = info.value.userId
+      const currentUserId = info.value.id
 
       // 无法获取当前用户 ID，跳过检查
       if (!currentUserId) return
@@ -219,6 +221,7 @@ export const useUserStore = defineStore(
       getUserInfo,
       getSettingState,
       getWorktabState,
+      getToken,
       setUserInfo,
       setLoginStatus,
       setLanguage,

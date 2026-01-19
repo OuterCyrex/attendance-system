@@ -78,7 +78,7 @@ const handleCurrentChange = async (val: number) => {
 
 const getClassList = async () => {
     tableLoading.value = true
-    const data = await fetchGetClassList({teacherNo: props.teacherNo})
+    const data = await fetchGetClassList({teacherNo: props.teacherNo} as any)
     classList.value = data.records
     total.value = data.total
     tableLoading.value = false

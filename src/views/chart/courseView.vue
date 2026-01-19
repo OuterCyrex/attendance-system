@@ -13,7 +13,7 @@
 
                     <div v-if="userInfo.role !== 'teacher'" class="flex items-center">
                         <span class="mr-2 text-gray-500 text-sm">教师名称:</span>
-                        <teacherSelect @selected="handleTeacherSelect" :collegeNo="collegeNo"
+                        <teacherSelect @selected="handleTeacherSelect" :collegeName="collegeName"
                             :disabled="collegeNo === ''" :reset="resetFlag" />
                     </div>
 

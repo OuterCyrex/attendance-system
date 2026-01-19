@@ -43,7 +43,7 @@ export type SelectOption = {
     value: string
 }
 
-export type SubmitClassData = classInfo & {
+export type SubmitClassData = Api.Class.classInfo & {
     id?: string | number
 }
 
@@ -52,7 +52,7 @@ const props = withDefaults(
         visible: boolean
         mode?: 'add' | 'edit'
         id?: string | number
-        formData?: Partial<classInfo>
+        formData?: Partial<Api.Class.classInfo>
         majorOptions: SelectOption[]
         gradeOptions: SelectOption[]
     }>(),
@@ -72,15 +72,15 @@ const dialogVisible = computed({
     set: (val) => emit('update:visible', val)
 })
 
-const defaultForm: classInfo = {
+const defaultForm: Api.Class.classInfo = {
     className: '',
     grade: '',
     major: '',
     count: 30
-}
+} as any
 
 const formRef = ref<FormInstance>()
-const form = reactive<classInfo>({ ...defaultForm })
+const form = reactive<Api.Class.classInfo>({ ...defaultForm })
 
 const rules: FormRules = {
     className: [{ required: true, message: '请输入班级名称', trigger: 'blur' }],
