@@ -2,7 +2,7 @@
     <div class="w-full mb-6">
         <ElCard shadow="hover" class="rounded-lg overflow-hidden px-3">
             <div class="flex flex-col gap-3">
-                <h1 class="text-xl font-bold text-gray-800 flex items-center gap-3">
+                <h1 class="text-xl font-bold flex items-center gap-3">
                     <el-icon class="text-blue-500">
                         <User />
                     </el-icon>
@@ -34,12 +34,12 @@
                         <div class="space-y-4">
                             <div class="flex items-start">
                                 <span class="w-24 text-gray-500 font-medium">用户名：</span>
-                                <span class="flex-1 text-gray-800">{{ userInfo.username || '-' }}</span>
+                                <span class="flex-1">{{ userInfo.username || '-' }}</span>
                             </div>
 
                             <div class="flex items-start">
                                 <span class="w-24 text-gray-500 font-medium">学院：</span>
-                                <span class="flex-1 text-gray-800">{{ userInfo.department || '-' }}</span>
+                                <span class="flex-1 ">{{ userInfo.department || '-' }}</span>
                             </div>
 
                             <div class="flex items-start">
@@ -51,12 +51,12 @@
 
                             <div class="flex items-start">
                                 <span class="w-24 text-gray-500 font-medium">手机号码：</span>
-                                <span class="flex-1 text-gray-800">{{ userInfo.phone || '-' }}</span>
+                                <span class="flex-1 ">{{ userInfo.phone || '-' }}</span>
                             </div>
 
                             <div class="flex items-start">
                                 <span class="w-24 text-gray-500 font-medium">电子邮箱：</span>
-                                <span class="flex-1 text-gray-800 truncate" :title="userInfo.email">
+                                <span class="flex-1 truncate" :title="userInfo.email">
                                     {{ userInfo.email || '-' }}
                                 </span>
                             </div>
