@@ -80,6 +80,10 @@ export const useUserStore = defineStore(
       return info.value.role || ''
     })
 
+    const isTeacher = computed(() => {
+      return info.value.role === 'teacher'
+    })
+
     /**
      * 设置用户信息
      * @param newInfo 新的用户信息
@@ -139,6 +143,10 @@ export const useUserStore = defineStore(
       if (newRefreshToken) {
         refreshToken.value = newRefreshToken
       }
+    }
+
+    const setRole = (role: string) => {
+      info.value.role = role
     }
 
     /**
@@ -231,7 +239,9 @@ export const useUserStore = defineStore(
       setToken,
       logOut,
       checkAndClearWorktabs,
-      role
+      role,
+      isTeacher,
+      setRole
     }
   },
   {

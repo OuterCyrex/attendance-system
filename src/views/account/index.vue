@@ -18,11 +18,17 @@
             <div class="px-2 py-2">
                 <div class="space-y-6">
                     <div class="rounded-lg p-3">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                            <el-icon class="text-gray-500">
-                                <InfoFilled />
-                            </el-icon>
-                            基础信息
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <el-icon class="text-gray-500">
+                                    <InfoFilled />
+                                </el-icon>
+                                基础信息
+                            </div>
+                            <div class="flex gap-1">
+                                <el-button type="primary" size="small" @click="isShow = true">编辑</el-button>
+                                <el-button type="primary" size="small" @click="isVisible = true">修改密码</el-button>
+                            </div>
                         </h3>
 
                         <div class="space-y-4">
@@ -59,15 +65,75 @@
                 </div>
             </div>
         </ElCard>
+        <div class="form-containers">
+            <accountForm v-model="isShow" :userInfo="userInfo" @save="handleSave" />
+            <passwordForm v-model="isVisible" @save="editPassword" />
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '@/store/modules/user'
 import { User, InfoFilled } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { fetchEditSelfInfo } from '@/api/account'
+import accountForm from './accountForm.vue'
+import passwordForm from './passwordForm.vue'
+import { fetchLogout } from '@/api/auth'
 
 const userStore = useUserStore()
-const userInfo = userStore.getUserInfo
+const { getToken: token } = userStore
+const { getUserInfo: userInfo } = storeToRefs(userStore)
+const isShow = ref(false)
+const isVisible = ref(false)
+const allowedFields = [
+    'username',
+    'realName',
+    'teacherNo',
+    'phone',
+    'email',
+    'status',
+    'department',
+    'attendanceThreshold',
+    'enableEmailNotification'
+]
+const router = useRouter()
+
+
+const handleSave = async (params: Api.Auth.userInfo) => {
+    const filteredParams: Partial<Api.Auth.userInfo> = {};
+    for (const key of allowedFields) {
+        const value = params[key];
+        filteredParams[key] = value;
+    }
+    await fetchEditSelfInfo(filteredParams);
+
+    const updatedUserInfo = { ...userStore.getUserInfo, ...filteredParams };
+    userStore.setUserInfo(updatedUserInfo);
+
+    isShow.value = false;
+    ElMessage.success('修改成功');
+}
+
+const editPassword = async (data: { password: string }) => {
+    const { password } = data
+
+    const params = {
+        username: userInfo.value.username,
+        realName: userInfo.value.realName,
+        teacherNo: userInfo.value.teacherNo,
+        password: password
+    }
+
+    await fetchEditSelfInfo(params);
+    if (token) {
+        await fetchLogout(token)
+    }
+    isShow.value = false;
+    userStore.logOut()
+    ElMessage.success('修改成功');
+}
 
 console.log(userInfo)
 </script>
