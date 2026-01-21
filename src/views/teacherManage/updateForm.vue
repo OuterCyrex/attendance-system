@@ -104,7 +104,7 @@ onMounted(() => {
         return
     }
     Object.assign(form, { ...defaultForm, ...props.formData })
-    getDepartmentOption()
+    if (userInfo.role === 'admin') getDepartmentOption()
 })
 
 const handleCancel = () => {

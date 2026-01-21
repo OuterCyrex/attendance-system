@@ -16,6 +16,7 @@
                     <div class="text-sm text-gray-600 space-y-2">
                         <div><span class="font-medium">课程名称：</span>{{ schedule.courseName }}</div>
                         <div><span class="font-medium">课程号：</span>{{ schedule.courseNo }}</div>
+                        <div><span class="font-medium">任课教师：</span>{{ schedule.teacherName }}</div>
                         <div><span class="font-medium">周次范围：</span>{{ schedule.weekRange }}</div>
                         <div><span class="font-medium">上课时间：</span>第{{ schedule.startPeriod }}节 - 第{{ schedule.endPeriod
                         }}节
@@ -130,7 +131,8 @@ const schedule = ref({
     endPeriod: 0,
     classroom: "",
     createTime: "",
-    updateTime: ""
+    updateTime: "",
+    teacherName: ''
 
 })
 const attendanceList = ref<attendanceInfo[]>([])

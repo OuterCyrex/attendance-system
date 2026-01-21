@@ -1,63 +1,73 @@
 <template>
     <div class="w-full mb-6">
-        <el-card shadow="never" class="shadow-sm rounded-lg border-none" style="min-height: 800px">
-            <template #header>
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-4">
-                        <div class="flex flex-col">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xl font-bold text-gray-800">{{ userInfo.realName }}</span>
+        <ElCard shadow="hover" class="rounded-lg overflow-hidden px-3">
+            <div class="flex flex-col gap-3">
+                <h1 class="text-xl font-bold text-gray-800 flex items-center gap-3">
+                    <el-icon class="text-blue-500">
+                        <User />
+                    </el-icon>
+                    {{ userInfo.realName }}
+                </h1>
+                <div class="flex flex-wrap gap-4 text-sm text-gray-500">
+                    <span>工号: </span>
+                    <span>{{ userInfo.teacherNo || userInfo.id }}</span>
+                </div>
+            </div>
+        </ElCard>
+        <ElCard shadow="never" class="mt-4">
+            <div class="px-2 py-2">
+                <div class="space-y-6">
+                    <div class="rounded-lg p-3">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <el-icon class="text-gray-500">
+                                <InfoFilled />
+                            </el-icon>
+                            基础信息
+                        </h3>
+
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="w-24 text-gray-500 font-medium">用户名：</span>
+                                <span class="flex-1 text-gray-800">{{ userInfo.username || '-' }}</span>
                             </div>
-                            <span class="text-sm text-gray-400 mt-2">
-                                工号: <span class="text-sm text-gray-400">{{ userInfo.id }}</span>
-                            </span>
+
+                            <div class="flex items-start">
+                                <span class="w-24 text-gray-500 font-medium">学院：</span>
+                                <span class="flex-1 text-gray-800">{{ userInfo.department || '-' }}</span>
+                            </div>
+
+                            <div class="flex items-start">
+                                <span class="w-24 text-gray-500 font-medium">权限：</span>
+                                <el-tag v-if="userInfo.role === 'teacher'" type="success">辅导员</el-tag>
+                                <el-tag v-if="userInfo.role === 'college_admin'" type="warning">学院管理员</el-tag>
+                                <el-tag v-if="userInfo.role === 'admin'" type="danger">学校管理员</el-tag>
+                            </div>
+
+                            <div class="flex items-start">
+                                <span class="w-24 text-gray-500 font-medium">手机号码：</span>
+                                <span class="flex-1 text-gray-800">{{ userInfo.phone || '-' }}</span>
+                            </div>
+
+                            <div class="flex items-start">
+                                <span class="w-24 text-gray-500 font-medium">电子邮箱：</span>
+                                <span class="flex-1 text-gray-800 truncate" :title="userInfo.email">
+                                    {{ userInfo.email || '-' }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </template>
-
-            <el-descriptions :column="3" border class="mt-2">
-                <el-descriptions-item label="用户名" label-class-name="bg-gray-50 font-bold text-gray-600">
-                    {{ userInfo.username }}
-                </el-descriptions-item>
-
-                <el-descriptions-item label="手机号码" label-class-name="bg-gray-50 font-bold text-gray-600">
-                    {{ userInfo.phone }}
-                </el-descriptions-item>
-
-                <el-descriptions-item label="电子邮箱" label-class-name="bg-gray-50 font-bold text-gray-600">
-                    <span class="truncate inline-block" :title="userInfo.email">
-                        {{ userInfo.email }}
-                    </span>
-                </el-descriptions-item>
-
-                <el-descriptions-item label="角色标识" label-class-name="bg-gray-50 font-bold text-gray-600">
-                    <div class="flex items-center gap-1.5">
-                        <el-tag v-if="userInfo.role === 'teacher'" type="success">辅导员</el-tag>
-                        <el-tag v-if="userInfo.role === 'college_admin'"  type="warning">学院管理员</el-tag>
-                        <el-tag v-if="userInfo.role === 'admin'" type="danger">学校管理员</el-tag>
-                    </div>
-                </el-descriptions-item>
-
-                <el-descriptions-item label="所属学院" label-class-name="bg-gray-50 font-bold text-gray-600">
-                    {{ userInfo.collegeName }}
-                </el-descriptions-item>
-
-                <el-descriptions-item label="工号" label-class-name="bg-gray-50 font-bold text-gray-600">
-                    {{ userInfo.id }}
-                </el-descriptions-item>
-
-                <el-descriptions-item label="备注说明" :span="3" label-class-name="bg-gray-50 font-bold text-gray-600">
-                    <span class="text-gray-500">暂无备注信息...</span>
-                </el-descriptions-item>
-            </el-descriptions>
-        </el-card>
+            </div>
+        </ElCard>
     </div>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '@/store/modules/user'
+import { User, InfoFilled } from '@element-plus/icons-vue'
 
 const userStore = useUserStore()
 const userInfo = userStore.getUserInfo
+
+console.log(userInfo)
 </script>

@@ -7,7 +7,7 @@ export const AttendanceClassRoutes: AppRouteRecord = {
   meta: {
     title: '班级考勤',
     isHide: true,
-    roles:['teacher']
+    roles:['teacher', 'admin', 'college_admin']
   }
 }
 
@@ -18,6 +18,6 @@ export const AttendanceScheduleRoutes: AppRouteRecord = {
   meta: {
     title: '课程考勤',
     isHide: true,
-    roles:['teacher']
+    roles:['teacher', 'admin', 'college_admin']
   }
 }

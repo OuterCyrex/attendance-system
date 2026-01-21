@@ -26,7 +26,7 @@
                 </div>
             </ElCard>
 
-            <ElCard class="col-span-12 mt-4" shadow="never">
+            <ElCard class="col-span-12 mt-4" shadow="never" v-if="userInfo.role === 'admin'">
                 <div class="operation-buttons flex">
                     <el-button type="primary" :icon="Plus" @click="addDialogVisible = true">新增教师</el-button>
                     <el-upload class="mx-4" :auto-upload="false" :show-file-list="false" :on-change="handleFileChange"

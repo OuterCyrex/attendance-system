@@ -88,6 +88,7 @@
           <el-table-column label="课程号" prop="courseNo" width="120" />
           <el-table-column label="课程名称" prop="courseName" min-width="150" />
           <el-table-column label="周次" prop="weekRange" width="120" />
+          <el-table-column label="任课教师" prop="teacherName" width="120" />
           <el-table-column label="上课星期">
             <template #default="scope"> {{ scope.row.weekday }} </template>
           </el-table-column>
