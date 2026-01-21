@@ -1,8 +1,8 @@
 <template>
-    <el-dialog v-model="dialogVisible" :title="titleMap[mode]" width="500px" :close-on-click-modal="false">
+    <el-dialog v-model="dialogVisible" title="更新班级" width="500px" :close-on-click-modal="false">
         <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
             <el-form-item label="班级名称" prop="className">
-                <el-input v-model="form.className" placeholder="请输入班级名称"/>
+                <el-input v-model="form.className" placeholder="请输入班级名称" />
             </el-form-item>
 
             <el-form-item label="年级" prop="grade">
@@ -24,9 +24,7 @@
 
         <template #footer>
             <el-button @click="dialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="handleSubmit">
-                {{ submitTextMap[mode] }}
-            </el-button>
+            <el-button type="primary" @click="handleSubmit">保存</el-button>
         </template>
     </el-dialog>
 </template>
@@ -36,35 +34,28 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
-import { Plus, Edit } from '@element-plus/icons-vue'
 
 export type SelectOption = {
     label: string
     value: string
 }
 
-export type SubmitClassData = Api.Class.classInfo & {
-    id?: string | number
-}
-
 const props = withDefaults(
     defineProps<{
         visible: boolean
-        mode?: 'add' | 'edit'
-        id?: string | number
-        formData?: Partial<Api.Class.classInfo>
+        id: string | number
+        formData: Partial<Api.Class.classInfo>
         majorOptions: SelectOption[]
         gradeOptions: SelectOption[]
     }>(),
     {
-        mode: 'add',
         formData: () => ({})
     }
 )
 
 const emit = defineEmits<{
     (e: 'update:visible', val: boolean): void
-    (e: 'submit', data: SubmitClassData): void
+    (e: 'submit', data: Api.Class.updateClassParams): void
 }>()
 
 const dialogVisible = computed({
@@ -73,6 +64,7 @@ const dialogVisible = computed({
 })
 
 const defaultForm: Api.Class.classInfo = {
+    id: '',
     className: '',
     grade: '',
     major: '',
@@ -89,33 +81,14 @@ const rules: FormRules = {
     count: [{ required: true, message: '请输入人数', trigger: 'blur' }]
 }
 
-const titleMap = {
-    add: '新增班级',
-    edit: '编辑班级'
-}
-
-const submitTextMap = {
-    add: '确认新增',
-    edit: '保存修改'
-}
-
 watch(
     () => dialogVisible.value,
     (visible) => {
         if (!visible) return
-
-        if (props.mode === 'edit') {
-            if (!props.id) {
-                console.warn('编辑模式下未传入 id')
-            }
-
-            Object.assign(form, {
-                ...defaultForm,
-                ...props.formData
-            })
-        } else {
-            Object.assign(form, { ...defaultForm })
-        }
+        Object.assign(form, {
+            ...defaultForm,
+            ...props.formData
+        })
     },
     { immediate: true }
 )
@@ -126,12 +99,7 @@ const handleSubmit = async () => {
     await formRef.value.validate((valid) => {
         if (!valid) return
 
-        const submitData: SubmitClassData =
-            props.mode === 'edit'
-                ? { id: props.id, ...form }
-                : { ...form }
-
-        emit('submit', submitData)
+        emit('submit', form)
         dialogVisible.value = false
     })
 }

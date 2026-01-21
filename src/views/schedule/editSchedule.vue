@@ -1,5 +1,5 @@
 <template>
-    <el-dialog v-model="dialogVisible" :title="titleMap[mode]" width="500px" :close-on-click-modal="false">
+    <el-dialog v-model="dialogVisible" title="更新课程" width="500px" :close-on-click-modal="false">
         <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
             <el-form-item label="课程号" prop="courseNo" class="flex-1">
                 <el-input v-model="form.courseNo" placeholder="例如: CS101" />
@@ -47,7 +47,7 @@
         <template #footer>
             <el-button @click="dialogVisible = false">取消</el-button>
             <el-button type="primary" @click="handleSubmit">
-                {{ submitTextMap[mode] }}
+                保存
             </el-button>
         </template>
     </el-dialog>
@@ -68,19 +68,17 @@ export type SubmitScheduleData = Api.Schedule.scheduleInfo
 const props = withDefaults(
     defineProps<{
         visible: boolean
-        mode?: 'add' | 'edit'
-        formData?: Partial<Api.Schedule.scheduleInfo>
+        formData: Partial<Api.Schedule.scheduleInfo>
         weekOptions: SelectOption[]
     }>(),
     {
-        mode: 'add',
         formData: () => ({})
     }
 )
 
 const emit = defineEmits<{
     (e: 'update:visible', val: boolean): void
-    (e: 'submit', data: SubmitScheduleData): void
+    (e: 'submit', data: Api.Schedule.updateClassParams): void
 }>()
 
 const dialogVisible = computed({
@@ -88,19 +86,26 @@ const dialogVisible = computed({
     set: (val) => emit('update:visible', val)
 })
 
-const defaultForm: Api.Schedule.scheduleInfo = {
-    courseNo: '',
-    courseName: '',
-    weekday: '',
-    weekRange: '',
-    startPeriod: 1,
-    endPeriod: 2,
-    classroom: '',
-    expectedCount: 0
+const defaultForm: Api.Schedule.updateClassParams = {
+  id: "",
+  courseNo: "",
+  orderNo: "",
+  courseName: "",
+  weekday: "",
+  expectedCount: 0,
+  weekRange: "",
+  startPeriod: 1,
+  endPeriod: 2,
+  classroom: "",
+  teacherName: "",
+  courseType: "",
+  semesterName: "",
+  createTime: "",
+  updateTime: ""
 }
 
 const formRef = ref<FormInstance>()
-const form = reactive<Api.Schedule.scheduleInfo>({ ...defaultForm })
+const form = reactive<Api.Schedule.updateClassParams>({ ...defaultForm })
 
 const rules: FormRules = {
     courseNo: [{ required: true, message: '请输入课程号', trigger: 'blur' }],
@@ -124,33 +129,14 @@ const rules: FormRules = {
     ]
 }
 
-const titleMap = {
-    add: '新增课程安排',
-    edit: '编辑排课'
-}
-
-const submitTextMap = {
-    add: '确认新增',
-    edit: '保存修改'
-}
-
 watch(
     () => dialogVisible.value,
     (visible) => {
         if (!visible) return
-
-        if (props.mode === 'edit') {
-            if (!props.id) {
-                console.warn('编辑模式下未传入 id')
-            }
-
             Object.assign(form, {
                 ...defaultForm,
                 ...props.formData
             })
-        } else {
-            Object.assign(form, { ...defaultForm })
-        }
     },
     { immediate: true }
 )
@@ -160,16 +146,8 @@ const handleSubmit = async () => {
 
     await formRef.value.validate((valid) => {
         if (!valid) return
-
-        const submitData: SubmitClassData =
-            props.mode === 'edit' ? { ...form, id: props.id } : { ...form }
-
-        emit('submit', submitData)
+        emit('submit', form)
         dialogVisible.value = false
     })
-}
-
-const handleCancel = () => {
-    dialogVisible.value = false
 }
 </script>

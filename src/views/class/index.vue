@@ -90,10 +90,9 @@
       </div>
     </div>
 
-    <classFormDialog v-model:visible="addDialogVisible" :majorOptions="majorOptions" :gradeOptions="gradeOptions"
+    <addClassDialog v-model:visible="addDialogVisible" :majorOptions="majorOptions" :gradeOptions="gradeOptions"
       @submit="AddClass" />
-    <classFormDialog v-model:visible="editDialogVisible" :majorOptions="majorOptions" :gradeOptions="gradeOptions"
-      mode="edit" :id="editId" @submit="UpdateClass" :formData="editFormData" />
+    <editClassDialog v-model:visible="editDialogVisible" :majorOptions="majorOptions" :gradeOptions="gradeOptions":id="editId" @submit="UpdateClass" :formData="editFormData" />
   </div>
 </template>
 
@@ -104,7 +103,8 @@ import { useRouter } from 'vue-router'
 import { fetchTemplate, fetchGetClassList, fetchImportClass, fetchAddClass, fetchDeleteClass, fetchUpdateClass } from '../../api/class'
 import { useUserStore } from '@/store/modules/user'
 import { majorOptions, gradeOptions } from './select'
-import classFormDialog from './classForm.vue'
+import editClassDialog from './editClass.vue'
+import addClassDialog from './addClass.vue'
 import type { UploadFile } from 'element-plus'
 import collegeSelect from '@/components/select/collegeSelect.vue'
 import teacherSelect from '@/components/select/teacherSelect.vue'
@@ -228,18 +228,18 @@ const resetSearch = async () => {
   await getClassList()
 }
 
-const AddClass = async (record: Api.Class.classInfo) => {
-  const data = await fetchAddClass(token, userInfo.teacherNo!, record)
+const AddClass = async (record: Api.Class.addClassParams) => {
+  const data = await fetchAddClass(userInfo.teacherNo!, record)
   await getClassList()
 }
 
-const UpdateClass = async (record:  Api.Class.classInfo) => {
-  const data = await fetchUpdateClass(token, editId.value, record)
+const UpdateClass = async (record:  Api.Class.updateClassParams) => {
+  const data = await fetchUpdateClass(editId.value, record)
   await getClassList()
 }
 
 const DeleteClass = async (id: string) => {
-  const data = await fetchDeleteClass(token, id)
+  const data = await fetchDeleteClass(id)
   getClassList()
 }
 

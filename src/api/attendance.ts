@@ -2,7 +2,7 @@ import request from '@/utils/http'
 import axios from 'axios'
 
 export function fetchGetAttendanceList(token: string, params:any) {
-    return request.post<Array<attendanceInfo>>({
+    return request.post<any>({
         url: '/attendance/queryAttendance',
         params,
         showErrorMessage: true
@@ -19,7 +19,7 @@ export function fetchManualAttendance(token: string, courseId: string) {
 }
 
 export function fetchGetAttendance(token: string, attendanceId: string) {
-    return request.get<attendanceInfo>({
+    return request.get<Api.Schedule.attendanceInfo>({
         url: `/attendance/get/${attendanceId}`,
         showErrorMessage: true
     })

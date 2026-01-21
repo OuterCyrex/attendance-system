@@ -53,7 +53,7 @@
                 <div class="flex-1">
                     <el-image :src="attendanceDetail.imageUrl" alt="考勤图片"
                         style="width: 100px; height: 100px; object-fit: cover"
-                        preview-src-list="[attendanceDetail.imageUrl]" />
+                        :preview-src-list="[attendanceDetail.imageUrl]" />
                 </div>
             </div>
 

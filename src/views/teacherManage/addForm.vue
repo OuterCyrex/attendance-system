@@ -72,7 +72,7 @@ const emit = defineEmits<{
 }>()
 
 const props = defineProps<{
-    departmentOption?: Array<collegeInfo>
+    departmentOption?: Array<Api.Misc.collegeInfo>
 }>()
 
 const localDialogVisible = ref(true)
@@ -80,7 +80,7 @@ const userStore = useUserStore()
 const { getUserInfo: currentUserInfo } = userStore
 
 const formRef = ref<FormInstance>()
-const defaultForm: addTeacherParams = {
+const defaultForm = {
     username: '',
     password: '123456',
     realName: '',
@@ -93,7 +93,7 @@ const defaultForm: addTeacherParams = {
     enableEmailNotification: 0,
     collegeNo: ''
 }
-const formData = reactive<addTeacherParams>(JSON.parse(JSON.stringify(defaultForm)));
+const formData = reactive(JSON.parse(JSON.stringify(defaultForm)));
 
 const rules: FormRules = {
     teacherNo: [{ required: true, message: '请输入教师工号', trigger: 'blur' }],
@@ -107,7 +107,7 @@ const rules: FormRules = {
     ],
     password: [{ required: false, message: '请输入密码', trigger: 'blur' }]
 }
-const departmentOption = ref({})
+const departmentOption = ref<Array<Api.Misc.collegeInfo>>([])
 
 const handleCancel = () => {
     if (formRef.value) {

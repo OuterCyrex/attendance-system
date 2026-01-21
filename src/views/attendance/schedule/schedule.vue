@@ -116,7 +116,7 @@ const route = useRoute()
 const recordId = route.params.id as string
 const tableLoading = ref(false)
 const buttonLoading = ref(false)
-const detailId = ref(0)
+const detailId = ref<string>('')
 const showDetailDialog = ref(false)
 
 const schedule = ref({
@@ -135,7 +135,7 @@ const schedule = ref({
     teacherName: ''
 
 })
-const attendanceList = ref<attendanceInfo[]>([])
+const attendanceList = ref<Api.Schedule.attendanceInfo[]>([])
 
 const getScheduleDetail = async () => {
     schedule.value = await fetchGetSchedule(token, recordId)
@@ -198,7 +198,6 @@ const checkTypeMap: Record<number, string> = {
     2: '手动',
 }
 
-/* ===== 生命周期 ===== */
 onMounted(() => {
     getScheduleDetail()
     getAttendanceList()

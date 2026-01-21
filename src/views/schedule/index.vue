@@ -151,9 +151,8 @@
           @size-change="handleSizeChange" />
       </div>
 
-      <scheduleFormDialog v-model:visible="addDialogVisible" :weekOptions="weekOptions" @submit="addSchedule"
-        mode="add" />
-      <scheduleFormDialog v-model:visible="editDialogVisible" :weekOptions="weekOptions" mode="edit" :id="editId"
+      <addScheduleDialog v-model:visible="addDialogVisible" :weekOptions="weekOptions" @submit="addSchedule"/>
+      <editScheduleDialog v-model:visible="editDialogVisible" :weekOptions="weekOptions":id="editId"
         @submit="updateSchedule" :formData="editFormData" />
     </div>
   </div>
@@ -166,7 +165,8 @@ import { useRouter } from 'vue-router'
 import { fetchImportSchedule, fetchTemplate, fetchGetScheduleList, fetchAddSechedule, fetchUpdateSchedule, fetchDeleteSchedule, fetchGetScheduleListByCourse } from '../../api/schedule'
 import { useUserStore } from '@/store/modules/user'
 import { weekOptions } from './select'
-import scheduleFormDialog from './scheduleForm.vue'
+import editScheduleDialog from './editSchedule.vue'
+import addScheduleDialog from './addSchedule.vue'
 import { UploadFile } from 'element-plus'
 import { useRoute } from 'vue-router'
 import { fetchClassDetail } from '@/api/class'
@@ -345,11 +345,11 @@ const handleFileChange = async (uploadFile: UploadFile) => {
   const file = uploadFile.raw
   if (!file) return
 
-  await fetchImportSchedule(token, file)
+  await fetchImportSchedule(file)
   loadData()
 }
 
-const addSchedule = async (record: Api.Schedule.scheduleInfo) => {
+const addSchedule = async (record: Api.Schedule.addScheduleParams) => {
   const data = await fetchAddSechedule(userInfo.teacherNo!, record)
   loadData()
 }
@@ -370,13 +370,13 @@ const showEditForm = (row: Api.Schedule.scheduleInfo) => {
   editDialogVisible.value = true
 }
 
-const updateSchedule = async (record: Api.Schedule.scheduleInfo) => {
-  const data = await fetchUpdateSchedule(token, editId.value, record)
+const updateSchedule = async (record: Api.Schedule.updateClassParams) => {
+  const data = await fetchUpdateSchedule(editId.value, record)
   loadData()
 }
 
 const DeleteSchedule = async (id: string) => {
-  const data = await fetchDeleteSchedule(token, id)
+  const data = await fetchDeleteSchedule(id)
   loadData()
 }
 

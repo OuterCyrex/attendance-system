@@ -95,7 +95,31 @@ declare namespace Api {
       teacherName: string
       collegeName: string
     }
+
+    interface addClassParams {
+      className: string
+      teacherNo: string
+      count: number
+      grade: string
+      major: string
+      createTime: string
+      updateTime: string
+      isDelete: number
+    }
+
+    interface updateClassParams {
+      id: string
+      className: string
+      teacherNo: string
+      count: number
+      grade: string
+      major: string
+      createTime: string
+      updateTime: string
+      isDelete: number
+    }
   }
+
   namespace Schedule {
     interface GetScheduleListParams {
       teacherNo: string
@@ -141,6 +165,42 @@ declare namespace Api {
       status: number
       remark: string
     }
+
+    interface updateClassParams {
+      id: string
+      courseNo: string
+      orderNo: string
+      courseName: string
+      weekday: string
+      expectedCount: number
+      weekRange: string
+      startPeriod: number
+      endPeriod: number
+      classroom: string
+      teacherName: string
+      courseType: string
+      semesterName: string
+      createTime: string
+      updateTime: string
+    }
+
+    interface addScheduleParams {
+      id: string
+      courseNo: string
+      orderNo: string
+      courseName: string
+      weekday: string
+      expectedCount: number
+      weekRange: string
+      startPeriod: number
+      endPeriod: number
+      classroom: string
+      teacherName: string
+      courseType: string
+      semesterName: string
+      createTime: string
+      updateTime: string
+    }
   }
 
   namespace Teacher {
@@ -154,7 +214,6 @@ declare namespace Api {
 
     interface updateTeacherParams {
       username: string
-      password: string
       realName: string
       teacherNo: string
       phone: string
@@ -162,7 +221,7 @@ declare namespace Api {
       department: string
       status: number
       attendanceThreshold: number
-      enableEmailNotification: number
+      enableEmailNotification: boolean
     }
 
     interface addTeacherParams {
@@ -182,13 +241,22 @@ declare namespace Api {
     interface teacherInfo {
       id: string
       username: string
+      password: any
       realName: string
       teacherNo: string
       phone: string
       email: string
       department: string
-      identity: any
+      collegeNo: string
       status: number
+      attendanceThreshold: number
+      enableEmailNotification: boolean
+      lastLoginTime: any
+      lastLoginIp: any
+      remark: any
+      createTime: string
+      updateTime: string
+      isDeleted: number
     }
   }
   

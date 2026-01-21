@@ -30,10 +30,10 @@ export function fetchGetScheduleList(params: Api.Schedule.GetScheduleListParams)
   })
 }
 
-export function fetchGetScheduleListByCourse(token:string,params:any) {
+export function fetchGetScheduleListByCourse(token: string, params: any) {
   return request.post<any>({
     url: '/courseSchedule/queryByClass',
-    data:params
+    data: params
   })
 }
 
@@ -43,7 +43,7 @@ export function fetchGetScheduleListByCourse(token:string,params:any) {
  * @param file 文件
  * @returns 导入响应
  */
-export function fetchImportSchedule(token: string, file: File) {
+export function fetchImportSchedule(file: File) {
   const formData = new FormData()
   formData.append('file', file)
   return request.post({
@@ -52,24 +52,27 @@ export function fetchImportSchedule(token: string, file: File) {
   })
 }
 
-export function fetchAddSechedule(teacherNo: string, params:any) {
+export function fetchAddSechedule(teacherNo: string, params: any) {
   return request.post({
     url: '/courseSchedule/add',
     params: { ...params, teacherNo },
+    showErrorMessage: true,
+    showSuccessMessage: true
+  })
+}
+
+export function fetchImportClass(file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request.post({
+    url: '/courseSchedule/import',
+    data: formData,
+    showSuccessMessage: true,
     showErrorMessage: true
   })
 }
 
-export function fetchImportClass(token: string, file: File) {
-  const formData = new FormData()
-  formData.append('file', file)
-    return request.post({
-    url: '/courseSchedule/import',
-    data: formData,
-  })
-}
-
-export function fetchUpdateSchedule(token: string, id: string, params: Api.Schedule.scheduleInfo) {
+export function fetchUpdateSchedule(id: string, params: Api.Schedule.updateClassParams) {
   return request.put<void>({
     url: `/courseSchedule/update/${id}`,
     params,
@@ -78,7 +81,7 @@ export function fetchUpdateSchedule(token: string, id: string, params: Api.Sched
   })
 }
 
-export function fetchDeleteSchedule(token: string, id: string) {
+export function fetchDeleteSchedule(id: string) {
   return request.del<void>({
     url: `courseSchedule/delete/${id}`,
     showSuccessMessage: true,
@@ -86,7 +89,7 @@ export function fetchDeleteSchedule(token: string, id: string) {
   })
 }
 
-export function fetchGetSchedule(token: string, id: string) {
+export function fetchGetSchedule(id: string) {
   return request.get<Api.Schedule.scheduleInfo>({
     url: `courseSchedule/get/${id}`,
     showErrorMessage: true,

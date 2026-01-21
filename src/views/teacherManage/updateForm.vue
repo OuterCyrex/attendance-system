@@ -34,7 +34,7 @@
             </el-form-item>
 
             <el-form-item label="邮箱通知" prop="enableEmailNotification">
-                <el-switch v-model="form.enableEmailNotification" :active-value="1" :inactive-value="0" />
+                <el-switch v-model="form.enableEmailNotification"/>
             </el-form-item>
 
             <el-form-item label="通知阈值" prop="attendanceThreshold">
@@ -58,8 +58,8 @@ import { fetchGetCollegeList } from '@/api/misc';
 
 const props = defineProps<{
     id: string,
-    formData?: updateTeacherParams
-    departmentOption?: Array<collegeInfo>
+    formData?: Api.Teacher.updateTeacherParams
+    departmentOption?: Array<Api.Misc.collegeInfo>
 }>()
 
 const emit = defineEmits<{
@@ -72,9 +72,9 @@ const userStore = useUserStore()
 const { getUserInfo: userInfo } = userStore
 
 const formRef = ref<FormInstance>()
-const defaultForm: updateTeacherParams = {
+const defaultForm: Api.Teacher.updateTeacherParams = {
     username: '',
-    realname: '',
+    realName: '',
     teacherNo: '',
     phone: '',
     email: '',
@@ -83,7 +83,7 @@ const defaultForm: updateTeacherParams = {
     attendanceThreshold: 0,
     enableEmailNotification: false
 }
-const form = reactive<updateTeacherParams>({ ...defaultForm })
+const form = reactive<Api.Teacher.updateTeacherParams>({ ...defaultForm })
 
 const rules: FormRules = {
     username: [{ required: true, message: '请输入用户名称', trigger: 'blur' }],
@@ -96,7 +96,7 @@ const rules: FormRules = {
     ],
     password: [{ required: false, message: '请输入密码', trigger: 'blur' }]
 }
-const departmentOption = ref({})
+const departmentOption = ref<Array<Api.Misc.collegeInfo>>([])
 
 onMounted(() => {
     if (!props.id) {
@@ -137,7 +137,7 @@ const handleSubmit = async () => {
         department: form.department,
         status: form.status,
         attendanceThreshold: form.attendanceThreshold,
-        enableEmailNotification: form.enableEmailNotification === 1
+        enableEmailNotification: form.enableEmailNotification
     }
 
     fetchUpdateTeacher(props.id, data).then(() => {

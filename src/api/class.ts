@@ -55,13 +55,10 @@ export function fetchImportClass(token: string, file: File) {
  * @param params 班级参数
  * @returns 添加响应
  */
-export function fetchAddClass(token: string, teacherNo: string,  params: Api.Class.classInfo) {
+export function fetchAddClass(teacherNo: string,  params: Api.Class.addClassParams) {
   return request.post<void>({
     url: '/class/add',
     data: {...params, teacherNo},
-    headers: {
-      'Authorization': 'Bearer ' + token
-    },
     showSuccessMessage: true,
     showErrorMessage: true,
   })
@@ -73,12 +70,9 @@ export function fetchAddClass(token: string, teacherNo: string,  params: Api.Cla
  * @param string 班级名称
  * @returns 删除响应
  */
-export function fetchDeleteClass(token: string, id: string) {
+export function fetchDeleteClass(id: string) {
   return request.del<void>({
     url: `/class/delete/${id}`,
-    headers: {
-      'Authorization': 'Bearer ' + token
-    },
     showSuccessMessage: true,
     showErrorMessage: true,
   })
@@ -91,13 +85,10 @@ export function fetchDeleteClass(token: string, id: string) {
  * @param params 班级信息
  * @returns 响应
  */
-export function fetchUpdateClass(token: string, id: string, params: Api.Class.classInfo) {
+export function fetchUpdateClass(id: string, params: Api.Class.updateClassParams) {
   return request.put<void>({
     url: `/class/update/${id}`,
     params,
-    headers: {
-      'Authorization': 'Bearer ' + token
-    },
     showSuccessMessage: true,
     showErrorMessage: true,
   })
