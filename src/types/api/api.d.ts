@@ -45,6 +45,7 @@ declare namespace Api {
     interface LoginResponse {
       token: string
       userInfo: userInfo
+      userInfo: userInfo
     }
 
     /** 用户信息 */
@@ -52,9 +53,14 @@ declare namespace Api {
       id: string
       username: string
       password: string
+      id: string
+      username: string
+      password: string
       realName: string
       teacherNo: string
+      teacherNo: string
       phone: string
+      email: string
       email: string
       department: string
       collegeNo: string
@@ -266,6 +272,8 @@ declare namespace Api {
       isDeleted: number
     }
   }
+
+  namespace Misc {
 
   namespace Misc {
     interface collegeInfo {
