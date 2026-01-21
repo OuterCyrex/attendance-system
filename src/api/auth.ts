@@ -14,6 +14,18 @@ export async function fetchLogin(params: Api.Auth.LoginParams) {
   })
 }
 
+export async function fetchUserInfo() {
+  return request.get<Api.Auth.userInfo>({
+    url: '/auth/getUserInfo',
+  })
+}
+
+export async function fetchUserRole() {
+  return request.get<string>({
+    url:'/auth/getRole'
+  })
+}
+
 /**
  * 退出登录
  * @param string token 用户令牌

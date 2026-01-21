@@ -28,7 +28,7 @@ import { fetchClassDetail } from '@/api/class'
 import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 
-const xAxisData = ref([])
+const xAxisData = ref<string[]>([])
 const classdata = ref([])
 const route = useRoute()
 const classId = route.params.id as string

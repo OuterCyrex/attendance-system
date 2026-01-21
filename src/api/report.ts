@@ -3,7 +3,7 @@ import { ApiResponse, PageResponse, AttendanceRecord } from '@/types/report'
 
 // 查询考勤报表
 export const fetchQueryAttendanceReport = (params: any) => {
-    return http.post<ApiResponse<PageResponse<AttendanceRecord>>>({
+    return http.post<any>({
         url: '/attendance/queryAttendanceReport',
         data: params
     })

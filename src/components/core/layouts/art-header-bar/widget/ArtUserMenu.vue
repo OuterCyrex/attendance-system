@@ -107,7 +107,7 @@
         customClass: 'login-out-dialog'
       }).then(() => {
         userStore.logOut()
-        fetchLogout(token)
+        fetchLogout(token.value)
       })
     }, 200)
   }

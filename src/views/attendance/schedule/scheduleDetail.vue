@@ -78,6 +78,8 @@ const userStore = useUserStore()
 const { getToken: token } = userStore
 const { getUserInfo: userInfo } = userStore
 
+type AlertType = "primary" | "success" | "warning" | "info" | "danger"
+
 const props = defineProps<{
     id: string
     visible: boolean
@@ -114,24 +116,26 @@ const router = useRouter();
 
 const getAttendanceRateTag = () => {
     const rate = attendanceDetail.value.attendanceRate * 100;
-    if (rate >= 90) return { type: 'success' };
-    if (rate >= 70) return { type: 'warning' };
-    return { type: 'danger' };
+    if (rate >= 90) return { type: 'success' as AlertType };
+    if (rate >= 70) return { type: 'warning' as AlertType};
+    return { type: 'danger' as AlertType};
 };
 
 const getCheckTypeTag = () => {
     switch (attendanceDetail.value.checkType) {
-        case 0: return { label: '手动打卡', type: 'info' }
-        case 1: return { label: '自动打卡', type: 'success' }
-        case 2: return { label: '手动打卡', type: 'info' }
+        case 0: return { label: '手动打卡', type: 'info' as AlertType}
+        case 1: return { label: '自动打卡', type: 'success' as AlertType}
+        case 2: return { label: '手动打卡', type: 'info' as AlertType}
+        default: return { label: '未知', type: 'warning' as AlertType}
     }
 };
 
 const getStatusTag = () => {
     switch (attendanceDetail.value.status) {
-        case 0: return { label: '正常', type: 'success' };
-        case 1: return { label: '正常', type: 'success' };
-        case 2: return { label: '异常', type: 'danger' };
+        case 0: return { label: '正常', type: 'success' as AlertType};
+        case 1: return { label: '正常', type: 'success' as AlertType};
+        case 2: return { label: '异常', type: 'danger' as AlertType};
+        default: return { label: '未知', type: 'warning' as AlertType};
     }
 };
 

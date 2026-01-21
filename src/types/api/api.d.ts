@@ -44,30 +44,37 @@ declare namespace Api {
     /** 登录响应 */
     interface LoginResponse {
       token: string
-      userInfo: {
-        realName: string
-        role: string
-        phone: string
-        id: string
-        department: string
-        teacherNo: string
-        collegeNo: string
-        email: string
-        username: string
-      }
+      userInfo: userInfo
     }
 
     /** 用户信息 */
     interface userInfo {
-      realName: string
-      role: string
-      phone: string
       id: string
-      department: string
-      teacherNo: string
-      collegeNo: string
-      email: string
       username: string
+      password: string
+      realName: string
+      teacherNo: string
+      phone: string
+      email: string
+      department: string
+      collegeNo: string
+      status: number
+      attendanceThreshold: number
+      enableEmailNotification: boolean
+      role: string
+    }
+
+    interface updateSelfParams {
+      username: string
+      password: string
+      realName: string
+      teacherNo: string
+      phone: string
+      email: string
+      status: number
+      department: string
+      attendanceThreshold: number
+      enableEmailNotification: boolean
     }
   }
 
@@ -259,8 +266,8 @@ declare namespace Api {
       isDeleted: number
     }
   }
-  
-  namespace Misc { 
+
+  namespace Misc {
     interface collegeInfo {
       id: string
       name: string

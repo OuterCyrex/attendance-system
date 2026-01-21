@@ -92,7 +92,7 @@
             </div>
         </div>
 
-        <scheduleDetail v-if="showDetailDialog" v-model="showDetailDialog" :id="detailId" />
+        <scheduleDetail v-if="showDetailDialog" v-model:visible="showDetailDialog" :id="detailId" />
     </div>
 </template>
 
@@ -138,13 +138,12 @@ const schedule = ref({
 const attendanceList = ref<Api.Schedule.attendanceInfo[]>([])
 
 const getScheduleDetail = async () => {
-    schedule.value = await fetchGetSchedule(token, recordId)
+    schedule.value = await fetchGetSchedule(recordId)
 }
 
 const getAttendanceList = async () => {
     const params = {
         courseId: recordId,
-        date: userInfo.date,
         pageNum: currentPage.value,
         pageSize: pageSize.value
     }

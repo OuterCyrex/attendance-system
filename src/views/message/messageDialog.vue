@@ -66,6 +66,8 @@
 import { router } from '@/router';
 import { computed } from 'vue';
 
+type AlertType = "info" | "primary" | "success" | "warning" | "danger"
+
 const props = (
     defineProps<{
         visible: boolean,
@@ -84,19 +86,19 @@ const dialogVisible = computed({
 
 const getAlertTypeTag = (type: number) => {
     switch (type) {
-        case 1: return { label: '人数不足', type: 'warning' };
-        case 2: return { label: '迟到过多', type: 'danger' };
-        case 3: return { label: '旷课严重', type: 'danger' };
-        default: return { label: '普通预警', type: 'info' };
+        case 1: return { label: '人数不足', type: 'warning' as AlertType };
+        case 2: return { label: '迟到过多', type: 'danger' as AlertType };
+        case 3: return { label: '旷课严重', type: 'danger' as AlertType };
+        default: return { label: '普通预警', type: 'info' as AlertType };
     }
 };
 
 const getAlertLevelTag = (type: number) => {
     switch (type) {
-        case 1: return { label: '中', type: 'warning' };
-        case 2: return { label: '高', type: 'danger' };
-        case 3: return { label: '低', type: 'info' };
-        default: return { label: '低', type: 'info' };
+        case 1: return { label: '中', type: 'warning' as AlertType };
+        case 2: return { label: '高', type: 'danger' as AlertType };
+        case 3: return { label: '低', type: 'info' as AlertType };
+        default: return { label: '低', type: 'info' as AlertType };
     }
 };
 

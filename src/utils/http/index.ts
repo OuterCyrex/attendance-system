@@ -49,9 +49,6 @@ const axiosInstance = axios.create({
   transformResponse: [
     (data, headers, config) => {
       // 如果是blob请求，不进行任何转换
-      if (config.responseType === 'blob') {
-        return data
-      }
 
       const contentType = headers['content-type']
       if (contentType?.includes('application/json')) {
@@ -199,8 +196,8 @@ async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> 
     const { data } = res
     if (data && typeof data === 'object' && 'data' in data && 'code' in data) {
       // 显示成功消息
-      if (config.showSuccessMessage && data.message) {
-        showSuccess(data.message)
+      if (config.showSuccessMessage && (data as any).message) {
+        showSuccess((data as any).message)
       }
 
       return data.data as T

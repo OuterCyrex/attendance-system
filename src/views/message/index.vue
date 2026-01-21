@@ -125,12 +125,12 @@ const handleSizeChange = (size: number) => {
 
 const isIndeterminate = ref(false)
 
-const handleCheckAllChange = (val: boolean) => {
+const handleCheckAllChange = (val: any) => {
     checkedList.value = val ? alertList.value.map((el) => el.id) : []
     isIndeterminate.value = false
 }
 
-const handleCheckedChange = (val: string[]) => {
+const handleCheckedChange = (val: any) => {
     const valLength = val.length
     const totalLength = alertList.value.length
     checkAll.value = valLength === totalLength

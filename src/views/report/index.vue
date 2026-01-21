@@ -143,7 +143,7 @@
 import { Download } from '@element-plus/icons-vue'
 import { fetchQueryAttendanceReport, fetchAttendanceReportExcel } from '@/api/report'
 import { useUserStore } from '@/store/modules/user'
-import { fetchGetCollegeList, fetchSemesterList, fetchOrderList } from '@/api/misc'
+import { fetchSemesterList, fetchOrderList } from '@/api/misc'
 import collegeSelect from '@/components/select/collegeSelect.vue'
 
 const currentPage = ref(1)
@@ -155,10 +155,10 @@ const semesterList = ref([])
 const orderList = ref([])
 
 const searchForm = reactive({
-    orderNos: [],
-    courseTypes: [],
-    semester: [],
-    collegeNames: []
+    orderNos: [] as Array<string>,
+    courseTypes: [] as Array<string>,
+    semester: [] as Array<string>,
+    collegeNames: [] as Array<string>
 })
 
 const inputInfo = ref({
@@ -225,19 +225,19 @@ const getAttendanceList = async () => {
 
 
     const params: any = {
-        collegeNames: searchForm.collegeNames.length > 0 ? searchForm.collegeNames : (userInfo?.collegeNames || []),
+        collegeNames: searchForm.collegeNames,
         teacherNos: finalTeacherNos,
         teacherNames: finalTeacherNames,
         orderNos: searchForm.orderNos,
-        courseTypes: searchForm.courseTypes.length > 0 ? searchForm.courseTypes : (userInfo?.courseTypes || []),
+        courseTypes: searchForm.courseTypes ,
         classNames: finalClassNames,
-        semester: searchForm.semester.length > 0 ? searchForm.semester : (userInfo?.semester || []),
+        semester: searchForm.semester,
         pageNum: currentPage.value,
         pageSize: pageSize.value
     }
 
     const response = await fetchQueryAttendanceReport(params)
-    attendanceList.value = response?.records || []
+    attendanceList.value = response.records || []
     total.value = response?.total || 0
     tableLoading.value = false
 }
