@@ -32,8 +32,8 @@
                             </div>
                             </div>
                             <div class="flex gap-1">
-                                <el-button type="primary" size="small" @click="isShow = true">编辑</el-button>
-                                <el-button type="primary" size="small" @click="isVisible = true">修改密码</el-button>
+                                <el-button type="primary" size="small" @click="editVisible = true">编辑</el-button>
+                                <el-button type="primary" size="small" @click="newPWDVisible = true">修改密码</el-button>
                             </div>
                         </h3>
 
@@ -76,8 +76,8 @@
             <passwordForm v-model="newPWDVisible" @save="editPassword" />
         </div>
         <div class="form-containers">
-            <accountForm v-model="isShow" :userInfo="userInfo" @save="handleSave" />
-            <passwordForm v-model="isVisible" @save="editPassword" />
+            <accountForm v-model="editVisible" :userInfo="userInfo" @save="handleSave" />
+            <passwordForm v-model="newPWDVisible" @save="editPassword" />
         </div>
     </div>
 </template>
@@ -85,12 +85,6 @@
 <script setup lang="ts">
 import { useUserStore } from '@/store/modules/user'
 import { User, InfoFilled } from '@element-plus/icons-vue'
-import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
-import { fetchEditSelfInfo } from '@/api/account'
-import accountForm from './accountForm.vue'
-import passwordForm from './passwordForm.vue'
-import { fetchLogout } from '@/api/auth'
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { fetchEditSelfInfo } from '@/api/account'

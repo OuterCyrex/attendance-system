@@ -274,8 +274,6 @@ declare namespace Api {
   }
 
   namespace Misc {
-
-  namespace Misc {
     interface collegeInfo {
       id: string
       name: string
@@ -309,5 +307,4 @@ declare namespace Api {
       granularity: number
     }
   }
-
 }
