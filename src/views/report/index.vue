@@ -12,17 +12,14 @@
 
                         <div v-if="userRole !== 'teacher'" class="flex items-center">
                             <div class="mr-2 text-gray-500">辅导员：</div>
-                            <teacherSelect :collegeName="searchForm.collegeNames[0] || ''"
-                                @selected="handleTeacherSelected"
-                                :disabled="userRole === 'admin' && !searchForm.collegeNames.length" :reset="resetFlag"
-                                style="width: 200px" />
+                            <teacherSelect :collegeName="searchForm.collegeNames[0]" @selected="handleTeacherSelected"
+                                :disabled="collegeName === ''" :reset="resetFlag" style="width: 200px" />
                         </div>
 
                         <div class="flex items-center">
                             <div class="mr-2 text-gray-500">班级名称：</div>
-                            <classSelect :teacherName="searchForm.teacherNames[0] || ''" @selected="handleClassSelected"
-                                :disabled="userRole !== 'teacher' && !searchForm.teacherNames.length"
-                                style="width: 200px" :reset="resetFlag" />
+                            <classSelect :teacherNo="teacherNo" @selected="handleClassSelected"
+                                :disabled="teacherNo === ''" style="width: 200px" :reset="resetFlag" />
                         </div>
 
 
@@ -167,6 +164,8 @@ const attendanceList = ref([])
 const semesterList = ref([])
 const orderList = ref([])
 const dateRange = ref<string[]>()
+const collegeName = ref('')
+const teacherNo = ref('')
 
 const searchForm = reactive({
     orderNos: [] as string[],
@@ -189,10 +188,12 @@ const resetFlag = ref(false)
 
 const handleCollegeSelected = async (college: Api.Misc.collegeInfo) => {
     searchForm.collegeNames = [college.name]
+    collegeName.value = college.name
 }
 
 const handleTeacherSelected = (teacher: Api.Teacher.teacherInfo) => {
     searchForm.teacherNames = [teacher.realName]
+    teacherNo.value = teacher.teacherNo
 }
 
 const handleClassSelected = (classInfo: Api.Class.classInfo) => {

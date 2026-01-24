@@ -275,39 +275,40 @@ declare namespace Api {
 
   namespace Misc {
 
-  namespace Misc {
-    interface collegeInfo {
-      id: string
-      name: string
-      collegeNo: string
+    namespace Misc {
+      interface collegeInfo {
+        id: string
+        name: string
+        collegeNo: string
+      }
+
+      interface semesterInfo {
+        id: string
+        semesterName: string
+        startDate: string
+        endDate: string
+        weeks: number
+        createTime: string
+        updateTime: string
+      }
     }
 
-    interface semesterInfo {
-      id: string
-      semesterName: string
-      startDate: string
-      endDate: string
-      weeks: number
-      createTime: string
-      updateTime: string
+    namespace Chart {
+      interface getClassChartParams {
+        collegeName: string
+        teacherName: string
+        className: string
+        granularity: number
+        semesterName: string
+      }
+
+      interface getCourseChartParams {
+        teacherName: string
+        orderNo: string
+        semesterName: string
+        granularity: number
+      }
     }
+
   }
-
-  namespace Chart {
-    interface getClassChartParams {
-      collegeName: string
-      teacherName: string
-      className: string
-      granularity: number
-      semesterName: string
-    }
-
-    interface getCourseChartParams {
-      teacherName: string
-      orderNo: string
-      semesterName: string
-      granularity: number
-    }
-  }
-
 }

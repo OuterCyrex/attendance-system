@@ -5,6 +5,10 @@
                 <el-input v-model="form.courseNo" placeholder="例如: CS101" />
             </el-form-item>
 
+            <el-form-item label="课序号" prop="orderNo" class="flex-1">
+                <el-input v-model="form.orderNo" placeholder="例如: 01" />
+            </el-form-item>
+
             <el-form-item label="课程名称" prop="courseName">
                 <el-input v-model="form.courseName" placeholder="请输入课程名称" />
             </el-form-item>
@@ -13,6 +17,10 @@
                 <el-select v-model="form.weekday" class="w-full" placeholder="请选择星期">
                     <el-option v-for="item in weekOptions" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
+            </el-form-item>
+
+            <el-form-item>
+                <classSelect @selected="handleClassSelected" />
             </el-form-item>
 
             <el-form-item label="周次范围" prop="weekRange" class="flex-1">
@@ -54,11 +62,14 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
+import classSelect from '@/components/select/classSelect.vue';
 
 export type SelectOption = {
     label: string
     value: string
 }
+
+const resetFlag = ref(false)
 
 const props = defineProps<{
     visible: boolean
@@ -76,21 +87,22 @@ const dialogVisible = computed({
 })
 
 const defaultForm = {
-  id: "",
-  courseNo: "",
-  orderNo: "",
-  courseName: "",
-  weekday: "",
-  expectedCount: 0,
-  weekRange: "",
-  startPeriod: 1,
-  endPeriod: 2,
-  classroom: "",
-  teacherName: "",
-  courseType: "",
-  semesterName: "",
-  createTime: "",
-  updateTime: ""
+    id: "",
+    courseNo: "",
+    orderNo: "",
+    courseName: "",
+    weekday: "",
+    expectedCount: 0,
+    weekRange: "",
+    startPeriod: 1,
+    endPeriod: 2,
+    classroom: "",
+    teacherName: "",
+    courseType: "",
+    semesterName: "",
+    createTime: "",
+    updateTime: "",
+    classId: []
 }
 
 const formRef = ref<FormInstance>()
@@ -135,5 +147,9 @@ const handleSubmit = async () => {
         emit('submit', form)
         dialogVisible.value = false
     })
+}
+
+const handleClassSelected = () => {
+    form.classId
 }
 </script>
