@@ -18,22 +18,19 @@
             <div class="px-2 py-2">
                 <div class="space-y-6">
                     <div class="rounded-lg p-3">
-                        <h3 class="text-lg font-semibold text-gray-800 text-gray-800 mb-4 flex items-center justify-between">
+                        <h3
+                            class="text-lg font-semibold text-gray-800 text-gray-800 mb-4 flex items-center justify-between">
                             <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-2">
                                     <el-icon class="text-gray-500">
                                         <InfoFilled />
                                     </el-icon>
                                     基础信息
+                                </div>
                             </div>
                             <div class="flex gap-1">
                                 <el-button type="primary" size="small" @click="editVisible = true">编辑</el-button>
                                 <el-button type="primary" size="small" @click="newPWDVisible = true">修改密码</el-button>
-                            </div>
-                            </div>
-                            <div class="flex gap-1">
-                                <el-button type="primary" size="small" @click="isShow = true">编辑</el-button>
-                                <el-button type="primary" size="small" @click="isVisible = true">修改密码</el-button>
                             </div>
                         </h3>
 
@@ -75,22 +72,12 @@
             <accountForm v-model="editVisible" :userInfo="userInfo" @save="handleSave" />
             <passwordForm v-model="newPWDVisible" @save="editPassword" />
         </div>
-        <div class="form-containers">
-            <accountForm v-model="isShow" :userInfo="userInfo" @save="handleSave" />
-            <passwordForm v-model="isVisible" @save="editPassword" />
-        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '@/store/modules/user'
 import { User, InfoFilled } from '@element-plus/icons-vue'
-import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
-import { fetchEditSelfInfo } from '@/api/account'
-import accountForm from './accountForm.vue'
-import passwordForm from './passwordForm.vue'
-import { fetchLogout } from '@/api/auth'
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { fetchEditSelfInfo } from '@/api/account'
@@ -141,7 +128,7 @@ const editPassword = async (data: { password: string }) => {
     if (token) {
         await fetchLogout(token)
     }
-    editVisible.value = false;
+    newPWDVisible.value = false
     userStore.logOut()
 }
 </script>
