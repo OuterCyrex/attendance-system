@@ -118,7 +118,7 @@
 
           <el-table-column label="班级名称" min-width="150" show-overflow-tooltip>
             <template #default="scope">
-              {{ Array.isArray(scope.row.classNames) ? scope.row.classNames.join('、') : scope.row.classNames }}
+              {{scope.row.classes.map((item: any) => item.className).join('、')}}
             </template>
           </el-table-column>
           <el-table-column label="预计人数" prop="expectedCount" width="100" />
