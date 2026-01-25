@@ -73,7 +73,7 @@
 
       <ElCard class="col-span-12 mt-4" shadow="never" v-if="userInfo.role === 'admin'">
         <div class="operation-buttons flex">
-          <el-button type="primary" :icon="Plus" @click="addDialogVisible = true">新增课程安排</el-button>
+          <el-button type="primary" :icon="Plus" @click="openAdd">新增课程安排</el-button>
           <el-upload class="mx-4" :auto-upload="false" :show-file-list="false" :on-change="handleFileChange"
             accept=".xlsx,.xls">
             <el-button type="primary">导入排课</el-button>
@@ -86,6 +86,7 @@
         <el-table v-loading="tableLoading" :data="scheduleList" style="min-height: 400px" border stripe
           highlight-current-row class="data-table__content">
           <el-table-column label="课程号" prop="courseNo" width="120" />
+          <el-table-column label="课序号" prop="orderNo" width="120" />
           <el-table-column label="课程名称" prop="courseName" min-width="150" />
           <el-table-column label="周次" prop="weekRange" width="120" />
           <el-table-column label="任课教师" prop="teacherName" width="120" />
@@ -130,7 +131,7 @@
           </el-table-column>
           <el-table-column v-if="userInfo.role === 'admin'" label="操作" width="160">
             <template #default="scope">
-              <el-button link type="primary" :icon="Edit" @click="showEditForm(scope.row)">编辑</el-button>
+              <el-button link type="primary" :icon="Edit" @click="openEdit(scope.row)">编辑</el-button>
               <el-popconfirm title="确认删除该课程吗？" confirm-button-text="确认" cancel-button-text="取消"
                 @confirm="DeleteSchedule(scope.row.id)">
                 <template #reference>
@@ -151,9 +152,8 @@
           @size-change="handleSizeChange" />
       </div>
 
-      <addScheduleDialog v-model:visible="addDialogVisible" :weekOptions="weekOptions" @submit="addSchedule"/>
-      <editScheduleDialog v-model:visible="editDialogVisible" :weekOptions="weekOptions":id="editId"
-        @submit="updateSchedule" :formData="editFormData" />
+      <ScheduleForm v-model:visible="dialogVisible" :weekOptions="weekOptions" :rowData="currentSchedule"
+        @submit="handleDialogSubmit" />
     </div>
   </div>
 </template>
@@ -162,14 +162,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { Plus, Edit, Delete, Timer } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import { fetchImportSchedule, fetchTemplate, fetchGetScheduleList, fetchAddSechedule, fetchUpdateSchedule, fetchDeleteSchedule, fetchGetScheduleListByCourse } from '../../api/schedule'
+import { fetchImportSchedule, fetchTemplate, fetchGetScheduleList, fetchAddSchedule, fetchUpdateSchedule, fetchDeleteSchedule, fetchGetScheduleListByCourse, fetchGetSchedule, fetchAddClassForCourse } from '../../api/schedule'
 import { useUserStore } from '@/store/modules/user'
 import { weekOptions } from './select'
-import editScheduleDialog from './editSchedule.vue'
-import addScheduleDialog from './addSchedule.vue'
+import ScheduleForm from './ScheduleForm.vue'
 import { UploadFile } from 'element-plus'
 import { useRoute } from 'vue-router'
-import { fetchClassDetail } from '@/api/class'
+import { fetchClassDetail, fetchGetClassList } from '@/api/class'
 import { fetchSemesterList } from '@/api/misc'
 import classSelect from '@/components/select/classSelect.vue'
 import collegeSelect from '@/components/select/collegeSelect.vue'
@@ -180,24 +179,13 @@ const courseName = ref('')
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+const dialogVisible = ref(false)
+const currentSchedule = ref<any>(null)
 
 const scheduleList = ref<any[]>([])
 const tableLoading = ref(false)
-const addDialogVisible = ref(false)
-const editDialogVisible = ref(false)
-const editId = ref()
 const router = useRouter()
 const route = useRoute()
-const editFormData = ref<Api.Schedule.scheduleInfo>({
-  courseNo: "",
-  courseName: "",
-  weekday: "",
-  weekRange: "",
-  startPeriod: 1,
-  endPeriod: 2,
-  classroom: "",
-  expectedCount: 0
-} as any)
 
 const userStore = useUserStore()
 const { getToken: token } = userStore
@@ -349,30 +337,49 @@ const handleFileChange = async (uploadFile: UploadFile) => {
   loadData()
 }
 
-const addSchedule = async (record: Api.Schedule.addScheduleParams) => {
-  const data = await fetchAddSechedule(userInfo.teacherNo!, record)
-  loadData()
+const openAdd = () => {
+  currentSchedule.value = null
+  dialogVisible.value = true
 }
 
-const showEditForm = (row: Api.Schedule.scheduleInfo) => {
-  editId.value = row.id
-  editFormData.value = {
-    ...row,
-    courseNo: row.courseNo,
-    courseName: row.courseName,
-    weekday: row.weekday,
-    weekRange: row.weekRange,
-    startPeriod: row.startPeriod,
-    endPeriod: row.endPeriod,
-    classroom: row.classroom,
-    expectedCount: row.expectedCount
+const openEdit = async (row: any) => {
+  try {
+    const fullScheduleInfo = await fetchGetSchedule(row.id)
+    //console.log('ful', fullScheduleInfo)
+    currentSchedule.value = fullScheduleInfo
+    //console.log('cu', currentSchedule.value)
+  } catch (error) {
+    console.warn('获取完整课程信息失败，使用表格数据:', error)
+    currentSchedule.value = JSON.parse(JSON.stringify(row))
   }
-  editDialogVisible.value = true
+  dialogVisible.value = true
 }
 
-const updateSchedule = async (record: Api.Schedule.updateClassParams) => {
-  const data = await fetchUpdateSchedule(editId.value, record)
-  loadData()
+const handleDialogSubmit = async (data: any) => {
+  try {
+    if (data.courseSchedule.id) {
+      const updateParams = {
+        courseSchedule: { ...data.courseSchedule },
+        classIds: data.classIds
+      }
+      await fetchUpdateSchedule(updateParams)
+      //console.log(updateParams)
+      /* const courseId = updateParams.id
+      const classIds = updateParams.classIds
+      await fetchAddClassForCourse(courseId, classIds) */
+      console.log('data', data)
+      ElMessage.success('更新成功')
+    } else {
+      await fetchAddSchedule(teacherNo.value, data)
+      ElMessage.success('创建成功')
+    }
+
+    dialogVisible.value = false
+    loadData()
+
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 const DeleteSchedule = async (id: string) => {

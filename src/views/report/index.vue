@@ -24,7 +24,7 @@
 
 
                         <div v-if="userRole !== 'teacher'" class="flex items-center">
-                            <div class="mr-2 text-gray-500">课程：</div>
+                            <div class="mr-2 text-gray-500">课程类型：</div>
                             <el-select v-model="searchForm.courseTypes" placeholder="请选择类型" style="width: 200px"
                                 clearable multiple collapse-tags>
                                 <el-option label="必修课" value="required"></el-option>
