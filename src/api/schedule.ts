@@ -52,10 +52,10 @@ export function fetchImportSchedule(file: File) {
   })
 }
 
-export function fetchAddSechedule(teacherNo: string, params: any) {
+export function fetchAddSchedule(teacherNo: string, params: any) {
   return request.post({
     url: '/courseSchedule/add',
-    params: { ...params, teacherNo },
+    params: { ...params, teacherNo},
     showErrorMessage: true,
     showSuccessMessage: true
   })
@@ -72,10 +72,10 @@ export function fetchImportClass(file: File) {
   })
 }
 
-export function fetchUpdateSchedule(id: string, params: Api.Schedule.updateClassParams) {
+export function fetchUpdateSchedule(params: Api.Schedule.updateClassParams) {
   return request.put<void>({
-    url: `/courseSchedule/update/${id}`,
-    params,
+    url: `/courseSchedule/update`,
+    params:{...params},
     showSuccessMessage: true,
     showErrorMessage: true,
   })
@@ -93,5 +93,12 @@ export function fetchGetSchedule(id: string) {
   return request.get<Api.Schedule.scheduleInfo>({
     url: `courseSchedule/get/${id}`,
     showErrorMessage: true,
+  })
+}
+
+export function fetchAddClassForCourse(id:string,params:string[]) {
+  return request.post<any>({
+    url: `courseSchedule/addClass/${id}`,
+    params
   })
 }
