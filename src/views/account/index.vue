@@ -26,10 +26,6 @@
                                     </el-icon>
                                     基础信息
                             </div>
-                            <div class="flex gap-1">
-                                <el-button type="primary" size="small" @click="editVisible = true">编辑</el-button>
-                                <el-button type="primary" size="small" @click="newPWDVisible = true">修改密码</el-button>
-                            </div>
                             </div>
                             <div class="flex gap-1">
                                 <el-button type="primary" size="small" @click="editVisible = true">编辑</el-button>
@@ -71,10 +67,6 @@
                 </div>
             </div>
         </ElCard>
-        <div class="form-containers">
-            <accountForm v-model="editVisible" :userInfo="userInfo" @save="handleSave" />
-            <passwordForm v-model="newPWDVisible" @save="editPassword" />
-        </div>
         <div class="form-containers">
             <accountForm v-model="editVisible" :userInfo="userInfo" @save="handleSave" />
             <passwordForm v-model="newPWDVisible" @save="editPassword" />
