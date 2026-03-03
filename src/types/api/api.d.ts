@@ -307,6 +307,4 @@ declare namespace Api {
         granularity: number
       }
     }
-
   }
-}

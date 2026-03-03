@@ -52,7 +52,7 @@ export function fetchImportSchedule(file: File) {
   })
 }
 
-export function fetchAddSchedule(teacherNo: string, params: any) {
+export function fetchAddSchedule(teacherNo: string, params: {courseSchedule: Api.Schedule.updateClassParams, classIds: Array<string>}) {
   return request.post({
     url: '/courseSchedule/add',
     params: { ...params, teacherNo},
@@ -72,7 +72,7 @@ export function fetchImportClass(file: File) {
   })
 }
 
-export function fetchUpdateSchedule(params: Api.Schedule.updateClassParams) {
+export function fetchUpdateSchedule(params: {courseSchedule: Api.Schedule.updateClassParams, classIds: Array<string>}) {
   return request.put<void>({
     url: `/courseSchedule/update`,
     params:{...params},

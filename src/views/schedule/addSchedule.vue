@@ -1,5 +1,5 @@
 <template>
-    <el-dialog v-model="dialogVisible" :title="isEdit ? '编辑课程' : '新增课程'" width="500px" :close-on-click-modal="false">
+    <el-dialog v-model="dialogVisible" title="编辑课程" width="500px" :close-on-click-modal="false">
         <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
             <el-form-item label="课程号" prop="courseNo" class="flex-1">
                 <el-input v-model="form.courseNo" placeholder="例如: CS101" />
@@ -20,8 +20,8 @@
             </el-form-item>
 
             <el-form-item label="上课班级" prop="">
-                <classSelect ref="classSelectRef" v-model="classId" :classNames="classNames" :multiple="true"
-                    style="width:500px;" />
+                <classSelectMulti :teacherNo="teacherNo" v-model="classId" :classNames="classNames"
+                    @selected="handleClassSelected" @removed="handleClassRemoved" style="width:500px;" />
             </el-form-item>
 
             <el-form-item label="课程类型" prop="courseType">
@@ -73,7 +73,7 @@
 
         <template #footer>
             <el-button @click="dialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="handleSubmit">{{ isEdit ? '编辑' : '新增' }}</el-button>
+            <el-button type="primary" @click="handleSubmit">编辑</el-button>
         </template>
     </el-dialog>
 </template>
@@ -81,10 +81,10 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
-import classSelect from '@/components/select/classSelect.vue';
+import classSelectMulti from '@/components/select/classSelectMulti.vue';
 import { useUserStore } from '@/store/modules/user';
 import { fetchGetClassList } from '@/api/class';
-import { fetchGetSchedule } from '@/api/schedule';
+import { fetchAddSchedule, fetchGetSchedule, fetchUpdateSchedule } from '@/api/schedule';
 
 const userStore = useUserStore()
 const semesterList = ref()
@@ -100,14 +100,12 @@ export type SelectOption = {
 const props = defineProps<{
     visible: boolean
     weekOptions: SelectOption[],
-    rowData?: any
+    teacherNo: string
 }>()
-
-const isEdit = computed(() => !!props.rowData && !!props.rowData.id)
 
 const emit = defineEmits<{
     (e: 'update:visible', val: boolean): void
-    (e: 'submit', data: Api.Schedule.addScheduleParams): void
+    (e: 'submit'): void
 }>()
 
 const dialogVisible = computed({
@@ -116,7 +114,7 @@ const dialogVisible = computed({
 })
 
 const classId = ref<string[]>()
-const defaultForm = {
+const defaultForm: Api.Schedule.updateClassParams = {
     id: "",
     courseNo: "",
     orderNo: "",
@@ -135,8 +133,17 @@ const defaultForm = {
 }
 
 const formRef = ref<FormInstance>()
-const form = reactive({ ...defaultForm })
+const form = reactive<Api.Schedule.updateClassParams>({ ...defaultForm })
 const classNames = ref()
+const handleClassSelected = (classInfo: Api.Class.classInfo) => {
+    if (!classInfo) return
+    classId.value?.push(classInfo.id)
+}
+
+const handleClassRemoved = (classInfo: Api.Class.classInfo | undefined) => {
+    if (!classInfo) return
+    classId.value?.filter(ids => ids !== classInfo.id)
+}
 
 const rules: FormRules = {
     courseNo: [{ required: true, message: '请输入课程号', trigger: 'blur' }],
@@ -164,28 +171,9 @@ const rules: FormRules = {
 
 watch(
     () => props.visible,
-    async (visible) => {
-        if (visible) {
-            formRef.value?.resetFields()
-            const classIds = props.rowData.classes.map((item: any) => item.id)
-            classNames.value = props.rowData.classes.map((item: any) => item.className)
-            console.log("props", props.rowData, classIds)
-            if (props.rowData) {
-                Object.assign(form, props.rowData)
-                if (classIds) {
-                    classId.value = classIds
-                    console.log("classId", classId)
-                } else {
-                    classId.value = []
-                }
-            } else {
-                Object.assign(form, defaultForm)
-                classId.value = []
-            }
-        } else {
-            Object.assign(form, { ...defaultForm })
-            classId.value = []
-        }
+    async () => {
+        Object.assign(form, { ...defaultForm })
+        classId.value = []
     }
 )
 
@@ -195,18 +183,13 @@ const handleSubmit = async () => {
 
     await formRef.value.validate((valid) => {
         if (!valid) return
-        const submitData = {
-            courseSchedule: {
-                ...form,
-                id: isEdit.value ? form.id : undefined
-            },
+        fetchAddSchedule(props.teacherNo, {
+            courseSchedule: form,
             classIds: classId.value || []
-        }
-        console.log(submitData)
-        emit('submit', submitData)
+        })
+        emit('submit')
         dialogVisible.value = false
     })
 }
-
 
 </script>

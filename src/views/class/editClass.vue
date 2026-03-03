@@ -6,7 +6,7 @@
             </el-form-item>
 
             <el-form-item label="年级" prop="grade">
-                <el-select v-model="form.grade" class="w-full" placeholder="请选择年级">
+                <el-select v-model="form.grade" class="w-full" placeholder="请选择年级" >
                     <el-option v-for="item in gradeOptions" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
             </el-form-item>

@@ -229,7 +229,7 @@ const resetSearch = async () => {
 }
 
 const AddClass = async (record: Api.Class.addClassParams) => {
-  const data = await fetchAddClass(userInfo.teacherNo!, record)
+  const data = await fetchAddClass(record)
   await getClassList()
 }
 

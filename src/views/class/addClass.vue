@@ -2,7 +2,11 @@
     <el-dialog v-model="dialogVisible" title="新增班级" width="500px" :close-on-click-modal="false">
         <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
             <el-form-item label="班级名称" prop="className">
-                <el-input v-model="form.className" placeholder="请输入班级名称"/>
+                <el-input v-model="form.className" placeholder="请输入班级名称" />
+            </el-form-item>
+
+            <el-form-item label="辅导员" prop="teacherNo">
+                <teacherSelect :collegeName="''" @selected="handleTeacherSelected" :disabled="false" />
             </el-form-item>
 
             <el-form-item label="年级" prop="grade">
@@ -32,67 +36,75 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive, computed, watch } from 'vue'
-    import type { FormInstance, FormRules } from 'element-plus'
-    
-    export type SelectOption = {
-        label: string
-        value: string
-    }
-    
-    const props = defineProps<{
-            visible: boolean
-            majorOptions: SelectOption[]
-            gradeOptions: SelectOption[]
-        }>()
-    
-    const emit = defineEmits<{
-        (e: 'update:visible', val: boolean): void
-        (e: 'submit', data: Api.Class.addClassParams): void
-    }>()
-    
-    const dialogVisible = computed({
-        get: () => props.visible,
-        set: (val) => emit('update:visible', val)
-    })
-    
-    const defaultForm: Api.Class.classInfo = {
-        className: '',
-        grade: '',
-        major: '',
-        count: 30
-    } as any
-    
-    const formRef = ref<FormInstance>()
-    const form = reactive<Api.Class.classInfo>({ ...defaultForm })
-    
-    const rules: FormRules = {
-        className: [{ required: true, message: '请输入班级名称', trigger: 'blur' }],
-        grade: [{ required: true, message: '请选择年级', trigger: 'change' }],
-        major: [{ required: true, message: '请选择专业', trigger: 'change' }],
-        count: [{ required: true, message: '请输入人数', trigger: 'blur' }]
+import { ref, reactive, computed, watch } from 'vue'
+import type { FormInstance, FormRules } from 'element-plus'
+
+export type SelectOption = {
+    label: string
+    value: string
+}
+
+const props = defineProps<{
+    visible: boolean
+    majorOptions: SelectOption[]
+    gradeOptions: SelectOption[]
+}>()
+
+const emit = defineEmits<{
+    (e: 'update:visible', val: boolean): void
+    (e: 'submit', data: Api.Class.addClassParams): void
+}>()
+
+const dialogVisible = computed({
+    get: () => props.visible,
+    set: (val) => emit('update:visible', val)
+})
+
+const handleTeacherSelected = async (teacher: Api.Teacher.teacherInfo) => {
+    form.teacherNo = teacher.teacherNo
+}
+const defaultForm: Api.Class.classInfo = {
+    className: '',
+    teacherNo: '',
+    grade: '',
+    major: '',
+    count: 30
+} as any
+
+const formRef = ref<FormInstance>()
+const form = reactive<Api.Class.classInfo>({ ...defaultForm })
+
+const rules: FormRules = {
+    className: [{ required: true, message: '请输入班级名称', trigger: 'blur' }],
+    grade: [{ required: true, message: '请选择年级', trigger: 'change' }],
+    major: [{ required: true, message: '请选择专业', trigger: 'change' }],
+    count: [{ required: true, message: '请输入人数', trigger: 'blur' }]
+}
+
+watch(
+    () => dialogVisible.value,
+    (visible) => {
+        if (!visible) return
+        Object.assign(form, { ...defaultForm })
+    },
+    { immediate: true }
+)
+
+const handleSubmit = async () => {
+    if (!formRef.value) return
+    if (form.teacherNo === '') {
+        ElMessage.error('请选择辅导员')
+        return
     }
 
-    watch(
-        () => dialogVisible.value,
-        (visible) => {
-            if (!visible) return
-            Object.assign(form, { ...defaultForm })
-        },
-        { immediate: true }
-    )
-    
-    const handleSubmit = async () => {
-        if (!formRef.value) return
-    
-        await formRef.value.validate((valid) => {
-            if (!valid) return
-            emit('submit', form)
-            dialogVisible.value = false
-        })
-    }
-    
-    const handleCancel = () => {
+    await formRef.value.validate((valid) => {
+        if (!valid) return
+        emit('submit', form)
         dialogVisible.value = false
-    }
-    </script>
+    })
+}
+
+const handleCancel = () => {
+    dialogVisible.value = false
+}
+</script>

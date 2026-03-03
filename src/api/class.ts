@@ -55,10 +55,11 @@ export function fetchImportClass(token: string, file: File) {
  * @param params 班级参数
  * @returns 添加响应
  */
-export function fetchAddClass(teacherNo: string,  params: Api.Class.addClassParams) {
+export function fetchAddClass(params: Api.Class.addClassParams) {
   return request.post<void>({
     url: '/class/add',
-    data: {...params, teacherNo},
+    params:{ teacherNo: params.teacherNo},
+    data: params,
     showSuccessMessage: true,
     showErrorMessage: true,
   })

@@ -1,12 +1,7 @@
 <template>
     <div class="custom-select-container">
-        <el-input v-model="selectedItem" placeholder="请选择班级" readonly @click="openDialog" :disabled="disabled">
-            <template #suffix>
-                <el-icon class="custom-select-icon">
-                    <ArrowDown />
-                </el-icon>
-            </template>
-        </el-input>
+        <el-select v-model="selectedNames" placeholder="请选择班级" readonly @visible-change="openDialog" multiple
+            @remove-tag="handleTagRemove" />
 
         <el-dialog title="请选择班级" v-model="dialogVisible" width="800px" destroy-on-close :show-footer="false"
             append-to-body>
@@ -30,19 +25,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
-import { ArrowDown } from '@element-plus/icons-vue'
+import { ref, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { fetchGetClassList } from '@/api/class';
 
 const props = defineProps<{
     teacherNo: string
-    disabled?: boolean
-    reset?: boolean
+    classNames: Array<string>
 }>()
 
 const dialogVisible = ref(false)
-const selectedItem = ref<string>('')
+const selectedNames = ref<Array<string>>([])
+const selectedClasses = ref<Array<Api.Class.classInfo>>([])
 const classList = ref<Array<Api.Class.classInfo>>([])
 const tableLoading = ref<boolean>(false)
 const currentPage = ref(1)
@@ -51,16 +45,20 @@ const total = ref(0)
 
 const emits = defineEmits<{
     selected: [classInfo: Api.Class.classInfo]
+    removed: [classInfo: Api.Class.classInfo]
 }>()
 
 const openDialog = () => {
-    if (props.disabled) return
     dialogVisible.value = true
     currentPage.value = 1
 }
 
 const handleRowSelect = (row: Api.Class.classInfo) => {
-    selectedItem.value = row.className
+    if (selectedNames.value.includes(row.className)) {
+        ElMessage.error(`已选择：${row.className}`)
+        return
+    }
+    selectedNames.value.push(row.className)
     dialogVisible.value = false
     ElMessage.success(`已选择：${row.className}`)
     emits('selected', row)
@@ -76,6 +74,26 @@ const handleCurrentChange = async (val: number) => {
     await getClassList()
 }
 
+const handleTagRemove = (val: string) => {
+    const filNames = selectedNames.value.filter(
+        name => name !== val
+    )
+    if (filNames.length <= 0) {
+        ElMessage.error(`班级不可为空`)
+        selectedNames.value.push(val)
+        return
+    }
+    ElMessage.success(`已移除：${val}`)
+    selectedNames.value = filNames
+    console.log(selectedClasses.value, val)
+    const removedClass = selectedClasses.value.find(
+        cls => cls.className === val
+    )
+    console.log(removedClass)
+    if (!removedClass) return
+    emits('removed', removedClass)
+}
+
 const getClassList = async () => {
     tableLoading.value = true
     const data = await fetchGetClassList({ teacherNo: props.teacherNo, pageSize: pageSize.value, pageNum: currentPage.value } as any)
@@ -85,37 +103,18 @@ const getClassList = async () => {
 }
 
 watch(
-    () => props.disabled,
-    async (newDisabled) => {
-        if (newDisabled && dialogVisible.value) {
-            dialogVisible.value = false
-            await getClassList()
-        }
-    },
-    { immediate: false }
-)
-
-watch(
     () => props.teacherNo,
     async (newTeacherNo, oldTeacherNo) => {
         if (newTeacherNo !== oldTeacherNo) {
             currentPage.value = 1
-            selectedItem.value = ''
             await getClassList()
         }
-    },
-    { immediate: false }
-)
-
-watch(
-    () => props.reset,
-    () => {
-        selectedItem.value = ''
     },
     { immediate: false }
 )
 
 onMounted(() => {
     getClassList()
+    selectedNames.value = props.classNames
 })
 </script>

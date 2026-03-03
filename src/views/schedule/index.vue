@@ -152,8 +152,10 @@
           @size-change="handleSizeChange" />
       </div>
 
-      <ScheduleForm v-model:visible="dialogVisible" :weekOptions="weekOptions" :rowData="currentSchedule"
-        @submit="handleDialogSubmit" />
+      <editSchedule v-model:visible="dialogEditVisible" :weekOptions="weekOptions" :rowData="currentSchedule"
+        @submit="getScheduleList" :teacherNo="teacherNo" />
+      <addSchedule v-model:visible="dialogAddVisible" :weekOptions="weekOptions" @submit="getScheduleList"
+        :teacherNo="teacherNo" />
     </div>
   </div>
 </template>
@@ -165,7 +167,8 @@ import { useRouter } from 'vue-router'
 import { fetchImportSchedule, fetchTemplate, fetchGetScheduleList, fetchAddSchedule, fetchUpdateSchedule, fetchDeleteSchedule, fetchGetScheduleListByCourse, fetchGetSchedule, fetchAddClassForCourse } from '../../api/schedule'
 import { useUserStore } from '@/store/modules/user'
 import { weekOptions } from './select'
-import ScheduleForm from './ScheduleForm.vue'
+import editSchedule from './editSchedule.vue'
+import addSchedule from './addSchedule.vue'
 import { UploadFile } from 'element-plus'
 import { useRoute } from 'vue-router'
 import { fetchClassDetail, fetchGetClassList } from '@/api/class'
@@ -179,7 +182,8 @@ const courseName = ref('')
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
-const dialogVisible = ref(false)
+const dialogEditVisible = ref(false)
+const dialogAddVisible = ref(false)
 const currentSchedule = ref<any>(null)
 
 const scheduleList = ref<any[]>([])
@@ -339,47 +343,18 @@ const handleFileChange = async (uploadFile: UploadFile) => {
 
 const openAdd = () => {
   currentSchedule.value = null
-  dialogVisible.value = true
+  dialogAddVisible.value = true
 }
 
 const openEdit = async (row: any) => {
   try {
     const fullScheduleInfo = await fetchGetSchedule(row.id)
-    //console.log('ful', fullScheduleInfo)
     currentSchedule.value = fullScheduleInfo
-    //console.log('cu', currentSchedule.value)
   } catch (error) {
     console.warn('获取完整课程信息失败，使用表格数据:', error)
     currentSchedule.value = JSON.parse(JSON.stringify(row))
   }
-  dialogVisible.value = true
-}
-
-const handleDialogSubmit = async (data: any) => {
-  try {
-    if (data.courseSchedule.id) {
-      const updateParams = {
-        courseSchedule: { ...data.courseSchedule },
-        classIds: data.classIds
-      }
-      await fetchUpdateSchedule(updateParams)
-      //console.log(updateParams)
-      /* const courseId = updateParams.id
-      const classIds = updateParams.classIds
-      await fetchAddClassForCourse(courseId, classIds) */
-      console.log('data', data)
-      ElMessage.success('更新成功')
-    } else {
-      await fetchAddSchedule(teacherNo.value, data)
-      ElMessage.success('创建成功')
-    }
-
-    dialogVisible.value = false
-    loadData()
-
-  } catch (error) {
-    console.error(error)
-  }
+  dialogEditVisible.value = true
 }
 
 const DeleteSchedule = async (id: string) => {

@@ -201,7 +201,8 @@ const handleClassSelected = (classInfo: Api.Class.classInfo) => {
 }
 
 const userRole = computed(() => {
-    const roles = userInfo?.role || []
+    const roles = userInfo.role
+    if (!roles) return ''
     if (roles.includes('college_admin')) return 'college_admin'
     if (roles.includes('admin')) return 'admin'
     if (roles.includes('teacher')) return 'teacher'
@@ -268,24 +269,22 @@ const resetSearch = () => {
     handleSearch()
 }
 
-const CheckTypeConfig: Record<number, { label: string; type: string }> = {
+const CheckTypeConfig: Record<number, { label: string; type: 'success' | 'warning' }> = {
     1: { label: '自动', type: 'success' },
     2: { label: '手动', type: 'warning' }
 }
 
-const StatusConfig: Record<number, { label: string; type: string }> = {
+const StatusConfig: Record<number, { label: string; type: 'success' | 'danger' }> = {
     1: { label: '正常', type: 'success' },
     2: { label: '异常', type: 'danger' }
 }
 
-// 获取出勤率进度条颜色
 const getAttendanceRateColor = (rate: number) => {
-    if (rate >= 90) return '#67c23a' // 绿色 - 高出勤率
-    if (rate >= 70) return '#e6a23c' // 黄色 - 中等出勤率
-    return '#f56c6c' // 红色 - 低出勤率
+    if (rate >= 90) return '#67c23a'
+    if (rate >= 70) return '#e6a23c'
+    return '#f56c6c'
 }
 
-// 导出报表
 const exportReport = async () => {
     try {
         const exportParams = {
@@ -294,14 +293,12 @@ const exportReport = async () => {
             pageSize: 99999
         }
 
-        // 调用实际的导出接口
         const response = await fetchAttendanceReportExcel(exportParams)
 
         const blob = response instanceof Blob
             ? response
             : new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
 
-        // 创建下载链接
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
