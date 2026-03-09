@@ -14,9 +14,9 @@
                 <el-input v-model="form.realName" placeholder="请输入真实姓名" />
             </el-form-item>
 
-            <el-form-item v-if="userInfo.role === 'admin'" label="所属部门" prop="department">
-                <el-select v-model="form.department" class="w-full" placeholder="请选择部门">
-                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item.name"
+            <el-form-item v-if="userInfo.role === 'admin'" label="所属学院" prop="collegeName">
+                <el-select v-model="form.collegeName" class="w-full" placeholder="请选择学院">
+                    <el-option v-for="(item, index) in collegeNameOption" :key="index" :label="item.name"
                         :value="item.name" />
                 </el-select>
             </el-form-item>
@@ -34,7 +34,7 @@
             </el-form-item>
 
             <el-form-item label="邮箱通知" prop="enableEmailNotification">
-                <el-switch v-model="form.enableEmailNotification"/>
+                <el-switch v-model="form.enableEmailNotification" />
             </el-form-item>
 
             <el-form-item label="通知阈值" prop="attendanceThreshold">
@@ -58,8 +58,7 @@ import { fetchGetCollegeList } from '@/api/misc';
 
 const props = defineProps<{
     id: string,
-    formData?: Api.Teacher.updateTeacherParams
-    departmentOption?: Array<Api.Misc.collegeInfo>
+    formData: Api.Teacher.teacherInfo
 }>()
 
 const emit = defineEmits<{
@@ -78,7 +77,7 @@ const defaultForm: Api.Teacher.updateTeacherParams = {
     teacherNo: '',
     phone: '',
     email: '',
-    department: '',
+    collegeName: '',
     status: 0,
     attendanceThreshold: 0,
     enableEmailNotification: false
@@ -86,9 +85,9 @@ const defaultForm: Api.Teacher.updateTeacherParams = {
 const form = reactive<Api.Teacher.updateTeacherParams>({ ...defaultForm })
 
 const rules: FormRules = {
-    teacherNo:  [{ required: true, message: '请输入工号', trigger: 'blur' }],
+    teacherNo: [{ required: true, message: '请输入工号', trigger: 'blur' }],
     username: [{ required: true, message: '请输入用户名称', trigger: 'blur' }],
-    department: [{ required: true, message: '请选择部门', trigger: 'change' }],
+    collegeName: [{ required: true, message: '请选择部门', trigger: 'change' }],
     realName: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }],
     phone: [{ required: false, message: '请输入电话', trigger: 'blur' }],
     email: [
@@ -97,15 +96,12 @@ const rules: FormRules = {
     ],
     password: [{ required: false, message: '请输入密码', trigger: 'blur' }]
 }
-const departmentOption = ref<Array<Api.Misc.collegeInfo>>([])
+const collegeNameOption = ref<Array<Api.Misc.collegeInfo>>([])
 
-onMounted(() => {
-    if (!props.id) {
-        emit('close')
-        return
-    }
+onMounted(async () => {
     Object.assign(form, { ...defaultForm, ...props.formData })
-    if (userInfo.role === 'admin') getDepartmentOption()
+    form.collegeName = props.formData.department
+    collegeNameOption.value = await fetchGetCollegeList()
 })
 
 const handleCancel = () => {
@@ -135,7 +131,7 @@ const handleSubmit = async () => {
         teacherNo: form.teacherNo,
         phone: form.phone,
         email: form.email,
-        department: form.department,
+        collegeName: form.collegeName,
         status: form.status,
         attendanceThreshold: form.attendanceThreshold,
         enableEmailNotification: form.enableEmailNotification
@@ -145,10 +141,5 @@ const handleSubmit = async () => {
         handleCancel()
         emit('submit')
     })
-}
-
-const getDepartmentOption = async () => {
-    let result = await fetchGetCollegeList()
-    departmentOption.value = result
 }
 </script>

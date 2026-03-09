@@ -1,6 +1,7 @@
 <template>
     <el-dialog v-model="dialogVisible" title="修改密码" width="500px" :before-close="handleClose">
-        <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
+        <div>功能暂未实现</div>
+        <!-- <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
             <el-form-item label="新密码" prop="newPassword">
                 <el-input v-model="form.newPassword" type="password" show-password placeholder="请输入新密码" />
             </el-form-item>
@@ -14,7 +15,7 @@
                 <el-button @click="cancel">取消</el-button>
                 <el-button type="primary" @click="save">保存</el-button>
             </span>
-        </template>
+        </template> -->
     </el-dialog>
 </template>
 

@@ -2,14 +2,12 @@
     <div class="mt-1">
         <ElCard class="col-span-12" shadow="never">
             <div class="flex items-center gap-4">
-                <!-- 单个日期选择器 -->
                 <div class="flex items-center">
                     <div class="mr-2 text-gray-500">日期：</div>
                     <el-date-picker v-model="selectedDate" type="date" placeholder="选择日期" format="YYYY-MM-DD"
                         value-format="YYYY-MM-DD" size="default" class="w-[200px]" />
                 </div>
 
-                <!-- 查询/重置按钮 -->
                 <div class="ml-auto flex gap-2">
                     <el-button type="primary" @click="getAlertList">查询</el-button>
                     <el-button type="info" plain @click="resetSearch">重置</el-button>
@@ -17,7 +15,7 @@
             </div>
         </ElCard>
         <ElCard class="col-span-12 mt-4" shadow="never" v-loading="tableLoading" style="min-height: 600px">
-            <div class="flex items-center px-4 py-3 bg-gray-50 border-b border-gray-200 rounded-t-md">
+            <div class="flex items-center px-4 py-3 border-b border-gray-200 rounded-t-md">
                 <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange"
                     label="选择全部" size="large" />
             </div>

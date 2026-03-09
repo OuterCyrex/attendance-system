@@ -46,7 +46,7 @@
                     <el-table-column label="教师工号" prop="teacherNo"></el-table-column>
                     <el-table-column label="电话" prop="phone"></el-table-column>
                     <el-table-column label="邮箱" prop="email"></el-table-column>
-                    <el-table-column label="所属部门/学院" prop="department"></el-table-column>
+                    <el-table-column label="所属学院" prop="department"></el-table-column>
                     <el-table-column label="是否禁用">
                         <template #default="scope">
                             <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">{{ scope.row.status === 1 ?
@@ -75,10 +75,9 @@
                     @size-change="handleSizeChange" />
             </div>
         </div>
-        <AddForm v-if="addDialogVisible" @close="addDialogVisible = false" @submit="getTeacherList"
-            :department-option="collegeOptions" />
+        <AddForm v-if="addDialogVisible" @close="addDialogVisible = false" @submit="getTeacherList" />
         <UpdateForm :id="teacherList[editIndex].id" :formData="teacherList[editIndex]" v-if="editDialogVisible"
-            @close="editDialogVisible = false" @submit="getTeacherList" :department-option="collegeOptions" />
+            @close="editDialogVisible = false" @submit="getTeacherList"/>
     </div>
 </template>
 
@@ -90,7 +89,6 @@ import UpdateForm from './editForm.vue'
 import AddForm from './addForm.vue'
 import { fetchDeleteTeacher, fetchGetTeacherList, fetchImportTeacher, fetchTeacherTemplate } from '@/api/teacherMange'
 import { useUserStore } from '@/store/modules/user'
-import { fetchGetCollegeList } from '@/api/misc'
 import type { UploadFile } from 'element-plus'
 import collegeSelect from '@/components/select/collegeSelect.vue'
 
@@ -99,7 +97,6 @@ const total = ref(0)
 const pageSize = ref(10)
 const tableLoading = ref(false)
 const teacherList = ref<Array<Api.Teacher.teacherInfo>>([])
-const collegeOptions = ref<Array<Api.Misc.collegeInfo>>([])
 const editIndex = ref<number>(0)
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
@@ -107,7 +104,7 @@ const resetFlag = ref(false)
 
 const searchForm = reactive({
     teacherNo: '',
-    department: '',
+    collegeName: '',
     realName: '',
 })
 const userStore = useUserStore()
@@ -115,7 +112,7 @@ const { getUserInfo: userInfo } = userStore
 const { getToken: token } = userStore
 
 const handleCollegeSelected = async (college: Api.Misc.collegeInfo) => {
-    searchForm.department = college.name
+    searchForm.collegeName = college.name
 }
 
 const handlePageChange = (page: number) => {
@@ -134,7 +131,7 @@ const getTeacherList = async () => {
         pageSize: pageSize.value,
         teacherNo: searchForm.teacherNo,
         realName: searchForm.realName,
-        department: searchForm.department,
+        collegeName: searchForm.collegeName,
     }
     const data = await fetchGetTeacherList(params)
     teacherList.value = data.records
@@ -161,13 +158,6 @@ const handleFileChange = async (uploadFile: UploadFile) => {
     getTeacherList()
 }
 
-const getCollegeList = async () => {
-    tableLoading.value = true
-    const data = await fetchGetCollegeList()
-    collegeOptions.value = data
-    tableLoading.value = false
-}
-
 const UpdateTeacher = (index: number) => {
     editIndex.value = index
     editDialogVisible.value = true
@@ -187,14 +177,13 @@ const handleSearch = () => {
 const resetSearch = () => {
     searchForm.teacherNo = ''
     searchForm.realName = ''
-    searchForm.department = ''
+    searchForm.collegeName = ''
     resetFlag.value = !resetFlag.value
 
     getTeacherList()
 }
 
-onMounted(() => {
-    getTeacherList()
-    if (userInfo.role === 'admin') getCollegeList()
+onMounted(async () => {
+    await getTeacherList()
 })
 </script>

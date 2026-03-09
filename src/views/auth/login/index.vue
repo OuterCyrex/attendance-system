@@ -126,29 +126,24 @@ const handleSubmit = async () => {
 
     loading.value = true
 
-    // 登录请求
     const { username, password } = formData
-    const { token } = await fetchLogin({
+    const { token, userInfo } = await fetchLogin({
       username: username,
       password
     })
 
     userStore.setToken(token)
 
-    const currentUserInfo = await getUserInfo()
     const userRole = await getUserRole()
 
-    // 验证token
     if (!token) {
       throw new Error('Login failed - no token received')
     }
 
-    // 存储 token 和登录状态
     userStore.setLoginStatus(true)
-    userStore.setUserInfo(currentUserInfo as Api.Auth.userInfo)
+    userStore.setUserInfo(userInfo as Api.Auth.userInfo)
     userStore.setRole(userRole)
 
-    // 登录成功处理
     showLoginSuccessNotice()
 
     TODO: '不同身份路由跳转'

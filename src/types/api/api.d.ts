@@ -74,7 +74,7 @@ declare namespace Api {
       phone: string
       email: string
       status: number
-      department: string
+      collegeName: string
       attendanceThreshold: number
       enableEmailNotification: boolean
     }
@@ -215,7 +215,7 @@ declare namespace Api {
   namespace Teacher {
     interface queryTeacherParams {
       teacherNo: string
-      department: string
+      collegeName: string
       realName: string
       pageNum: number
       pageSize: number
@@ -227,7 +227,7 @@ declare namespace Api {
       teacherNo: string
       phone: string
       email: string
-      department: string
+      collegeName: string
       status: number
       attendanceThreshold: number
       enableEmailNotification: boolean
@@ -240,17 +240,16 @@ declare namespace Api {
       teacherNo: string
       phone: string
       email: string
-      department: string
       status: number
+      collegeName: string
       attendanceThreshold: number
       enableEmailNotification: boolean
-      collegeNo: string
     }
 
     interface teacherInfo {
       id: string
       username: string
-      password: any
+      password: string
       realName: string
       teacherNo: string
       phone: string
@@ -260,47 +259,47 @@ declare namespace Api {
       status: number
       attendanceThreshold: number
       enableEmailNotification: boolean
-      lastLoginTime: any
-      lastLoginIp: any
-      remark: any
+      lastLoginTime: string
+      lastLoginIp: string
+      remark: string
       createTime: string
       updateTime: string
       isDeleted: number
     }
   }
 
-    namespace Misc {
-      interface collegeInfo {
-        id: string
-        name: string
-        collegeNo: string
-      }
-
-      interface semesterInfo {
-        id: string
-        semesterName: string
-        startDate: string
-        endDate: string
-        weeks: number
-        createTime: string
-        updateTime: string
-      }
+  namespace Misc {
+    interface collegeInfo {
+      id: string
+      name: string
+      collegeNo: string
     }
 
-    namespace Chart {
-      interface getClassChartParams {
-        collegeName: string
-        teacherName: string
-        className: string
-        granularity: number
-        semesterName: string
-      }
-
-      interface getCourseChartParams {
-        teacherName: string
-        orderNo: string
-        semesterName: string
-        granularity: number
-      }
+    interface semesterInfo {
+      id: string
+      semesterName: string
+      startDate: string
+      endDate: string
+      weeks: number
+      createTime: string
+      updateTime: string
     }
   }
+
+  namespace Chart {
+    interface getClassChartParams {
+      collegeName: string
+      teacherName: string
+      className: string
+      granularity: number
+      semesterName: string
+    }
+
+    interface getCourseChartParams {
+      teacherName: string
+      orderNo: string
+      semesterName: string
+      granularity: number
+    }
+  }
+}

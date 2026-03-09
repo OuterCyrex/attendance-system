@@ -245,7 +245,8 @@ const DeleteClass = async (id: string) => {
   getClassList()
 }
 
-onMounted(() => {
-  resetSearch()
+onMounted(async () => {
+  await resetSearch()
+  console.log(userInfo)
 })
 </script>

@@ -225,7 +225,7 @@ const handleGetAttendanceList = async () => {
     })
 }
 
-const handleSearch = () => {
+const handleSearch = async () => {
     currentPage.value = 1
     handleGetAttendanceList()
 }
@@ -234,7 +234,7 @@ const handleGetOrderList = async () => {
     await fetchOrderList().then(data => orderList.value = data)
 }
 
-const resetSearch = () => {
+const resetSearch = async () => {
     collegeName.value = ''
     teacherNo.value = ''
     className.value = ''
@@ -245,12 +245,11 @@ const resetSearch = () => {
     courseTeacher.value = ''
     resetFlag.value = !resetFlag.value
     teacherNo.value = ''
-    if (userInfo.role === 'collegeAdmin') collegeName.value = userInfo.collegeName || ''
-    if (userInfo.role === 'teacher') {
-        teacherNo.value = userInfo.teacherNo || ''
-    }
+    if (userInfo.role === 'college_admin') collegeName.value = userInfo.collegeName || ''
+    if (userInfo.role === 'teacher')  teacherNo.value = userInfo.teacherNo || ''
+    await handleSearch()
 
-    handleSearch()
+    console.log(userInfo.collegeName || '', collegeName.value)
 }
 
 
@@ -274,10 +273,10 @@ const exportReport = async () => {
 }
 
 onMounted(async () => {
-    await handleGetAttendanceList()
     await handleGetOrderList()
     semesterList.value = await fetchSemesterList()
     courseTypeList.value = await fetchGetCourseType()
+    await resetSearch()
 })
 
 

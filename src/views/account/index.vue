@@ -10,7 +10,7 @@
                 </h1>
                 <div class="flex flex-wrap gap-4 text-sm text-gray-500">
                     <span>工号: </span>
-                    <span>{{ userInfo.teacherNo || userInfo.id }}</span>
+                    <span>{{ userInfo.teacherNo || '-' }}</span>
                 </div>
             </div>
         </ElCard>
@@ -40,7 +40,7 @@
 
                             <div class="flex items-start">
                                 <span class="w-24 text-gray-500 font-medium">学院：</span>
-                                <span class="flex-1 ">{{ userInfo.department || '-' }}</span>
+                                <span class="flex-1 ">{{ userInfo.collegeName || '-' }}</span>
                             </div>
 
                             <div class="flex items-start">
@@ -67,8 +67,8 @@
             </div>
         </ElCard>
         <div class="form-containers">
-            <accountForm v-model="editVisible" :userInfo="userInfo" @save="handleSave" />
-            <passwordForm v-model="newPWDVisible" @save="editPassword" />
+            <accountForm v-model="editVisible"/>
+            <passwordForm v-model="newPWDVisible"/>
         </div>
     </div>
 </template>
@@ -78,55 +78,12 @@ import { useUserStore } from '@/store/modules/user'
 import { User, InfoFilled } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { fetchEditSelfInfo } from '@/api/account'
 import accountForm from './accountForm.vue'
 import passwordForm from './passwordForm.vue'
-import { fetchLogout } from '@/api/auth'
 
 const userStore = useUserStore()
 const { getToken: token } = userStore
 const userInfo: any = storeToRefs(userStore).getUserInfo
 const editVisible = ref(false)
 const newPWDVisible = ref(false)
-
-
-const handleSave = async (params: Api.Auth.updateSelfParams) => {
-    try {
-        await fetchEditSelfInfo(params)
-    } catch (error) {
-        return
-    }
-
-    const newUserInfo = userInfo.value
-    newUserInfo.username = params.username
-    newUserInfo.phone = params.phone
-    newUserInfo.email = params.email
-    newUserInfo.status = params.status
-    newUserInfo.attendanceThreshold = params.attendanceThreshold
-    newUserInfo.enableEmailNotification = params.enableEmailNotification
-    newUserInfo.department = params.department
-    newUserInfo.realName = params.realName
-    newUserInfo.teacherNo = params.teacherNo
-    userStore.setUserInfo(newUserInfo)
-
-    editVisible.value = false
-}
-
-const editPassword = async (data: { password: string }) => {
-    const { password } = data
-
-    const params = {
-        username: userInfo.value.username,
-        realName: userInfo.value.realName,
-        teacherNo: userInfo.value.teacherNo,
-        password: password
-    }
-
-    await fetchEditSelfInfo(params as any);
-    if (token) {
-        await fetchLogout(token)
-    }
-    newPWDVisible.value = false
-    userStore.logOut()
-}
 </script>

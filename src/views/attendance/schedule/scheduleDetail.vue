@@ -1,14 +1,10 @@
 <template>
     <el-dialog v-model="dialogVisible" title="考勤详情" width="500px" destroy-on-close align-center>
         <div v-if="attendanceDetail" class="flex flex-col gap-4 text-sm px-4">
-
-            <!-- 打卡时间 -->
             <div class="flex items-center">
                 <div class="w-20 text-left text-gray-500 mr-3 shrink-0">打卡时间:</div>
                 <div class="flex-1 text-gray-600">{{ attendanceDetail.checkTime || '暂无数据' }}</div>
             </div>
-
-            <!-- 考勤统计 -->
             <div class="flex items-center">
                 <div class="w-20 text-left text-gray-500 mr-3 shrink-0">考勤统计:</div>
                 <div class="flex-1">
@@ -16,18 +12,12 @@
                     <span class="text-blue-600 font-bold">{{ attendanceDetail.actualCount }}</span> 人
                 </div>
             </div>
-
-            <!-- 考勤率 -->
             <div class="flex items-center">
                 <div class="w-20 text-left text-gray-500 mr-3 shrink-0">考勤率:</div>
                 <div class="flex-1">
-                    <el-tag size="small" :type="getAttendanceRateTag().type">
-                        {{ (attendanceDetail.attendanceRate * 100).toFixed(1) }}%
-                    </el-tag>
+                        {{ attendanceDetail.attendanceRate }}%
                 </div>
             </div>
-
-            <!-- 打卡类型 -->
             <div class="flex items-center">
                 <div class="w-20 text-left text-gray-500 mr-3 shrink-0">打卡类型:</div>
                 <div class="flex-1">
@@ -36,8 +26,6 @@
                     </el-tag>
                 </div>
             </div>
-
-            <!-- 状态 -->
             <div class="flex items-center">
                 <div class="w-20 text-left text-gray-500 mr-3 shrink-0">状态:</div>
                 <div class="flex-1">
@@ -47,7 +35,6 @@
                 </div>
             </div>
 
-            <!-- 考勤图片 -->
             <div v-if="attendanceDetail.imageUrl" class="flex items-start">
                 <div class="w-20 text-left text-gray-500 mr-3 shrink-0 mt-0.5">考勤图片:</div>
                 <div class="flex-1">
@@ -57,7 +44,6 @@
                 </div>
             </div>
 
-            <!-- 备注 -->
             <div class="flex items-start">
                 <div class="w-20 text-left text-gray-500 mr-3 shrink-0 mt-0.5">备注:</div>
                 <div class="flex-1 text-gray-800 break-all leading-normal">
@@ -114,25 +100,16 @@ const dialogVisible = computed({
 
 const router = useRouter();
 
-const getAttendanceRateTag = () => {
-    const rate = attendanceDetail.value.attendanceRate * 100;
-    if (rate >= 90) return { type: 'success' as AlertType };
-    if (rate >= 70) return { type: 'warning' as AlertType};
-    return { type: 'danger' as AlertType};
-};
-
 const getCheckTypeTag = () => {
     switch (attendanceDetail.value.checkType) {
-        case 0: return { label: '手动打卡', type: 'info' as AlertType}
-        case 1: return { label: '自动打卡', type: 'success' as AlertType}
-        case 2: return { label: '手动打卡', type: 'info' as AlertType}
+        case 1: return { label: '自动打卡', type: 'info' as AlertType}
+        case 2: return { label: '手动打卡', type: 'warning' as AlertType}
         default: return { label: '未知', type: 'warning' as AlertType}
     }
 };
 
 const getStatusTag = () => {
     switch (attendanceDetail.value.status) {
-        case 0: return { label: '正常', type: 'success' as AlertType};
         case 1: return { label: '正常', type: 'success' as AlertType};
         case 2: return { label: '异常', type: 'danger' as AlertType};
         default: return { label: '未知', type: 'warning' as AlertType};

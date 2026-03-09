@@ -24,9 +24,9 @@
                 <el-input v-model="formData.realName" placeholder="请输入真实姓名" />
             </el-form-item>
 
-            <el-form-item v-if="currentUserInfo.role === 'admin'" label="所属部门" prop="department">
-                <el-select v-model="formData.department" class="w-full" placeholder="请选择部门">
-                    <el-option v-for="(item, index) in departmentOption" :key="index" :label="item.name"
+            <el-form-item v-if="currentUserInfo.role === 'admin'" label="所属学院" prop="collegeName">
+                <el-select v-model="formData.collegeName" class="w-full" placeholder="请选择学院">
+                    <el-option v-for="(item, index) in collegeNameOption" :key="index" :label="item.name"
                         :value="item.name" />
                 </el-select>
             </el-form-item>
@@ -71,43 +71,38 @@ const emit = defineEmits<{
     (e: 'submit'): void
 }>()
 
-const props = defineProps<{
-    departmentOption?: Array<Api.Misc.collegeInfo>
-}>()
-
 const localDialogVisible = ref(true)
 const userStore = useUserStore()
 const { getUserInfo: currentUserInfo } = userStore
 
 const formRef = ref<FormInstance>()
 const defaultForm = {
-    username: '',
-    password: '123456',
-    realName: '',
-    teacherNo: '',
-    phone: '',
-    email: '',
-    department: '',
-    status: 0,
-    attendanceThreshold: 0,
-    enableEmailNotification: 0,
-    collegeNo: ''
+  username: '',
+  password: '123456',
+  realName: '',
+  teacherNo: '',
+  phone: '',
+  email: '',
+  status: 0,
+  collegeName: '',
+  attendanceThreshold: 0,
+  enableEmailNotification: false
 }
 const formData = reactive(JSON.parse(JSON.stringify(defaultForm)));
 
 const rules: FormRules = {
     teacherNo: [{ required: true, message: '请输入教师工号', trigger: 'blur' }],
     username: [{ required: true, message: '请输入用户名称', trigger: 'blur' }],
-    department: [{ required: true, message: '请选择部门', trigger: 'change' }],
+    collegeName: [{ required: true, message: '请选择部门', trigger: 'change' }],
     realName: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }],
-    phone: [{ required: true, message: '请输入电话', trigger: 'blur' }],
+    phone: [{ required: false, message: '请输入电话', trigger: 'blur' }],
     email: [
-        { required: true, message: '请输入邮箱', trigger: 'blur' },
+        { required:false, message: '请输入邮箱', trigger: 'blur' },
         { type: 'email', message: '请输入合法的邮箱格式', trigger: 'blur' }
     ],
     password: [{ required: false, message: '请输入密码', trigger: 'blur' }]
 }
-const departmentOption = ref<Array<Api.Misc.collegeInfo>>([])
+const collegeNameOption = ref<Array<Api.Misc.collegeInfo>>([])
 
 const handleCancel = () => {
     if (formRef.value) {
@@ -137,13 +132,13 @@ const handleSubmit = async () => {
     })
 }
 
-const getDepartmentOption = async () => {
+const getCollegeNameOption = async () => {
     let result = await fetchGetCollegeList()
-    departmentOption.value = result
+    collegeNameOption.value = result
 }
 
 onMounted(() => {
     Object.assign(formData, { ...defaultForm })
-    getDepartmentOption()
+    getCollegeNameOption()
 })
 </script>

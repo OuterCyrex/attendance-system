@@ -18,10 +18,18 @@ export const fetchUpdateTeacher = (id: string, param: Api.Teacher.updateTeacherP
     })
 }
 
+export const fetchUpdateSelf = (data: Api.Teacher.updateTeacherParams) => {
+    return request.put<void>({
+        url: `/teacher/profile`,
+        data,
+        showSuccessMessage: true,
+        showErrorMessage: true
+    })
+}
+
 export const fetchAddTeacher = (param: Api.Teacher.addTeacherParams) => {
     return request.post<void>({
         data: param,
-        params: {collegeNo: param.collegeNo},
         url: `/teacher/teachers`,
         showSuccessMessage: true,
         showErrorMessage: true

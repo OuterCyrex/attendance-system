@@ -187,11 +187,6 @@ const latestRecord = computed(() => {
     )
 })
 
-/* const weekdayText = computed(() => {
-    const map = ['一', '二', '三', '四', '五', '六', '日']
-    return map[schedule.value.weekday - 1] || '-'
-}) */
-
 const checkTypeMap: Record<number, string> = {
     1: '自动',
     2: '手动',
