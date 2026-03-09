@@ -19,9 +19,9 @@
                 </el-select>
             </el-form-item>
 
-            <el-form-item label="上课班级" prop="">
-                <classSelectMulti :teacherNo="teacherNo" v-model="classId" :classNames="classNames"
-                    @selected="handleClassSelected" @removed="handleClassRemoved" style="width:500px;" />
+            <el-form-item label="上课班级">
+                <classSelectMulti :teacherNo="teacherNo" v-model="classId" :classes="classes"
+                    @change="handleClassChange" style="width:500px;" />
             </el-form-item>
 
             <el-form-item label="课程类型" prop="courseType">
@@ -83,13 +83,13 @@ import { ref, reactive, computed, watch } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import classSelectMulti from '@/components/select/classSelectMulti.vue';
 import { useUserStore } from '@/store/modules/user';
-import { fetchGetClassList } from '@/api/class';
-import { fetchAddSchedule, fetchGetSchedule, fetchUpdateSchedule } from '@/api/schedule';
+import { fetchAddSchedule } from '@/api/schedule';
+import { fetchSemesterList } from '@/api/misc';
 
 const userStore = useUserStore()
 const semesterList = ref()
 onMounted(async () => {
-    semesterList.value = await userStore.getSemesterList()
+    semesterList.value = await fetchSemesterList()
 })
 
 export type SelectOption = {
@@ -114,6 +114,7 @@ const dialogVisible = computed({
 })
 
 const classId = ref<string[]>()
+const classes = ref<Array<Api.Class.classInfo>>([])
 const defaultForm: Api.Schedule.updateClassParams = {
     id: "",
     courseNo: "",
@@ -134,15 +135,10 @@ const defaultForm: Api.Schedule.updateClassParams = {
 
 const formRef = ref<FormInstance>()
 const form = reactive<Api.Schedule.updateClassParams>({ ...defaultForm })
-const classNames = ref()
-const handleClassSelected = (classInfo: Api.Class.classInfo) => {
+const handleClassChange = (classInfo: Array<Api.Class.classInfo>) => {
     if (!classInfo) return
-    classId.value?.push(classInfo.id)
-}
-
-const handleClassRemoved = (classInfo: Api.Class.classInfo | undefined) => {
-    if (!classInfo) return
-    classId.value?.filter(ids => ids !== classInfo.id)
+    classId.value = classInfo.map(item => item.id)
+    console.log(classInfo)
 }
 
 const rules: FormRules = {

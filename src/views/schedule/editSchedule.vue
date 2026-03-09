@@ -19,9 +19,9 @@
                 </el-select>
             </el-form-item>
 
-            <el-form-item label="上课班级" prop="">
-                <classSelectMulti :teacherNo="teacherNo" v-model="classId" :classNames="classNames" @selected="handleClassSelected" @removed="handleClassRemoved"
-                    style="width:500px;" />
+            <el-form-item label="上课班级">
+                <classSelectMulti :teacherNo="teacherNo" v-model="classId" :classes="rowData.classes"
+                    @change="handleClassChange" style="width:500px;" />
             </el-form-item>
 
             <el-form-item label="课程类型" prop="courseType">
@@ -83,15 +83,14 @@ import { ref, reactive, computed, watch } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import classSelectMulti from '@/components/select/classSelectMulti.vue';
 import { useUserStore } from '@/store/modules/user';
-import { fetchGetClassList } from '@/api/class';
-import { fetchGetSchedule, fetchUpdateSchedule } from '@/api/schedule';
+import { fetchUpdateSchedule } from '@/api/schedule';
+import { fetchSemesterList } from '@/api/misc';
 
 const userStore = useUserStore()
 const semesterList = ref()
 onMounted(async () => {
-    semesterList.value = await userStore.getSemesterList()
+    semesterList.value = await fetchSemesterList()
 })
-
 export type SelectOption = {
     label: string
     value: string
@@ -135,15 +134,9 @@ const defaultForm: Api.Schedule.updateClassParams = {
 
 const formRef = ref<FormInstance>()
 const form = reactive<Api.Schedule.updateClassParams>({ ...defaultForm })
-const classNames = ref()
-const handleClassSelected = (classInfo: Api.Class.classInfo) => {
+const handleClassChange = (classInfo: Array<Api.Class.classInfo>) => {
     if (!classInfo) return
-    classId.value?.push(classInfo.id)
-}
-
-const handleClassRemoved = (classInfo: Api.Class.classInfo) => {
-    console.log(classInfo)
-    classId.value?.filter(ids => ids !== classInfo.id)
+    classId.value = classInfo.map(item => item.id)
 }
 
 const rules: FormRules = {
@@ -175,21 +168,8 @@ watch(
     async (visible) => {
         if (visible) {
             formRef.value?.resetFields()
-            const classIds = props.rowData.classes.map((item: any) => item.id)
-            classNames.value = props.rowData.classes.map((item: any) => item.className)
-            console.log("props", props.rowData, classIds)
-            if (props.rowData) {
-                Object.assign(form, props.rowData)
-                if (classIds) {
-                    classId.value = classIds
-                    console.log("classId", classId)
-                } else {
-                    classId.value = []
-                }
-            } else {
-                Object.assign(form, defaultForm)
-                classId.value = []
-            }
+            Object.assign(form, props.rowData)
+            classId.value = props.rowData.classes.map((item: Api.Class.classInfo) => item.id)
         } else {
             Object.assign(form, { ...defaultForm })
             classId.value = []

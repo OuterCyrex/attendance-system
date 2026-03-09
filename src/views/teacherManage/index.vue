@@ -86,7 +86,7 @@
 import { ref, reactive } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
-import UpdateForm from './updateForm.vue'
+import UpdateForm from './editForm.vue'
 import AddForm from './addForm.vue'
 import { fetchDeleteTeacher, fetchGetTeacherList, fetchImportTeacher, fetchTeacherTemplate } from '@/api/teacherMange'
 import { useUserStore } from '@/store/modules/user'

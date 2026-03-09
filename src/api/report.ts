@@ -1,7 +1,5 @@
 import http from '@/utils/http'
-import { ApiResponse, PageResponse, AttendanceRecord } from '@/types/report'
 
-// 查询考勤报表
 export const fetchQueryAttendanceReport = (params: any) => {
     return http.post<any>({
         url: '/attendance/queryAttendanceReport',
@@ -9,7 +7,6 @@ export const fetchQueryAttendanceReport = (params: any) => {
     })
 }
 
-// 新增：导出考勤报表Excel接口
 export const fetchAttendanceReportExcel = (params: any) => {
     return http.post<Blob>({
         url: '/attendance/exportAttendanceReport',
@@ -18,7 +15,8 @@ export const fetchAttendanceReportExcel = (params: any) => {
             'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Type': 'application/json'
         },
-        responseType: 'blob'
+        responseType: 'blob',
+        showSuccessMessage: true
     })
 }
 

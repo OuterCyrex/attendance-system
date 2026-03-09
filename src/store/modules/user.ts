@@ -42,7 +42,7 @@ import { setPageTitle } from '@/utils/router'
 import { resetRouterState } from '@/router/guards/beforeEach'
 import { useMenuStore } from './menu'
 import { StorageConfig } from '@/utils/storage/storage-config'
-import { fetchSemesterList } from '@/api/misc'
+import { fetchGetCourseType, fetchSemesterList } from '@/api/misc'
 
 /**
  * 用户状态管理
@@ -150,11 +150,6 @@ export const useUserStore = defineStore(
       info.value.role = role
     }
 
-    const getSemesterList = async () => {
-         const data = await fetchSemesterList()
-         return data
-    }
-
     /**
      * 退出登录
      * 清空所有用户相关状态并跳转到登录页
@@ -247,8 +242,7 @@ export const useUserStore = defineStore(
       checkAndClearWorktabs,
       role,
       isTeacher,
-      setRole,
-      getSemesterList
+      setRole
     }
   },
   {

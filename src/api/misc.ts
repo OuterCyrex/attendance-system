@@ -19,3 +19,9 @@ export const fetchOrderList = () => {
         url:'/courseSchedule/getAllClassNumbers'
     })
 }
+
+export const fetchGetCourseType = () => {
+  return request.get<Array<string>>({
+    url: '/courseSchedule/getAllCourseTypes'
+  })
+}

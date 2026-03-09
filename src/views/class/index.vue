@@ -166,11 +166,13 @@ function goToCourseDetail(row: any) {
 }
 function handlePageChange(page: number) {
   currentPage.value = page
+  getClassList()
 }
 
 function handleSizeChange(size: number) {
   pageSize.value = size
   currentPage.value = 1
+  getClassList()
 }
 
 const downloadTemplate = async () => {

@@ -26,9 +26,7 @@
             <div class="flex items-center">
               <div class="mr-2 text-gray-500">课程类型：</div>
               <el-select v-model="courseType" placeholder="请选择课程类型" style="width: 200px">
-                <el-option label="必修课" value="required"></el-option>
-                <el-option label="选修课" value="elective"></el-option>
-                <el-option label="实验课" value="lab"></el-option>
+                <el-option v-for="item in courseTypeList" :value="item" :label="item"></el-option>
               </el-select>
             </div>
 
@@ -86,15 +84,15 @@
         <el-table v-loading="tableLoading" :data="scheduleList" style="min-height: 400px" border stripe
           highlight-current-row class="data-table__content">
           <el-table-column label="课程号" prop="courseNo" width="120" />
-          <el-table-column label="课序号" prop="orderNo" width="120" />
+          <el-table-column label="课序号" prop="orderNo" width="100" />
           <el-table-column label="课程名称" prop="courseName" min-width="150" />
-          <el-table-column label="周次" prop="weekRange" width="120" />
-          <el-table-column label="任课教师" prop="teacherName" width="120" />
+          <el-table-column label="周次" prop="weekRange" width="100" />
+          <el-table-column label="任课教师" prop="teacherName" width="100" />
           <el-table-column label="上课星期">
             <template #default="scope"> {{ scope.row.weekday }} </template>
           </el-table-column>
 
-          <el-table-column label="上课节次" width="160">
+          <el-table-column label="上课节次" width="120">
             <template #default="scope">
               <el-space :size="4">
 
@@ -164,15 +162,15 @@
 import { ref, computed, onMounted } from 'vue'
 import { Plus, Edit, Delete, Timer } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import { fetchImportSchedule, fetchTemplate, fetchGetScheduleList, fetchAddSchedule, fetchUpdateSchedule, fetchDeleteSchedule, fetchGetScheduleListByCourse, fetchGetSchedule, fetchAddClassForCourse } from '../../api/schedule'
+import { fetchImportSchedule, fetchTemplate, fetchGetScheduleList, fetchDeleteSchedule, fetchGetScheduleListByCourse, fetchGetSchedule } from '../../api/schedule'
 import { useUserStore } from '@/store/modules/user'
 import { weekOptions } from './select'
 import editSchedule from './editSchedule.vue'
 import addSchedule from './addSchedule.vue'
 import { UploadFile } from 'element-plus'
 import { useRoute } from 'vue-router'
-import { fetchClassDetail, fetchGetClassList } from '@/api/class'
-import { fetchSemesterList } from '@/api/misc'
+import { fetchClassDetail } from '@/api/class'
+import { fetchGetCourseType, fetchSemesterList } from '@/api/misc'
 import classSelect from '@/components/select/classSelect.vue'
 import collegeSelect from '@/components/select/collegeSelect.vue'
 import teacherSelect from '@/components/select/teacherSelect.vue'
@@ -187,6 +185,7 @@ const dialogAddVisible = ref(false)
 const currentSchedule = ref<any>(null)
 
 const scheduleList = ref<any[]>([])
+const courseTypeList = ref<Array<string>>([])
 const tableLoading = ref(false)
 const router = useRouter()
 const route = useRoute()
@@ -235,10 +234,6 @@ const handleClassSelected = async (classinfo: Api.Class.classInfo) => {
 
 const semesterName = ref<string>('')
 const semesterList = ref<Array<string>>([])
-const getSemesterList = async () => {
-  const data = await fetchSemesterList()
-  semesterList.value = data
-}
 
 const courseType = ref<string>('')
 
@@ -336,7 +331,6 @@ function goToDetail(id: string) {
 const handleFileChange = async (uploadFile: UploadFile) => {
   const file = uploadFile.raw
   if (!file) return
-
   await fetchImportSchedule(file)
   loadData()
 }
@@ -347,24 +341,19 @@ const openAdd = () => {
 }
 
 const openEdit = async (row: any) => {
-  try {
-    const fullScheduleInfo = await fetchGetSchedule(row.id)
-    currentSchedule.value = fullScheduleInfo
-  } catch (error) {
-    console.warn('获取完整课程信息失败，使用表格数据:', error)
-    currentSchedule.value = JSON.parse(JSON.stringify(row))
-  }
+  currentSchedule.value = await fetchGetSchedule(row.id)
   dialogEditVisible.value = true
 }
 
 const DeleteSchedule = async (id: string) => {
-  const data = await fetchDeleteSchedule(id)
+  await fetchDeleteSchedule(id)
   loadData()
 }
 
 
-onMounted(() => {
-  getSemesterList()
-  resetSearch()
+onMounted(async () => {
+  semesterList.value = await fetchSemesterList()
+  courseTypeList.value = await fetchGetCourseType()
+  await resetSearch()
 })
 </script>

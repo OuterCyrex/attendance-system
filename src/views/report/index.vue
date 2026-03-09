@@ -12,7 +12,7 @@
 
                         <div v-if="userRole !== 'teacher'" class="flex items-center">
                             <div class="mr-2 text-gray-500">辅导员：</div>
-                            <teacherSelect :collegeName="searchForm.collegeNames[0]" @selected="handleTeacherSelected"
+                            <teacherSelect :collegeName="collegeName || ''" @selected="handleTeacherSelected"
                                 :disabled="collegeName === ''" :reset="resetFlag" style="width: 200px" />
                         </div>
 
@@ -25,11 +25,8 @@
 
                         <div v-if="userRole !== 'teacher'" class="flex items-center">
                             <div class="mr-2 text-gray-500">课程类型：</div>
-                            <el-select v-model="searchForm.courseTypes" placeholder="请选择类型" style="width: 200px"
-                                clearable multiple collapse-tags>
-                                <el-option label="必修课" value="required"></el-option>
-                                <el-option label="选修课" value="elective"></el-option>
-                                <el-option label="实验课" value="lab"></el-option>
+                            <el-select v-model="courseType" placeholder="请选择类型" style="width: 200px">
+                                <el-option v-for="item in courseTypeList" :value="item" :label="item"></el-option>
                             </el-select>
                         </div>
                     </div>
@@ -37,14 +34,12 @@
                     <div class="flex items-center gap-4">
                         <div v-if="userRole !== 'teacher'" class="flex items-center">
                             <div class="mr-2 text-gray-500">任课教师：</div>
-                            <el-input v-model="inputInfo.courseTeachers" placeholder="请输入任课教师姓名"
-                                style="width: 200px;"></el-input>
+                            <el-input v-model="courseTeacher" placeholder="请输入任课教师姓名" style="width: 200px;"></el-input>
                         </div>
 
                         <div v-if="userRole !== 'teacher'" class="flex items-center">
                             <div class="mr-2 text-gray-500">课序号：</div>
-                            <el-select v-model="searchForm.orderNos" placeholder="请选择课序号" style="width: 200px" clearable
-                                multiple collapse-tags>
+                            <el-select v-model="orderNo" placeholder="请选择课序号" style="width: 200px">
                                 <el-option v-for="value in orderList" :key="value" :label="value"
                                     :value="value"></el-option>
                             </el-select>
@@ -52,8 +47,7 @@
 
                         <div class="flex items-center">
                             <div class="mr-2 text-gray-500">学期：</div>
-                            <el-select v-model="searchForm.semester" placeholder="请选择学期" style="width: 200px" clearable
-                                multiple collapse-tags>
+                            <el-select v-model="semester" placeholder="请选择学期" style="width: 200px">
                                 <el-option v-for="value in semesterList" :key="value" :label="value"
                                     :value="value"></el-option>
                             </el-select>
@@ -83,47 +77,22 @@
             <ElCard class="col-span-12 mt-4" shadow="never">
                 <el-table :data="attendanceList" v-loading="tableLoading" border stripe highlight-current-row
                     class="data-table__content" style="min-height: 560px">
-                    <el-table-column label="序号" type="index" width="60"></el-table-column>
                     <el-table-column label="课程编号" prop="courseNo" width="120"></el-table-column>
                     <el-table-column label="课程名称" prop="courseName" width="150"></el-table-column>
                     <el-table-column label="教师姓名" prop="teacherName" width="120"></el-table-column>
-                    <el-table-column label="课程类型" prop="courseType" width="120"></el-table-column>
                     <el-table-column label="学期" prop="semesterName" width="120"></el-table-column>
-                    <el-table-column label="班级名称" width="200">
+                    <el-table-column label="班级名称" min-width="200" show-overflow-tooltip>
                         <template #default="scope">
-                            <div v-for="className in scope.row.classNames" :key="className" class="
-    bg-blue-100 text-blue-500 border border-blue-200 rounded px-2 py-1 text-xs break-all
-    inline-flex justify-center items-center text-center">
-                                {{ className }}
-                            </div>
+                            {{ scope.row.classNames.join('、') }}
                         </template>
                     </el-table-column>
                     <el-table-column label="课序号" prop="orderNo" width="120"></el-table-column>
-                    <el-table-column label="考勤时间" width="180">
-                        <template #default="scope">
-                            {{ scope.row.checkTime ? scope.row.checkTime.replace('T', ' ') : '-' }}
-                        </template>
-                    </el-table-column>
                     <el-table-column label="应到人数" prop="expectedCount" width="100"></el-table-column>
                     <el-table-column label="实到人数" prop="actualCount" width="100"></el-table-column>
                     <el-table-column label="出勤率(%)" prop="attendanceRate" width="120">
                         <template #default="scope">
                             <el-progress :percentage="scope.row.attendanceRate" :stroke-width="15"
                                 :color="getAttendanceRateColor(scope.row.attendanceRate)" />
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="考勤类型" prop="checkType" width="120">
-                        <template #default="{ row }">
-                            <el-tag :type="CheckTypeConfig[row.checkType]?.type || 'info'" size="small">
-                                {{ CheckTypeConfig[row.checkType]?.label || '未知' }}
-                            </el-tag>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="状态" prop="status" width="100">
-                        <template #default="{ row }">
-                            <el-tag :type="StatusConfig[row.status]?.type || 'info'" size="small">
-                                {{ StatusConfig[row.status]?.label || '未知' }}
-                            </el-tag>
                         </template>
                     </el-table-column>
                     <el-table-column label="考勤图片" width="150">
@@ -134,7 +103,27 @@
                             <span v-else>暂无图片</span>
                         </template>
                     </el-table-column>
+                    <el-table-column label="状态" prop="status" width="100">
+                        <template #default="{ row }">
+                            <el-tag :type="StatusConfig[row.status]?.type || 'info'" size="small">
+                                {{ StatusConfig[row.status]?.label || '未知' }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="考勤类型" prop="checkType" width="120">
+                        <template #default="{ row }">
+                            <el-tag :type="CheckTypeConfig[row.checkType]?.type || 'info'" size="small">
+                                {{ CheckTypeConfig[row.checkType]?.label || '未知' }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="备注" prop="remark" min-width="150"></el-table-column>
+
+                    <el-table-column label="考勤时间" fixed="right" width="180">
+                        <template #default="scope">
+                            {{ scope.row.checkTime ? scope.row.checkTime.replace('T', ' ') : '-' }}
+                        </template>
+                    </el-table-column>
                 </el-table>
             </ElCard>
 
@@ -151,7 +140,7 @@
 import { Download } from '@element-plus/icons-vue'
 import { fetchQueryAttendanceReport, fetchAttendanceReportExcel } from '@/api/report'
 import { useUserStore } from '@/store/modules/user'
-import { fetchSemesterList, fetchOrderList } from '@/api/misc'
+import { fetchSemesterList, fetchOrderList, fetchGetCourseType } from '@/api/misc'
 import collegeSelect from '@/components/select/collegeSelect.vue'
 import classSelect from '@/components/select/classSelect.vue'
 import teacherSelect from '@/components/select/teacherSelect.vue'
@@ -163,41 +152,32 @@ const tableLoading = ref(false)
 const attendanceList = ref([])
 const semesterList = ref([])
 const orderList = ref([])
+const courseTypeList = ref<Array<string>>([])
 const dateRange = ref<string[]>()
-const collegeName = ref('')
-const teacherNo = ref('')
 
-const searchForm = reactive({
-    orderNos: [] as string[],
-    courseTypes: [] as string[],
-    semester: [] as string[],
-    collegeNames: [] as string[],
-    teacherNames: [] as string[],
-    classNames: [] as string[],
-})
-
-const inputInfo = ref({
-    courseTeachers: ''
-})
+const collegeName = ref<string>('')
+const teacherNo = ref<string>('')
+const className = ref<string>('')
+const courseType = ref<string>('')
+const orderNo = ref<string>('')
+const semester = ref<string>('')
+const courseTeacher = ref<string>('')
 
 const userStore = useUserStore()
-const { getToken: token } = userStore
 const { getUserInfo: userInfo } = userStore
 
 const resetFlag = ref(false)
 
 const handleCollegeSelected = async (college: Api.Misc.collegeInfo) => {
-    searchForm.collegeNames = [college.name]
     collegeName.value = college.name
 }
 
 const handleTeacherSelected = (teacher: Api.Teacher.teacherInfo) => {
-    searchForm.teacherNames = [teacher.realName]
     teacherNo.value = teacher.teacherNo
 }
 
 const handleClassSelected = (classInfo: Api.Class.classInfo) => {
-    searchForm.classNames = [classInfo.className]
+    className.value = classInfo.className
 }
 
 const userRole = computed(() => {
@@ -211,63 +191,95 @@ const userRole = computed(() => {
 
 const handlePageChange = (page: number) => {
     currentPage.value = page
-    getAttendanceList()
+    handleGetAttendanceList()
 }
 
 const handleSizeChange = (size: number) => {
     pageSize.value = size
     currentPage.value = 1
-    getAttendanceList()
+    handleGetAttendanceList()
 }
 
-const splitToArray = (value?: string) => {
-    return value
-        ? value
-            .replace(/，/g, ',')
-            .split(',')
-            .map(item => item.trim())
-            .filter(item => item !== '')
-        : []
-}
+const toArray = (value: string) => value ? [value] : [];
 
-const getAttendanceList = async () => {
+const handleGetAttendanceList = async () => {
     tableLoading.value = true
-
-    const finalTeacherNames = splitToArray(inputInfo.value.courseTeachers)
-
     const startDate = dateRange.value && dateRange.value[0] ? dateRange.value[0] : ''
     const endDate = dateRange.value && dateRange.value[1] ? dateRange.value[1] : ''
-
-    const params = {
-        ...searchForm,
-        courseTeachers: finalTeacherNames,
+    await fetchQueryAttendanceReport({
+        collegeNames: toArray(collegeName.value),
+        teacherNos: toArray(teacherNo.value),
+        orderNos: toArray(orderNo.value),
+        courseTypes: toArray(courseType.value),
+        classNames: toArray(className.value),
+        courseTeachers: toArray(courseTeacher.value),
         startDate: startDate,
         endDate: endDate,
         pageNum: currentPage.value,
         pageSize: pageSize.value
-    }
-
-    const response = await fetchQueryAttendanceReport(params)
-    attendanceList.value = response.records || []
-    total.value = response?.total || 0
-    tableLoading.value = false
+    }).then(res => {
+        attendanceList.value = res.records || []
+        total.value = res.total || 0
+    }).finally(() => {
+        tableLoading.value = false
+    })
 }
 
 const handleSearch = () => {
     currentPage.value = 1
-    getAttendanceList()
+    handleGetAttendanceList()
+}
+
+const handleGetOrderList = async () => {
+    await fetchOrderList().then(data => orderList.value = data)
 }
 
 const resetSearch = () => {
-    Object.keys(searchForm).forEach(key => {
-        (searchForm as any)[key] = []
-    })
+    collegeName.value = ''
+    teacherNo.value = ''
+    className.value = ''
+    courseType.value = ''
+    orderNo.value = ''
+    semester.value = ''
     dateRange.value = []
-    inputInfo.value.courseTeachers = ''
+    courseTeacher.value = ''
     resetFlag.value = !resetFlag.value
+    teacherNo.value = ''
+    if (userInfo.role === 'collegeAdmin') collegeName.value = userInfo.collegeName || ''
+    if (userInfo.role === 'teacher') {
+        teacherNo.value = userInfo.teacherNo || ''
+    }
 
     handleSearch()
 }
+
+
+const exportReport = async () => {
+    await fetchAttendanceReportExcel({
+        collegeNames: toArray(collegeName.value),
+        teacherNos: toArray(teacherNo.value),
+        orderNos: toArray(orderNo.value),
+        courseTypes: toArray(courseType.value),
+        classNames: toArray(className.value),
+        pageNum: 1,
+        pageSize: 10000
+    }).then(blob => {
+        const a = document.createElement('a')
+        a.href = URL.createObjectURL(blob)
+        a.download = '考勤报表.xlsx'
+        a.click()
+        URL.revokeObjectURL(a.href)
+    })
+
+}
+
+onMounted(async () => {
+    await handleGetAttendanceList()
+    await handleGetOrderList()
+    semesterList.value = await fetchSemesterList()
+    courseTypeList.value = await fetchGetCourseType()
+})
+
 
 const CheckTypeConfig: Record<number, { label: string; type: 'success' | 'warning' }> = {
     1: { label: '自动', type: 'success' },
@@ -284,59 +296,4 @@ const getAttendanceRateColor = (rate: number) => {
     if (rate >= 70) return '#e6a23c'
     return '#f56c6c'
 }
-
-const exportReport = async () => {
-    try {
-        const exportParams = {
-            ...searchForm,
-            pageNum: 1,
-            pageSize: 99999
-        }
-
-        const response = await fetchAttendanceReportExcel(exportParams)
-
-        const blob = response instanceof Blob
-            ? response
-            : new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `考勤报表_${new Date().toISOString().slice(0, 10)}.xlsx`;
-        link.style.display = 'none';
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        // 释放URL对象
-        URL.revokeObjectURL(url);
-
-        ElMessage.success('报表导出成功');
-    } catch (error) {
-        console.error('导出报表失败:', error);
-        ElMessage.error('报表导出失败，请联系管理员');
-    }
-}
-
-onMounted(async () => {
-    const promises = [getAttendanceList(), fetchSemesterList()]
-
-    if (userRole.value !== 'teacher') {
-        promises.push(fetchOrderList().then(data => orderList.value = data))
-    }
-
-    const [_, semesterData] = await Promise.all(promises)
-    semesterList.value = semesterData
-})
 </script>
-
-<style scoped>
-.report-container {
-    padding: 20px;
-}
-
-.operation-buttons {
-    margin-bottom: 16px;
-}
-</style>

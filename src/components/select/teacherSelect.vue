@@ -8,11 +8,11 @@
             </template>
         </el-input>
 
-        <el-dialog title="请选择辅导员老师" v-model="dialogVisible" width="400px" destroy-on-close :show-footer="false"
+        <el-dialog title="请选择辅导员老师" v-model="dialogVisible" width="600px" destroy-on-close :show-footer="false"
             append-to-body>
             <el-table :data="teacherList" @row-click="handleRowSelect" v-loading="tableLoading"
                 highlight-current-row size="small" style="cursor: pointer">
-                <el-table-column prop="teacherNo" label="工号" width="100" />
+                <el-table-column prop="teacherNo" label="工号" width="150" />
                 <el-table-column prop="realName" label="教师名" />
                 <el-table-column prop="phone" label="电话" />
             </el-table>

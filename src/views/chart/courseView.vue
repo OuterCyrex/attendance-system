@@ -12,7 +12,7 @@
                     </div>
 
                     <div v-if="userInfo.role !== 'teacher'" class="flex items-center">
-                        <span class="mr-2 text-gray-500 text-sm">教师名称:</span>
+                        <span class="mr-2 text-gray-500 text-sm">辅导员:</span>
                         <teacherSelect @selected="handleTeacherSelect" :collegeName="collegeName"
                             :disabled="collegeNo === ''" :reset="resetFlag" />
                     </div>
@@ -21,6 +21,11 @@
                         <span class="mr-2 text-gray-500 text-sm">课程名称:</span>
                         <courseSelect @selected="handleCourseSelect" :teacherNo="teacherNo"
                             :disabled="teacherNo === ''" :reset="resetFlag" />
+                    </div>
+
+                    <div class="flex items-center">
+                        <span class="mr-2 text-gray-500 text-sm">任课教师:</span>
+                        <el-input v-model="teacherName"  placeholder="请输入任课教师姓名" style="width: 180px;"/>
                     </div>
 
                     <div class="flex items-center">
@@ -66,13 +71,11 @@ const collegeNo = ref<string>('')
 const handleCollegeSelect = (college: Api.Misc.collegeInfo) => {
     collegeName.value = college.name
     collegeNo.value = college.collegeNo
-    console.log(collegeNo.value)
 }
 
 const teacherName = ref<string>('')
 const teacherNo = ref<string>('')
 const handleTeacherSelect = (teacher: Api.Teacher.teacherInfo) => {
-    teacherName.value = teacher.realName
     teacherNo.value = teacher.teacherNo
 
 }

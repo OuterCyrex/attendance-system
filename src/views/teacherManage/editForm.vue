@@ -86,12 +86,13 @@ const defaultForm: Api.Teacher.updateTeacherParams = {
 const form = reactive<Api.Teacher.updateTeacherParams>({ ...defaultForm })
 
 const rules: FormRules = {
+    teacherNo:  [{ required: true, message: '请输入工号', trigger: 'blur' }],
     username: [{ required: true, message: '请输入用户名称', trigger: 'blur' }],
     department: [{ required: true, message: '请选择部门', trigger: 'change' }],
-    realname: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }],
-    phone: [{ required: true, message: '请输入电话', trigger: 'blur' }],
+    realName: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }],
+    phone: [{ required: false, message: '请输入电话', trigger: 'blur' }],
     email: [
-        { required: true, message: '请输入邮箱', trigger: 'blur' },
+        { required: false, message: '请输入邮箱', trigger: 'blur' },
         { type: 'email', message: '请输入合法的邮箱格式', trigger: 'blur' }
     ],
     password: [{ required: false, message: '请输入密码', trigger: 'blur' }]

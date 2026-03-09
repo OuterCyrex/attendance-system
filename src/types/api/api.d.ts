@@ -50,24 +50,20 @@ declare namespace Api {
 
     /** 用户信息 */
     interface userInfo {
-      id: string
-      username: string
-      password: string
-      id: string
-      username: string
-      password: string
-      realName: string
-      teacherNo: string
-      teacherNo: string
-      phone: string
-      email: string
-      email: string
-      department: string
-      collegeNo: string
-      status: number
-      attendanceThreshold: number
-      enableEmailNotification: boolean
       role: string
+      enableEmailNotification: boolean
+      remark: string
+      teacherNo: string
+      attendanceThreshold: number
+      realName: string
+      lastLoginTime: string
+      phone: string
+      id: string
+      collegeName: string
+      collegeNo: string
+      email: string
+      username: string
+      status: number
     }
 
     interface updateSelfParams {
@@ -162,7 +158,7 @@ declare namespace Api {
       semesterName: string
       createTime: string
       updateTime: string
-      classNames: string[]
+      classes: Api.Class.classInfo[]
       inClassTime: boolean
     }
 
